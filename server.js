@@ -1,236 +1,254 @@
 // server.js
 
-    // set up ========================
-    var express  = require('express');
-    var app      = express();                               // create our app w/ express
-    var mongoose = require('mongoose');                     // mongoose for mongodb
-    var morgan = require('morgan');             // log requests to the console (express4)
-    var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-    var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
-    var jwt    = require('jsonwebtoken');
-    var config = require('./config');
-    var User   = require('./app/models/user');
-    
-    var apiRoutes = express.Router();
+// set up ========================
+var express = require('express');
+var app = express(); // create our app w/ express
+var mongoose = require('mongoose'); // mongoose for mongodb
+var morgan = require('morgan'); // log requests to the console (express4)
+var bodyParser = require('body-parser'); // pull information from HTML POST (express4)
+var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
+var jwt = require('jsonwebtoken');
+var config = require('./config');
+var User = require('./app/models/user');
 
-    // configuration =================
-    app.set('superSecret', config.secret);
+var apiRoutes = express.Router();
 
-    mongoose.connect('mongodb://localhost:27017/test');     // connect to mongoDB database on modulus.io
+// configuration =================
+app.set('superSecret', config.secret);
 
-    app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
-    app.use(morgan('dev'));                                         // log every request to the console
-    app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
-    app.use(bodyParser.json());                                     // parse application/json
-    app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
-    app.use(methodOverride());
-  
-    var Schema = mongoose.Schema
-      , ObjectId = Schema.ObjectID;
+mongoose.connect('mongodb://localhost:27017/test'); // connect to mongoDB database on modulus.io
 
-    var Person = new Schema({
-       username        : { type: String, required: true, trim: true }
-    });
-    var Person = mongoose.model('Person', Person);
+app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
+app.use(morgan('dev')); // log every request to the console
+app.use(bodyParser.urlencoded({
+    'extended': 'true'
+})); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.json({
+    type: 'application/vnd.api+json'
+})); // parse application/vnd.api+json as json
+app.use(methodOverride());
 
-    var Todo = mongoose.model('Todo', {
-        text : String
-      , persons         : [Person.username]
-    });
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectID;
+
+var Person = new Schema({
+    username: {
+        type: String,
+        required: true,
+        trim: true
+    }
+});
+var Person = mongoose.model('Person', Person);
+
+var Todo = mongoose.model('Todo', {
+    text: String,
+    persons: [Person.username]
+});
 
 apiRoutes.use(function(req, res, next) {
 
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    // check header or url parameters or post parameters for token
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-  // decode token
-  if (token) {
+    // decode token
+    if (token) {
 
-    // verifies secret and checks exp
-    jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;    
-        next();
-      }
+        // verifies secret and checks exp
+        jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+            if (err) {
+                return res.json({
+                    success: false,
+                    message: 'Failed to authenticate token.'
+                });
+            } else {
+                // if everything is good, save to request for use in other routes
+                req.decoded = decoded;
+                next();
+            }
+        });
+
+    } else {
+
+        // if there is no token
+        // return an error
+        return res.status(403).send({
+            success: false,
+            message: 'No token provided.'
+        });
+
+    }
+});
+
+apiRoutes.get('/usersget', function(req, res) {
+    User.find({}, function(err, users) {
+        res.json(users);
+    });
+});
+
+app.get('/setup', function(req, res) {
+
+    // create a sample user
+    var nick = new User({
+        name: 'woot8',
+        password: '77jump'
     });
 
-  } else {
+    // save the sample user
+    nick.save(function(err) {
+        if (err) throw err;
 
-    // if there is no token
-    // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
+        console.log('User saved successfully');
+        res.json({
+            success: true
+        });
     });
-    
-  }
 });
-
-
-    apiRoutes.get('/usersget', function(req, res) {
-  User.find({}, function(err, users) {
-    res.json(users);
-  });
-});
-    app.get('/setup', function(req, res) {
-
-  // create a sample user
-  var nick = new User({
-    name: 'woot8',
-    password: '77jump'
-  });
-
-  // save the sample user
-  nick.save(function(err) {
-    if (err) throw err;
-
-    console.log('User saved successfully');
-    res.json({ success: true });
-  });
-});
-
 
 app.post('/authenticate', function(req, res) {
 
-  // find the user
-  User.findOne({
-    name: req.body.name
-  }, function(err, user) {
+    // find the user
+    User.findOne({
+        name: req.body.name
+    }, function(err, user) {
 
-    if (err) throw err;
+        if (err) throw err;
 
-    if (!user) {
-      res.json({ success: false, message: 'Authentication failed. User not found.' });
-    } else if (user) {
+        if (!user) {
+            res.json({
+                success: false,
+                message: 'Authentication failed. User not found.'
+            });
+        } else if (user) {
 
-      // check if password matches
-      if (user.password != req.body.password) {
-        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-      } else {
+            // check if password matches
+            if (user.password != req.body.password) {
+                res.json({
+                    success: false,
+                    message: 'Authentication failed. Wrong password.'
+                });
+            } else {
 
-        // if user is found and password is right
-        // create a token
-        var token = jwt.sign(user, app.get('superSecret'), {
-          expiresInMinutes: 1440 // expires in 24 hours
-        });
-  
-        console.log(user._id); 
+                // if user is found and password is right
+                // create a token
+                var token = jwt.sign(user, app.get('superSecret'), {
+                    expiresInMinutes: 1440 // expires in 24 hours
+                });
 
-        // return the information including token as JSON
-        res.json({
-          success: true,
-          message: 'Enjoy your token!',
-          token: token
-        });
-      }   
+                console.log(user._id);
 
-    }
+                // return the information including token as JSON
+                res.json({
+                    success: true,
+                    message: 'Enjoy your token!',
+                    token: token
+                });
+            }
 
-  });
+        }
+
+    });
 });
 
+app.get('/adduser/:username', function(req, res) {
+    var person_data = {
+        username: req.params.username
+    };
 
-    app.get('/adduser/:username', function(req, res){
-        var person_data = {
-           username: req.params.username
-        };
+    var person = new Person(person_data);
 
-        var person = new Person(person_data);
-
-        person.save( function(error, data){
-            if(error){
-                res.json(error);
-            }
-            else{
-                res.json(data);
-            }
-        });
+    person.save(function(error, data) {
+        if (error) {
+            res.json(error);
+        } else {
+            res.json(data);
+        }
     });
+});
 
-    apiRoutes.get('/adduserevent/:username/:todo', function(req, res){
-        Todo.findOne({ text: req.params.todo }, function(error, todos){
-            if(error){
-                res.json(error);
-            }
-            else if(todos == null){
-                res.json('no such todo!')
-            }
-            else{
-                todos.persons.push({ username: req.decoded });
-                todos.save( function(err, data){
-                  if (err)
+apiRoutes.get('/adduserevent/:username/:todo', function(req, res) {
+    Todo.findOne({
+        text: req.params.todo
+    }, function(error, todos) {
+        if (error) {
+            res.json(error);
+        } else if (todos == null) {
+            res.json('no such todo!')
+        } else {
+            todos.persons.push({
+                username: req.decoded
+            });
+            todos.save(function(err, data) {
+                if (err)
                     res.send(err);
 
-                    Todo.find(function(err, todos) {
-                      if (err)
+                Todo.find(function(err, todos) {
+                    if (err)
                         res.send(err)
-                      res.json(todos);
-                    });
+                    res.json(todos);
                 });
-           }
-        });
+            });
+        }
     });
+});
 
-    app.get('/api/todos', function(req, res) {
+app.get('/api/todos', function(req, res) {
 
-        // use mongoose to get all todos in the database
+    // use mongoose to get all todos in the database
+    Todo.find(function(err, todos) {
+
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+
+        res.json(todos); // return all todos in JSON format
+    });
+});
+
+// create todo and send back all todos after creation
+app.post('/api/todos', function(req, res) {
+
+    // create a todo, information comes from AJAX request from Angular
+    Todo.create({
+        text: req.body.text,
+
+        done: false
+    }, function(err, todo) {
+        if (err)
+            res.send(err);
+
+        // get and return all the todos after you create another
         Todo.find(function(err, todos) {
-
-            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
                 res.send(err)
-
-            res.json(todos); // return all todos in JSON format
+            res.json(todos);
         });
     });
 
-    // create todo and send back all todos after creation
-    app.post('/api/todos', function(req, res) {
+});
 
-        // create a todo, information comes from AJAX request from Angular
-        Todo.create({
-            text : req.body.text,
- 
-            done : false
-        }, function(err, todo) {
+// delete a todo
+app.delete('/api/todos/:todo_id', function(req, res) {
+    Todo.remove({
+        _id: req.params.todo_id
+    }, function(err, todo) {
+        if (err)
+            res.send(err);
+
+        // get and return all the todos after you create another
+        Todo.find(function(err, todos) {
             if (err)
-                res.send(err);
-
-            // get and return all the todos after you create another
-            Todo.find(function(err, todos) {
-                if (err)
-                    res.send(err)
-                res.json(todos);
-            });
-        });
-
-    });
-
-    // delete a todo
-    app.delete('/api/todos/:todo_id', function(req, res) {
-        Todo.remove({
-            _id : req.params.todo_id
-        }, function(err, todo) {
-            if (err)
-                res.send(err);
-
-            // get and return all the todos after you create another
-            Todo.find(function(err, todos) {
-                if (err)
-                    res.send(err)
-                res.json(todos);
-            });
+                res.send(err)
+            res.json(todos);
         });
     });
+});
 
-     apiRoutes.get('*', function(req, res) {
-        res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-    });
+apiRoutes.get('*', function(req, res) {
+    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
 
-    app.use('/api', apiRoutes);
-    // listen (start app with node server.js) ======================================
-    app.listen(8080);
-    console.log("App listening on port 8080");
+app.use('/api', apiRoutes);
+// listen (start app with node server.js) ======================================
+app.listen(8080);
+console.log("App listening on port 8080");
