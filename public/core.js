@@ -1,6 +1,20 @@
-var scotchTodo = angular.module('scotchTodo', []);
+var scotchTodo = angular.module('scotchTodo', ['ngRoute']);
 
-function mainController($scope, $http, $window, $location) {
+scotchTodo.config(['$routeProvider',
+   function ($routeProvider) {
+	$routeProvider
+	.when('/events/:event_id', {
+		templateUrl: 'events.html',
+		controller: 'mainController'
+	})
+	.when('/login', {
+		templateUrl: 'login.html',
+		controller: 'mainController'
+	});
+}]);
+
+scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams',
+  function ($scope, $http, $window, $location , $routeParams) {
     $scope.formData = {};
 
     // when landing on the page, get all todos and show them
@@ -55,20 +69,40 @@ function mainController($scope, $http, $window, $location) {
         });
     }
 
-    $scope.addEvent = function(id) {
+    $scope.getEvent = function(id) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/adduserevent/wo9999/' + id,
+                url: 'http://localhost:8080/api/events/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.todos2 = data;
-                console.log(data);
+                $scope.todos = data;
+                console.log("get Event scope");
+                console.log (data);
+                
             })
             .error(function(data) {
                 console.log('Error: ' + data);
             });
     };
-}
+
+    $scope.addEvent = function(id) {
+        $http({
+                method: 'GET',
+                url: 'http://localhost:8080/api/adduserevent/' + id,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.todos = data;
+                console.log("add Event scope");
+                console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+}]);

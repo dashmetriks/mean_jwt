@@ -166,9 +166,9 @@ app.get('/adduser/:username', function(req, res) {
     });
 });
 
-apiRoutes.get('/adduserevent/:username/:todo', function(req, res) {
+apiRoutes.get('/adduserevent/:event_id', function(req, res) {
     Todo.findOne({
-        text: req.params.todo
+        _id: req.params.event_id
     }, function(error, todos) {
         if (error) {
             res.json(error);
@@ -181,14 +181,29 @@ apiRoutes.get('/adduserevent/:username/:todo', function(req, res) {
             todos.save(function(err, data) {
                 if (err)
                     res.send(err);
-
-                Todo.find(function(err, todos) {
+            Todo.find({
+                _id: req.params.event_id
+            }, function(error, todos) {
                     if (err)
                         res.send(err)
                     res.json(todos);
                 });
             });
         }
+    });
+});
+
+app.get('/api/events/:event_id', function(req, res) {
+
+    // use mongoose to get all todos in the database
+    Todo.find({ _id: req.params.event_id },
+          function(err, todos) {
+
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+
+        res.json(todos); // return all todos in JSON format
     });
 });
 
@@ -244,11 +259,12 @@ app.delete('/api/todos/:todo_id', function(req, res) {
     });
 });
 
-apiRoutes.get('*', function(req, res) {
-    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
 
 app.use('/api', apiRoutes);
+//apiRoutes.use(function(req, res) {
+ //   res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+//});
+
 // listen (start app with node server.js) ======================================
 app.listen(8080);
 console.log("App listening on port 8080");
