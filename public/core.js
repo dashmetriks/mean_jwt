@@ -88,10 +88,10 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             });
     };
 
-    $scope.addEvent = function(id) {
+    $scope.addEvent = function(id,ustatus) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/adduserevent/' + id,
+                url: 'http://localhost:8080/api/adduserevent/' + id + '/' + ustatus,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')

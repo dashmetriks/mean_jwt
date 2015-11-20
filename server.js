@@ -166,7 +166,7 @@ app.get('/adduser/:username', function(req, res) {
     });
 });
 
-apiRoutes.get('/adduserevent/:event_id', function(req, res) {
+apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
     Todo.findOne({
         _id: req.params.event_id
     }, function(error, todos) {
@@ -176,7 +176,8 @@ apiRoutes.get('/adduserevent/:event_id', function(req, res) {
             res.json('no such todo!')
         } else {
             todos.persons.push({
-                username: req.decoded
+                username: req.decoded,
+                userstatus: req.params.ustatus
             });
             todos.save(function(err, data) {
                 if (err)
