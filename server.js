@@ -180,7 +180,9 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
             console.log('wttttttfffff');
             Todo.update(
                { 
-                 "text": "12345677"
+                 _id: req.params.event_id,
+        "persons.username._id": req.decoded._id
+
                },
                { 
                $set: { 
@@ -190,7 +192,6 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
              function (err, result) {
       if (err) throw err;
       console.log(result);
-      console.log('errrrrrrr');
           
            });
 
