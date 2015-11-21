@@ -174,65 +174,69 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
         if (error) {
             res.json(error);
         } else if (todos == null) {
-            res.json('no such todo!')
-            Todo.findOne({ _id: req.params.event_id}, function(err, todo) {
-                    if (err) res.send(err);
-            console.log(req.decoded);
-            todo.persons.push({
-                username: req.decoded,
-                userstatus: req.params.ustatus
-            });
-            todo.save(function(err, data) {
-                if (err)
-                    res.send(err);
-            });
-            });
+
+            console.log('we are here');
+            Todo.update(
+               { _id: req.params.event_id }, 
+               {
+                $push: {
+                    persons: {
+                        $each: [{ username: req.decoded, userstatus: req.params.ustatus }]
+                        }
+                    }
+                },
+                function(err, result) {
+                    if (err) throw err;
+                    console.log(result);
+                });
+
+            console.log('we are here3333');
+
         } else {
             console.log(todos);
             console.log('wttttttfffff');
-            Todo.update(
-               { 
-                 _id: req.params.event_id,
-                 "persons.username._id": req.decoded._id
-               },
-               { 
-               $set: { 
-                 "persons.$.userstatus": req.params.ustatus 
-               }
-             },
-             function (err, result) {
-      if (err) throw err;
-      console.log(result);
-          
-           });
-
-           // todos.save(function(err, data) {
-            //    if (err)
-             //       res.send(err);
-            Todo.find({
-                _id: req.params.event_id
-            }, function(err, todos) {
-                    if (err)
-                        res.send(err)
-                    res.json(todos);
+            Todo.update({
+                    _id: req.params.event_id,
+                    "persons.username._id": req.decoded._id
+                }, {
+                    $set: {
+                        "persons.$.userstatus": req.params.ustatus
+                    }
+                },
+                function(err, result) {
+                    if (err) throw err;
+                    console.log(result);
                 });
-          //  });
         }
+        // todos.save(function(err, data) {
+        //    if (err)
+        //       res.send(err);
+        Todo.find({
+            _id: req.params.event_id
+        }, function(err, todos) {
+            if (err)
+                res.send(err)
+            res.json(todos);
+        });
+        //  });
+
     });
 });
 
 app.get('/api/events/:event_id', function(req, res) {
 
     // use mongoose to get all todos in the database
-    Todo.find({ _id: req.params.event_id },
-          function(err, todos) {
+    Todo.find({
+            _id: req.params.event_id
+        },
+        function(err, todos) {
 
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-            res.send(err)
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
 
-        res.json(todos); // return all todos in JSON format
-    });
+            res.json(todos); // return all todos in JSON format
+        });
 });
 
 app.get('/api/todos', function(req, res) {
@@ -290,7 +294,7 @@ app.delete('/api/todos/:todo_id', function(req, res) {
 
 app.use('/api', apiRoutes);
 //apiRoutes.use(function(req, res) {
- //   res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+//   res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
 //});
 
 // listen (start app with node server.js) ======================================
