@@ -168,28 +168,43 @@ app.get('/adduser/:username', function(req, res) {
 
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
     Todo.findOne({
-        _id: req.params.event_id
+        _id: req.params.event_id,
+        "persons.username._id": req.decoded._id
     }, function(error, todos) {
         if (error) {
             res.json(error);
         } else if (todos == null) {
             res.json('no such todo!')
         } else {
-            todos.persons.push({
-                username: req.decoded,
-                userstatus: req.params.ustatus
-            });
-            todos.save(function(err, data) {
-                if (err)
-                    res.send(err);
+            console.log(todos);
+            console.log('wttttttfffff');
+            Todo.update(
+               { 
+                 "text": "12345677"
+               },
+               { 
+               $set: { 
+                 "persons.0.userstatus": req.params.ustatus 
+               }
+             },
+             function (err, result) {
+      if (err) throw err;
+      console.log(result);
+      console.log('errrrrrrr');
+          
+           });
+
+           // todos.save(function(err, data) {
+            //    if (err)
+             //       res.send(err);
             Todo.find({
                 _id: req.params.event_id
-            }, function(error, todos) {
+            }, function(err, todos) {
                     if (err)
                         res.send(err)
                     res.json(todos);
                 });
-            });
+          //  });
         }
     });
 });

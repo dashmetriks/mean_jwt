@@ -17,7 +17,7 @@
                         <input type="button" value="No" ng-click="addEvent(todo._id,'No')"> {{ todo.text }}
                         <input type="button" value="Maybe" ng-click="addEvent(todo._id,'Maybe')"> {{ todo.text }}
                     <div ng-repeat="user in todo.persons">
-                       {{user.userstatus}} {{user.username}}
+                       {{user}} -  {{user.username}}
                     </div>
                     </label>
                 </div>
