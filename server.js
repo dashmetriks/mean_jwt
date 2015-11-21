@@ -175,6 +175,18 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
             res.json(error);
         } else if (todos == null) {
             res.json('no such todo!')
+            Todo.find({ _id: req.params.event_id}, function(err, todo) {
+                    if (err) res.send(err);
+            console.log(req.decoded);
+            todo.persons.push({
+                username: req.decoded,
+                userstatus: req.params.ustatus
+            });
+            todo.save(function(err, data) {
+                if (err)
+                    res.send(err);
+            });
+            });
         } else {
             console.log(todos);
             console.log('wttttttfffff');
@@ -186,7 +198,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                },
                { 
                $set: { 
-                 "persons.0.userstatus": req.params.ustatus 
+                 "persons.$.userstatus": req.params.ustatus 
                }
              },
              function (err, result) {
