@@ -175,7 +175,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
             res.json(error);
         } else if (todos == null) {
             res.json('no such todo!')
-            Todo.find({ _id: req.params.event_id}, function(err, todo) {
+            Todo.findOne({ _id: req.params.event_id}, function(err, todo) {
                     if (err) res.send(err);
             console.log(req.decoded);
             todo.persons.push({
@@ -193,8 +193,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
             Todo.update(
                { 
                  _id: req.params.event_id,
-        "persons.username._id": req.decoded._id
-
+                 "persons.username._id": req.decoded._id
                },
                { 
                $set: { 
