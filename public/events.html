@@ -19,11 +19,13 @@
                     <div ng-repeat="user in todo.persons">
                        {{user}} -  {{user.username}}
                     </div>
+                    <div ng-repeat="comment in todo.comments">
+                       {{comment}} -  {{user.username}}
+                    </div>
                     </label>
                 </div>
 
             </div>
-        </div>
 
         <!-- FORM TO CREATE TODOS -->
         <div id="todo-form" class="row">
@@ -43,4 +45,5 @@
 
     </div>
 
+        </div>
 </body>

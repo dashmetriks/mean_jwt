@@ -116,7 +116,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.comments = data;
+                $scope.todos = data;
                 console.log("add commment");
                 console.log (data);
             })
