@@ -105,4 +105,25 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 console.log('Error: ' + data);
             });
     };
+
+    $scope.addComment = function() {
+        $http({
+                method: 'POST',
+                url: 'http://localhost:8080/api/addcomment/' + $routeParams.event_id,
+                data: 'text=' + $scope.formData.text,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.comments = data;
+                console.log("add commment");
+                console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+
 }]);

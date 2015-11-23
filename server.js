@@ -43,7 +43,8 @@ var Person = mongoose.model('Person', Person);
 
 var Todo = mongoose.model('Todo', {
     text: String,
-    persons: [Person.username]
+    persons: [Person.username],
+    comments: [Person.username]
 });
 
 apiRoutes.use(function(req, res, next) {
@@ -174,8 +175,6 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
         if (error) {
             res.json(error);
         } else if (todos == null) {
-
-            console.log('we are here');
             Todo.update(
                { _id: req.params.event_id }, 
                {
@@ -189,9 +188,6 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                     if (err) throw err;
                     console.log(result);
                 });
-
-            console.log('we are here3333');
-
         } else {
             console.log(todos);
             console.log('wttttttfffff');
@@ -208,9 +204,6 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                     console.log(result);
                 });
         }
-        // todos.save(function(err, data) {
-        //    if (err)
-        //       res.send(err);
         Todo.find({
             _id: req.params.event_id
         }, function(err, todos) {
@@ -218,8 +211,41 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                 res.send(err)
             res.json(todos);
         });
-        //  });
+    });
+});
 
+apiRoutes.post('/addcomment/:event_id/', function(req, res) {
+    Todo.findOne({
+        _id: req.params.event_id,
+        "persons.username._id": req.decoded._id
+    }, function(error, todos) {
+        if (error) {
+            res.json(error);
+        } else if (todos == null) {
+        } else {
+            console.log('wttttttfffff 34444444');
+            Todo.update(
+               { _id: req.params.event_id }, 
+               {
+                $push: {
+                    comments: {
+                        $each: [{ username: req.decoded, text: req.body.text }]
+                        }
+                    }
+                },
+                function(err, result) {
+                    if (err) throw err;
+                    console.log(err);
+                    console.log(result);
+                });
+        }
+        Todo.find({
+            _id: req.params.event_id
+        }, function(err, todos) {
+            if (err)
+                res.send(err)
+            res.json(todos);
+        });
     });
 });
 
