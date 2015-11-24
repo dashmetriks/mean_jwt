@@ -13,7 +13,7 @@
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
                 <div class="checkbox" ng-repeat="todo in todos">
                     <label>
-                        <h3>{{ todo.text }} </h3>
+                        <h3><a href="#/events/{{ todo._id }}"> {{ todo.text }} </a> </h3>
                     </label>
                 </div>
 
