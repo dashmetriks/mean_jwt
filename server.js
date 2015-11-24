@@ -257,6 +257,9 @@ apiRoutes.post('/addcomment/:event_id/', function(req, res) {
 });
 
 app.get('/api/events/:event_id', function(req, res) {
+  console.log('event id');
+  console.log(req.params.event_id);
+
 
     // use mongoose to get all todos in the database
     Todo.find({
@@ -268,12 +271,14 @@ app.get('/api/events/:event_id', function(req, res) {
             if (err)
                 res.send(err)
 
+  console.log(todos);
             res.json(todos); // return all todos in JSON format
         });
 });
 
 app.get('/api/todos', function(req, res) {
 
+  console.log(' ee are here');
     // use mongoose to get all todos in the database
     Todo.find(function(err, todos) {
 
@@ -299,6 +304,9 @@ app.post('/api/todos', function(req, res) {
         Todo.find(function(err, todos) {
             if (err)
                 res.send(err)
+            console.log("now now");
+            console.log(todos);
+    
             res.json(todos);
         });
     });

@@ -7,6 +7,10 @@ scotchTodo.config(['$routeProvider',
 		templateUrl: 'events.html',
 		controller: 'mainController'
 	})
+	.when('/event_list', {
+		templateUrl: 'event_list.html',
+		controller: 'mainController'
+	})
 	.when('/login', {
 		templateUrl: 'login.html',
 		controller: 'mainController'
@@ -18,22 +22,21 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.formData = {};
 
     // when landing on the page, get all todos and show them
-    $http.get('/api/todos')
-        .success(function(data) {
-            $scope.todos2 = data;
-            console.log(data);
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-        });
+//    $http.get('/api/todos')
+ //       .success(function(data) {
+  //          $scope.todos = data;
+   //         console.log(data);
+    //    })
+     //   .error(function(data) {
+      //      console.log('Error: ' + data);
+       // });
 
     // when submitting the add form, send the text to the node API
     $scope.createTodo = function() {
         $http.post('/api/todos', $scope.formData)
             .success(function(data) {
                 $scope.formData = {}; // clear the form so our user is ready to enter another
-                $scope.todos2 = data;
-                console.log(data);
+                $scope.todos = data;
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -44,7 +47,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.deleteTodo = function(id) {
         $http.delete('/api/todos/' + id)
             .success(function(data) {
-                $scope.todos2 = data;
+                $scope.todos = data;
                 console.log(data);
             })
             .error(function(data) {
@@ -68,6 +71,25 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             //          $location.path('/');
         });
     }
+
+    $scope.getEventList = function() {
+        $http({
+                method: 'GET',
+                url: 'http://localhost:8080/api/todos/',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.todos = data;
+                console.log("get Event scope");
+                console.log (data);
+                
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
 
     $scope.getEvent = function(id) {
         $http({

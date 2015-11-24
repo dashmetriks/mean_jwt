@@ -13,16 +13,17 @@
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
                 <div class="checkbox" ng-repeat="todo in todos">
                     <label>
-                        <input type="button" value="Yes" ng-click="addEvent(todo._id,'Yes')"> {{ todo.text }}
-                        <input type="button" value="No" ng-click="addEvent(todo._id,'No')"> {{ todo.text }}
-                        <input type="button" value="Maybe" ng-click="addEvent(todo._id,'Maybe')"> {{ todo.text }}
+                        <h3>{{ todo.text }} </h3>
+                        <input type="button" value="Yes" ng-click="addEvent(todo._id,'Yes')"> 
+                        <input type="button" value="No" ng-click="addEvent(todo._id,'No')"> 
+                        <input type="button" value="Maybe" ng-click="addEvent(todo._id,'Maybe')"> 
+                    </label>
                     <div ng-repeat="user in todo.persons">
-                       {{user}} -  {{user.username}}
+                       {{user.userstatus}} -  {{user.username.name}}
                     </div>
                     <div ng-repeat="comment in todo.comments">
                        {{comment.text}} -  {{comment.username.name}}
                     </div>
-                    </label>
                 </div>
 
             </div>
