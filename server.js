@@ -4,6 +4,8 @@
 var express = require('express');
 var app = express(); // create our app w/ express
 var mongoose = require('mongoose'); // mongoose for mongodb
+var autoIncrement = require('mongoose-auto-increment');
+
 var morgan = require('morgan'); // log requests to the console (express4)
 var bodyParser = require('body-parser'); // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
@@ -41,11 +43,16 @@ var Person = new Schema({
 });
 var Person = mongoose.model('Person', Person);
 
-var Todo = mongoose.model('Todo', {
+var TodoSchema = new Schema({
     text: String,
     persons: [Person.username],
     comments: [Person.username]
 });
+
+autoIncrement.initialize(mongoose.connection);
+TodoSchema.plugin(autoIncrement.plugin, 'Todo');
+
+var Todo = mongoose.model('Todo', TodoSchema);
 
 apiRoutes.use(function(req, res, next) {
 
@@ -283,9 +290,7 @@ app.post('/api/todos', function(req, res) {
 
     // create a todo, information comes from AJAX request from Angular
     Todo.create({
-        text: req.body.text,
-
-        done: false
+        text: req.body.text
     }, function(err, todo) {
         if (err)
             res.send(err);
