@@ -6,6 +6,7 @@
 <head>
     <!-- META -->
     <meta charset="utf-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
 
     <title>Node/Angular Todo App</title>
@@ -27,8 +28,10 @@
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
 <body>
-
 <div ng-app="scotchTodo">
+<div class="text-center">
+<a href="#/event_list"> list </a>
+</div>
         <ng-view></ng-view>
 </div>
 

@@ -1,7 +1,7 @@
 var scotchTodo = angular.module('scotchTodo', ['ngRoute']);
 
-scotchTodo.config(['$routeProvider',
-   function ($routeProvider) {
+scotchTodo.config(['$locationProvider', '$routeProvider',
+   function ($locationProvider, $routeProvider) {
 	$routeProvider
 	.when('/events/:event_id', {
 		templateUrl: 'events.html',
@@ -15,6 +15,7 @@ scotchTodo.config(['$routeProvider',
 		templateUrl: 'login.html',
 		controller: 'mainController'
 	});
+   $locationProvider.html5Mode(true);
 }]);
 
 scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams',
@@ -68,7 +69,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         }).success(function(data) {
             console.log(data);
             $window.sessionStorage.setItem('token', data.token);
-            //          $location.path('/');
+            $location.url('/event_list');
         });
     }
 
@@ -82,7 +83,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 }
             }).success(function(data) {
                 $scope.todos = data;
-                console.log("get Event scope");
+                console.log("get Event Lissssssssst scope");
                 console.log (data);
                 
             })
