@@ -60,8 +60,10 @@ apiRoutes.use(function(req, res, next) {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
     // decode token
-    if (token) {
+    if (token !== "null") {
 
+console.log("weeeeee are heeeeer tookeennnnn");
+console.log(token);
         // verifies secret and checks exp
         jwt.verify(token, app.get('superSecret'), function(err, decoded) {
             if (err) {
@@ -78,6 +80,7 @@ apiRoutes.use(function(req, res, next) {
 
     } else {
 
+console.log("nooooooo tookeennnnn");
         // if there is no token
         // return an error
         return res.status(403).send({
@@ -256,7 +259,7 @@ apiRoutes.post('/addcomment/:event_id/', function(req, res) {
     });
 });
 
-app.get('/api/events/:event_id', function(req, res) {
+apiRoutes.get('/events/:event_id', function(req, res) {
   console.log('event id');
   console.log(req.params.event_id);
 
@@ -276,7 +279,7 @@ app.get('/api/events/:event_id', function(req, res) {
         });
 });
 
-app.get('/api/todos', function(req, res) {
+apiRoutes.get('/todos', function(req, res) {
 
   console.log(' ee are here');
     // use mongoose to get all todos in the database
@@ -291,8 +294,9 @@ app.get('/api/todos', function(req, res) {
 });
 
 // create todo and send back all todos after creation
-app.post('/api/todos', function(req, res) {
+apiRoutes.post('/todos', function(req, res) {
 
+console.log ("po po");
     // create a todo, information comes from AJAX request from Angular
     Todo.create({
         text: req.body.text
@@ -332,9 +336,9 @@ app.delete('/api/todos/:todo_id', function(req, res) {
 
 
 app.use('/api', apiRoutes);
-//apiRoutes.use(function(req, res) {
-//   res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-//});
+apiRoutes.use(function(req, res) {
+   res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
 
 // listen (start app with node server.js) ======================================
 app.listen(8080);

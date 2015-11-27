@@ -1,4 +1,35 @@
+var interceptor = function ($q, $location) {
+	return {
+		request: function (config) {
+		console.log(config);
+		return config;
+	},
+
+	response: function (result) {
+		console.log('Repos:');
+		//    result.data.splice(0, 10).forEach(function (repo) {
+		//       console.log(repo.name);
+		//    })
+		return result;
+	},
+
+	responseError: function (rejection) {
+		console.log('Failed with', rejection.status, 'status');
+		if (rejection.status == 403) {
+			$location.url('/login');
+		}
+
+		return $q.reject(rejection);
+	}
+	}
+};
+
+
 var scotchTodo = angular.module('scotchTodo', ['ngRoute']);
+
+scotchTodo.config(function ($httpProvider) {
+       $httpProvider.interceptors.push(interceptor);
+    });
 
 scotchTodo.config(['$locationProvider', '$routeProvider',
    function ($locationProvider, $routeProvider) {
@@ -33,16 +64,6 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
        // });
 
     // when submitting the add form, send the text to the node API
-    $scope.createTodo = function() {
-        $http.post('/api/todos', $scope.formData)
-            .success(function(data) {
-                $scope.formData = {}; // clear the form so our user is ready to enter another
-                $scope.todos = data;
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
-    };
 
     // delete a todo after checking it
     $scope.deleteTodo = function(id) {
@@ -122,6 +143,26 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             }).success(function(data) {
                 $scope.todos = data;
                 console.log("add Event scope");
+                console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+
+    $scope.createTodo = function() {
+        $http({
+                method: 'POST',
+                url: 'http://localhost:8080/api/todos',
+                data: 'text=' + $scope.formData.text,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.todos = data;
+                console.log("add commment");
                 console.log (data);
             })
             .error(function(data) {
