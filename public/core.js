@@ -45,7 +45,10 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
 	.when('/login', {
 		templateUrl: 'login.html',
 		controller: 'mainController'
-	});
+	})
+        .otherwise({
+            redirectTo: '/event_list'
+        });
    $locationProvider.html5Mode(true);
 }]);
 
