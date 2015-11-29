@@ -52,10 +52,17 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
    $locationProvider.html5Mode(true);
 }]);
 
-scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams',
-  function ($scope, $http, $window, $location , $routeParams) {
+scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams', '$rootScope',
+  function ($scope, $http, $window, $location , $routeParams, $rootScope) {
     $scope.formData = {};
 
+    $scope.logOut = function () {
+       console.log ("looooooooogout");
+       $window.sessionStorage['token'] = null;
+       $rootScope.isUserLoggedIn = false;
+          //  $window.sessionStorage.setItem('token', data.token);
+       $location.url('/login');
+    }
     // when landing on the page, get all todos and show them
 //    $http.get('/api/todos')
  //       .success(function(data) {
@@ -93,6 +100,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         }).success(function(data) {
             console.log(data);
             $window.sessionStorage.setItem('token', data.token);
+//            $scope.isUserLoggedIn = true;
             $location.url('/event_list');
         });
     }
@@ -108,6 +116,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             }).success(function(data) {
                 $scope.todos = data;
                 console.log("get Event Lissssssssst scope");
+            $rootScope.isUserLoggedIn = true;
                 console.log (data);
                 
             })
