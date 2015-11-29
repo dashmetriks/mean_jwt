@@ -46,6 +46,10 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
 		templateUrl: 'login.html',
 		controller: 'mainController'
 	})
+	.when('/register', {
+		templateUrl: 'register.html',
+		controller: 'mainController'
+	})
         .otherwise({
             redirectTo: '/event_list'
         });
@@ -88,8 +92,24 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     };
 
 
+    $scope.register = function() {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:8080/register',
+            data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data) {
+           console.log("kkmkmkoooo");
+            console.log(data);
+          //  $window.sessionStorage.setItem('token', data.token);
+//            $scope.isUserLoggedIn = true;
+            $location.url('/login');
+        });
+    }
+
     $scope.login = function() {
-        console.log("easdfdsafsdaf");
         $http({
             method: 'POST',
             url: 'http://localhost:8080/authenticate',

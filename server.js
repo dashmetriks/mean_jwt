@@ -116,6 +116,40 @@ app.get('/setup', function(req, res) {
     });
 });
 
+app.post('/register', function(req, res) {
+console.log("registers now");
+    // find the user
+    User.findOne({
+        name: req.body.name
+    }, function(err, user) {
+
+        if (err) throw err;
+
+        if (!user) {
+          var newuser = new User({
+              name: req.body.name,
+              password: req.body.password
+          });
+
+          // save the sample user
+          newuser.save(function(err) {
+              if (err) throw err;
+
+              console.log('User saved successfully');
+              res.json({
+                  success: true
+              });
+          });
+
+
+        } else if (user) {
+
+          console.log('User already exists');
+        }
+
+    });
+});
+
 app.post('/authenticate', function(req, res) {
 
     // find the user
