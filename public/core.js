@@ -103,9 +103,14 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         }).success(function(data) {
            console.log("kkmkmkoooo");
             console.log(data);
+            if (data.message == "User already exists.") {
+              $scope.reg_message = "User already exists."    
+            }
           //  $window.sessionStorage.setItem('token', data.token);
 //            $scope.isUserLoggedIn = true;
-            $location.url('/login');
+            if (data.success == true) {
+              $location.url('/login');
+            }
         });
     }
 
@@ -119,9 +124,13 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             }
         }).success(function(data) {
             console.log(data);
-            $window.sessionStorage.setItem('token', data.token);
-//            $scope.isUserLoggedIn = true;
-            $location.url('/event_list');
+            if (data.success == true) {
+              $window.sessionStorage.setItem('token', data.token);
+              $location.url('/event_list');
+            } else {
+              $scope.login_message = data.message    
+            }
+
         });
     }
 

@@ -143,6 +143,10 @@ console.log("registers now");
 
 
         } else if (user) {
+            res.json({
+                success: false,
+                message: 'User already exists.'
+            });
 
           console.log('User already exists');
         }
