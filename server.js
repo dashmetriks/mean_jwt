@@ -43,10 +43,35 @@ var Person = new Schema({
 });
 var Person = mongoose.model('Person', Person);
 
+var Player = new Schema({
+   event_id: String,
+   username: String,
+   in_or_out: String,
+   created_at: {type: Date, default: Date.now}
+});
+
+var Player = mongoose.model('Player', Player);
+
+var Comments = new Schema({
+   event_id: String,
+   username: String,
+   text: String,
+   created_at: {type: Date, default: Date.now}
+});
+
+var Comments = mongoose.model('Comments', Comments);
+
 var TodoSchema = new Schema({
     text: String,
     persons: [Person.username],
-    comments: [Person.username]
+    //comments: [Person.username]
+   // comments:  [
+    //                {
+     //                   username: String,
+      //                  text: String,
+       //                 created_at: {type: Date, default: Date.now}
+        //            }
+         //       ]   
 });
 
 autoIncrement.initialize(mongoose.connection);
@@ -216,14 +241,19 @@ app.get('/adduser/:username', function(req, res) {
 });
 
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
-    Todo.findOne({
-        _id: req.params.event_id,
-        "persons.username._id": req.decoded._id
-    }, function(error, todos) {
+    Player.findOne({
+        event_id: req.params.event_id,
+        username: req.decoded.name 
+    }, function(error, players) {
         if (error) {
             res.json(error);
-        } else if (todos == null) {
-            Todo.update(
+        } else if (players == null) {
+    console.log("we are herererererererer");
+            Player.create( { 
+               event_id: req.params.event_id,
+               username: req.decoded.name, 
+               in_or_out: req.params.ustatus} , 
+      /*      Todo.update(
                { _id: req.params.event_id }, 
                {
                 $push: {
@@ -232,19 +262,19 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                         }
                     }
                 },
+*/
                 function(err, result) {
                     if (err) throw err;
                     console.log(result);
                 });
         } else {
-            console.log(todos);
-            console.log('wttttttfffff');
-            Todo.update({
-                    _id: req.params.event_id,
-                    "persons.username._id": req.decoded._id
+            Player.update({
+                    event_id: req.params.event_id,
+                    username: req.decoded.name 
                 }, {
                     $set: {
-                        "persons.$.userstatus": req.params.ustatus
+                        in_or_out: req.params.ustatus 
+                      //  "persons.$.userstatus": req.params.ustatus
                     }
                 },
                 function(err, result) {
@@ -252,48 +282,85 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
                     console.log(result);
                 });
         }
-        Todo.find({
-            _id: req.params.event_id
-        }, function(err, todos) {
-            if (err)
-                res.send(err)
-            res.json(todos);
-        });
+    Player.find({ event_id: req.params.event_id , in_or_out: 'Yes' },
+        function(err, players_yes) {
+            if (err) res.send(err)
+    Player.find({ event_id: req.params.event_id , in_or_out: 'No' },
+        function(err, players_no) {
+            if (err) res.send(err)
+    //       res.json(todos); // return all todos in JSON format
+            res.json({
+                'players_yes': players_yes,
+                'players_no': players_no
+        //        'comments': comments,
+            });            
+    });
+    });
+//        Player.find({
+ //           event_id: req.params.event_id
+  //      }, function(err, players) {
+   //         if (err)
+    //            res.send(err)
+     //       res.json(players);
+     //   });
     });
 });
 
+
 apiRoutes.post('/addcomment/:event_id/', function(req, res) {
-    Todo.findOne({
-        _id: req.params.event_id,
-        "persons.username._id": req.decoded._id
+    Player.findOne({
+       event_id: req.params.event_id
+//        _id: req.decoded._id
     }, function(error, todos) {
         if (error) {
             res.json(error);
         } else if (todos == null) {
         } else {
-            console.log('wttttttfffff 34444444');
-            Todo.update(
-               { _id: req.params.event_id }, 
-               {
-                $push: {
-                    comments: {
-                        $each: [{ username: req.decoded, text: req.body.text }]
-                        }
-                    }
-                },
+
+            Comments.create( { 
+               event_id: req.params.event_id,
+               username: req.decoded.name, 
+               text: req.body.text} , 
                 function(err, result) {
                     if (err) throw err;
-                    console.log(err);
-                    console.log(result);
-                });
-        }
-        Todo.find({
-            _id: req.params.event_id
-        }, function(err, todos) {
-            if (err)
-                res.send(err)
-            res.json(todos);
+Comments.find({ event_id: req.params.event_id },
+null,
+{ sort:{ "created_at" : -1  } },
+ function(err, comments) {
+            if (err) res.send(err)
+            res.json({
+                'comments': comments,
+            });            
+          //  res.json(comments);
+            
+          //  res.json(todos[0]);
         });
+                });
+        };
+    });
+});
+
+app.get('/getcomments/:event_id', function(req, res) {
+
+Comments.find({ event_id: req.params.event_id },
+null,
+{ sort:{ "created_at" : -1  } },
+ function(err, comments) {
+            if (err) res.send(err)
+    Player.find({ event_id: req.params.event_id , in_or_out: 'Yes' },
+        function(err, players_yes) {
+            if (err) res.send(err)
+    Player.find({ event_id: req.params.event_id , in_or_out: 'No' },
+        function(err, players_no) {
+            if (err) res.send(err)
+    //       res.json(todos); // return all todos in JSON format
+            res.json({
+                'players_yes': players_yes,
+                'players_no': players_no,
+                'comments': comments,
+            });            
+    });
+    });
     });
 });
 
@@ -303,18 +370,11 @@ apiRoutes.get('/events/:event_id', function(req, res) {
 
 
     // use mongoose to get all todos in the database
-    Todo.find({
-            _id: req.params.event_id
-        },
+    Todo.find({ _id: req.params.event_id },
         function(err, todos) {
-
-            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-            if (err)
-                res.send(err)
-
-  console.log(todos);
-            res.json(todos); // return all todos in JSON format
-        });
+            if (err) res.send(err)
+           res.json(todos); // return all todos in JSON format
+    });
 });
 
 apiRoutes.get('/todos', function(req, res) {
