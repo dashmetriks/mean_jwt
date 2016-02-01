@@ -27,6 +27,98 @@ var interceptor = function ($q, $location) {
 
 var scotchTodo = angular.module('scotchTodo', ['ngRoute']);
 
+(function (module) {
+     
+    var fileReader = function ($q, $log) {
+ 
+        var onLoad = function(reader, deferred, scope) {
+            return function () {
+                scope.$apply(function () {
+                    deferred.resolve(reader.result);
+                });
+            };
+        };
+ 
+        var onError = function (reader, deferred, scope) {
+            return function () {
+                scope.$apply(function () {
+                    deferred.reject(reader.result);
+                });
+            };
+        };
+ 
+        var onProgress = function(reader, scope) {
+            return function (event) {
+                scope.$broadcast("fileProgress",
+                    {
+                        total: event.total,
+                        loaded: event.loaded
+                    });
+            };
+        };
+ 
+        var getReader = function(deferred, scope) {
+            var reader = new FileReader();
+            reader.onload = onLoad(reader, deferred, scope);
+            reader.onerror = onError(reader, deferred, scope);
+            reader.onprogress = onProgress(reader, scope);
+            return reader;
+        };
+ 
+        var readAsDataURL = function (file, scope) {
+            var deferred = $q.defer();
+             
+            var reader = getReader(deferred, scope);         
+            reader.readAsDataURL(file);
+             
+            return deferred.promise;
+        };
+ 
+        return {
+            readAsDataUrl: readAsDataURL  
+        };
+    };
+ 
+    module.factory("fileReader",
+                   ["$q", "$log", fileReader]);
+ 
+}(angular.module("scotchTodo")));
+
+var UploadController = function ($scope, fileReader) {
+     console.log(fileReader)
+    $scope.getFile = function () {
+        $scope.progress = 0;
+        fileReader.readAsDataUrl($scope.file, $scope)
+                      .then(function(result) {
+                          $scope.imageSrc = result;
+                      });
+    };
+ 
+    $scope.$on("fileProgress", function(e, progress) {
+        $scope.progress = progress.loaded / progress.total;
+    });
+ 
+};
+
+scotchTodo.directive("ngFileSelect",function(){
+
+  return {
+    link: function($scope,el){
+      
+      el.bind("change", function(e){
+      
+        $scope.file = (e.srcElement || e.target).files[0];
+        $scope.getFile();
+      })
+      
+    }
+    
+  }
+  
+  
+});
+
+
 scotchTodo.config(function ($httpProvider) {
        $httpProvider.interceptors.push(interceptor);
     });
@@ -34,6 +126,10 @@ scotchTodo.config(function ($httpProvider) {
 scotchTodo.config(['$locationProvider', '$routeProvider',
    function ($locationProvider, $routeProvider) {
 	$routeProvider
+	.when('/invite/:invite_code', {
+		templateUrl: 'invites.html',
+		controller: 'mainController'
+	})
 	.when('/events/:event_id', {
 		templateUrl: 'events.html',
 		controller: 'mainController'
@@ -67,19 +163,56 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
           //  $window.sessionStorage.setItem('token', data.token);
        $location.url('/login');
     }
-    // when landing on the page, get all todos and show them
-//    $http.get('/api/todos')
- //       .success(function(data) {
-  //          $scope.todos = data;
-   //         console.log(data);
-    //    })
-     //   .error(function(data) {
-      //      console.log('Error: ' + data);
-       // });
 
-    // when submitting the add form, send the text to the node API
+    $scope.invite_accept = function (event_id) {
+       console.log ("invite accept");
+       console.log ($routeParams.invite_code);
+            $http({
+                method: 'GET',
+                url: 'http://localhost:8080/api/adduserevent/' + event_id + '/invited' ,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.todos = data;
+                console.log("invite acccccccccepted");
+            //$rootScope.isUserLoggedIn = true;
+                //console.log (data[0].invite_status);
+               // if (data[0].invite_status == 'open') {
+                //   console.log("wowowowowo");
+                   $location.url('/events/' + event_id);
+              //  }
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    }
 
-    // delete a todo after checking it
+    $scope.invite_check = function () {
+       console.log ("invite check");
+       console.log ($routeParams.invite_code);
+       $http({
+                method: 'GET',
+                url: 'http://localhost:8080/invites/' + $routeParams.invite_code
+           //     headers: {
+            //        'Content-Type': 'application/json',
+            //    }
+            }).success(function(data) {
+                $scope.todos = data;
+                console.log("invite scoppppppppe");
+            //$rootScope.isUserLoggedIn = true;
+                console.log (data[0].invite_status);
+                if (data[0].invite_status == 'open') {
+                   console.log("wowowowowo");
+                 //  $location.url('/events/38');
+                }
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    }
+
     $scope.deleteTodo = function(id) {
         $http.delete('/api/todos/' + id)
             .success(function(data) {
@@ -182,9 +315,10 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.todos = data;
+                $scope.yeses = data['players_yes'];
+                $scope.nos = data['players_no'];
                 console.log("add Event scope");
-                console.log (data);
+                console.log (data['players_yes']);
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -221,8 +355,32 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.todos = data;
+                console.log($window.sessionStorage.getItem('token'));
+              //  $scope.todos = data;
+                $scope.comments = data;
                 console.log("add commment");
+                console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+
+    $scope.addInvite = function() {
+        $http({
+                method: 'POST',
+                url: 'http://localhost:8080/api/addinvite/' + $routeParams.event_id,
+                data: 'text=' + $scope.formData.text,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+                console.log($window.sessionStorage.getItem('token'));
+              //  $scope.todos = data;
+                $scope.comments = data;
+                console.log("add invite");
                 console.log (data);
             })
             .error(function(data) {

@@ -1,0 +1,34 @@
+<body >
+    <div class="container">
+
+        <!-- HEADER AND TODO COUNT -->
+        <div class="jumbotron text-center">
+            <h1>I'm a Todo-woot <span class="label label-info">{{ todos2.length }}</span></h1>
+        </div>
+
+ </div>
+
+        <!-- TODO LIST -->
+
+        <!-- FORM TO CREATE TODOS -->
+<div id="todo-list" class="row" ng-controller="mainController" ng-init="invite_check()">
+
+        <div id="todo-form" class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <form>
+                    <div class="form-group">
+   <h3> todos   {{todos[0].event_id}}  </h3>
+                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+
+                    <!-- createToDo() WILL CREATE NEW TODOS -->
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="invite_accept(todos[0].event_id)">Accept Invite</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+    </div>
+        </div>
+</body>

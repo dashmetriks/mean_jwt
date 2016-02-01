@@ -12,6 +12,14 @@ var methodOverride = require('method-override'); // simulate DELETE and PUT (exp
 var jwt = require('jsonwebtoken');
 var config = require('./config');
 var User = require('./app/models/user');
+var crypto = require('crypto');
+
+function randomValueHex (len) {
+    return crypto.randomBytes(Math.ceil(len/2))
+        .toString('hex') // convert to hexadecimal format
+        .slice(0,len);   // return required number of characters
+}
+
 
 var apiRoutes = express.Router();
 
@@ -43,6 +51,16 @@ var Person = new Schema({
 });
 var Person = mongoose.model('Person', Person);
 
+var Invite = new Schema({
+   event_id: String,
+   inviter: String,
+   invited: String,
+   invite_code: String,
+   invite_status: String,
+   created_at: {type: Date, default: Date.now}
+});
+
+var Invite = mongoose.model('Invite', Invite);
 var Player = new Schema({
    event_id: String,
    username: String,
@@ -307,10 +325,21 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function(req, res) {
 });
 
 
+apiRoutes.post('/addinvite/:event_id/', function(req, res) {
+            Invite.create( { 
+               event_id: req.params.event_id,
+               inviter: req.decoded.name, 
+               invited: req.body.text,
+               invite_code: randomValueHex(8),
+               invite_status: "open"} , 
+                function(err, result) {
+                    if (err) throw err;
+    });
+});
+
 apiRoutes.post('/addcomment/:event_id/', function(req, res) {
     Player.findOne({
        event_id: req.params.event_id
-//        _id: req.decoded._id
     }, function(error, todos) {
         if (error) {
             res.json(error);
@@ -331,9 +360,6 @@ null,
             res.json({
                 'comments': comments,
             });            
-          //  res.json(comments);
-            
-          //  res.json(todos[0]);
         });
                 });
         };
@@ -364,6 +390,19 @@ null,
     });
 });
 
+app.get('/invites/:invite_code', function(req, res) {
+  console.log('invite code ------');
+  console.log(req.params.invite_code);
+
+
+    // use mongoose to get all todos in the database
+    Invite.find({ invite_code: req.params.invite_code },
+        function(err, invites) {
+            if (err) res.send(err)
+           console.log(invites);
+           res.json(invites); // return all todos in JSON format
+    });
+});
 apiRoutes.get('/events/:event_id', function(req, res) {
   console.log('event id');
   console.log(req.params.event_id);
