@@ -20,9 +20,52 @@
    <h3> todos   {{todos[0].event_id}}  </h3>
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
 
+
                     <!-- createToDo() WILL CREATE NEW TODOS -->
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="invite_accept(todos[0].event_id)">Accept Invite</button>
-                </form>
+ <div ng-if="showAcceptInvite">
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="invite_accept(events[0].event_id)">Accept Invite</button>
+</div>
+
+ <div ng-if="showLoginToInvite">
+<h3>fdsafasfa</h3>
+    <div class="container" ng-controller="mainController">
+
+        <form class="well">
+           <div  class="form-group" >
+    <label>Username</label>
+        <input type="text" name="username" ng-model="user.username"/>
+    </div>
+    <div class="form-group" >
+    <label>Password</label>
+        <input type="password" name="password" ng-model="user.password"/>
+    </div>
+     <input type="button" value="Login" ng-click="login()" class="btn btn-primary"/>
+    </form>
+
+     <h3> {{login_message}} </h3>
+    </div>
+   <h3>or <a href="" ng-click="display_reg_form()">Register</a></h3>
+ </div>
+
+
+ <div ng-if="showRegToInvite">
+    <div class="container" ng-controller="mainController">
+
+        <form class="well">
+           <div  class="form-group" >
+    <label>Username</label>
+        <input type="text" name="username" ng-model="user.username"/>
+    </div>
+    <div class="form-group" >
+    <label>Password</label>
+        <input type="password" name="password" ng-model="user.password"/>
+    </div>
+     <input type="button" value="Register" ng-click="register()" class="btn btn-primary"/>
+    </form>
+    <h3> {{reg_message}} </h3>
+    </div>
+
+   <h3>or <a href="" ng-click="display_login_form()">Login</a></h3>
             </div>
         </div>
 

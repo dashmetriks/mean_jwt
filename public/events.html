@@ -1,81 +1,70 @@
-<body >
+<body>
     <div class="container">
-
         <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
             <h1>I'm a Todo-woot <span class="label label-info">{{ todos2.length }}</span></h1>
         </div>
-
         <div ng-controller="UploadController ">
-  <form>
-        <input type="file" ng-file-select="onFileSelect($files)" >
- <!--  <input type="file" ng-file-select="onFileSelect($files)" multiple> -->
- 
-   </form>
-   <b>Preview:</b><br />
-   <i ng-hide="imageSrc">No image choosed</i>
-   <img ng-src="{{imageSrc}}" /><br/>
-   <b>Progress:</b>
-  <progress value="{{progress}}"></progress>
- </div>
-
+            <form>
+                <input type="file" ng-file-select="onFileSelect($files)">
+                <!--  <input type="file" ng-file-select="onFileSelect($files)" multiple> -->
+            </form>
+            <b>Preview:</b>
+            <br />
+            <i ng-hide="imageSrc">No image choosed</i>
+            <img ng-src="{{imageSrc}}" />
+            <br/>
+            <b>Progress:</b>
+            <progress value="{{progress}}"></progress>
+        </div>
         <!-- TODO LIST -->
         <div id="todo-list" class="row" ng-controller="mainController" ng-init="getEvent()">
             <div class="col-sm-4 col-sm-offset-4">
-
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
-                <div class="checkbox" ng-repeat="todo in todos">
-                    <label>
-                        <h3>{{ todo.text }} </h3>
-                        <input type="button" value="Yes" ng-click="addEvent(todo._id,'Yes')"> 
-                        <input type="button" value="No" ng-click="addEvent(todo._id,'No')"> 
-                        <input type="button" value="Maybe" ng-click="addEvent(todo._id,'Maybe')"> 
-                    </label>
-                    <div ng-repeat="user in yeses">
-                       {{user.in_or_out}} -  {{user.username}}
-                    </div>
-                    <div ng-repeat="user in nos">
-                       {{user.in_or_out}} -  {{user.username}}
-                    </div>
+                <!--                <div class="checkbox" ng-repeat="event in events">  --->
+                <label>
+                    <h3>{{ event_title }} </h3>
+                    <input type="button" value="Yes" ng-click="addEvent(event_id,'Yes')">
+                    <input type="button" value="No" ng-click="addEvent(event_id,'No')">
+                    <input type="button" value="Maybe" ng-click="addEvent(event_id,'Maybe')">
+                </label>
+                <div ng-repeat="user in yeses">
+                    {{user.in_or_out}} - {{user.username}}
                 </div>
-                    <div ng-repeat="comment in comments">
-                       {{comment.text}} -  {{comment.username}}
-                    </div>
+                <div ng-repeat="user in nos">
+                    {{user.in_or_out}} - {{user.username}}
+                </div>
+                    <h3>Comments </h3>
+            <div ng-repeat="comment in comments">
+                {{comment.text}} - {{comment.username}}
             </div>
-
+        </div>
         <!-- FORM TO CREATE TODOS -->
         <div id="todo-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
                 <form>
                     <div class="form-group">
-
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
                         <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
                     </div>
-
                     <!-- createToDo() WILL CREATE NEW TODOS -->
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="addComment()">Add</button>
                 </form>
             </div>
         </div>
-
     </div>
-
-        <div id="todo-form" class="row">
-            <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form>
-                    <div class="form-group">
-
-                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                        <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-                    </div>
-
-                    <!-- createToDo() WILL CREATE NEW TODOS -->
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="addInvite()">Invite</button>
-                </form>
-            </div>
+    <div id="todo-form" class="row">
+        <div class="col-sm-8 col-sm-offset-2 text-center">
+            <form>
+                <div class="form-group">
+                    <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                    <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
+                </div>
+                <!-- createToDo() WILL CREATE NEW TODOS -->
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="addInvite()">Invite</button>
+            </form>
         </div>
-
     </div>
-        </div>
+    </div>
+    </div>
 </body>

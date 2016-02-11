@@ -11,9 +11,9 @@
             <div class="col-sm-4 col-sm-offset-4">
 
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
-                <div class="checkbox" ng-repeat="todo in todos">
+                <div class="checkbox" ng-repeat="event in events">
                     <label>
-                        <h3><a href="/events/{{ todo._id }}"> {{ todo.text }} </a> </h3>
+                        <h3><a href="/events/{{ event._id }}"> {{ event.event_title }} </a> </h3>
                     </label>
                 </div>
 
