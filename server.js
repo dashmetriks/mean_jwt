@@ -308,6 +308,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
                     throw err;
             });
         } else {
+            update_invite_status(players["invite_id"], req.params.ustatus );
             Player.update({
                 event_id: req.params.event_id,
                 username: req.decoded.name
@@ -520,10 +521,10 @@ apiRoutes.get('/events/:event_id', function (req, res) {
     });
 });
 
-function update_invite_status(invite_code, ustatus) {
+function update_invite_status(invite_id, ustatus) {
 
     Invite.update({
-        invite_code: invite_code
+        _id: invite_id
     }, {
         $set: {
             invite_status: ustatus
@@ -538,6 +539,7 @@ function update_invite_status(invite_code, ustatus) {
 }
 
 apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
+/*
     console.log('change invite status');
     Invite.update({
         invite_code: req.params.invite_code
@@ -553,14 +555,17 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
         console.log("invite status hanged");
         console.log(result);
     });
+*/
     Invite.findOne({
         invite_code: req.params.invite_code
     }, function (error, invites) {
         if (error) res.json(error);
+        update_invite_status(invites["_id"], "Accepted" );
         console.log("find one invite");
         console.log(invites["_id"]);
             Player.create({
                 event_id: invites["event_id"], 
+                invite_id: invites["_id"], 
                 username: req.decoded.name,
                 in_or_out: "Accepted"
             },
