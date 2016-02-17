@@ -26,8 +26,11 @@
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="invite_accept(events[0].event_id)">Accept Invite</button>
 </div>
 
+ <div ng-if="showAlreadyAccepted">
+<h3>This invite has already been accepted.  Please contact the inviter to request another invite.</h3>
+</div>
+
  <div ng-if="showLoginToInvite">
-<h3>fdsafasfa</h3>
     <div class="container" ng-controller="mainController">
 
         <form class="well">

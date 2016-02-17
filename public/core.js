@@ -182,6 +182,21 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
        console.log ($routeParams.invite_code);
             $http({
                 method: 'GET',
+                url: 'http://localhost:8080/api/change_invite_status/' + $routeParams.invite_code ,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+           //     $scope.events = data;
+          //      console.log("invite acccccccccepted");
+         //          $location.url('/events/' + event_id);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+            $http({
+                method: 'GET',
                 url: 'http://localhost:8080/api/adduserevent/' + event_id + '/invited' ,
                 headers: {
                     'Content-Type': 'application/json',
@@ -190,12 +205,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             }).success(function(data) {
                 $scope.events = data;
                 console.log("invite acccccccccepted");
-            //$rootScope.isUserLoggedIn = true;
-                //console.log (data[0].invite_status);
-               // if (data[0].invite_status == 'open') {
-                //   console.log("wowowowowo");
                    $location.url('/events/' + event_id);
-              //  }
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -233,6 +243,8 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     $scope.showLoginToInvite = true;
                   }
                   }
+                } else {
+                    $scope.showAlreadyAccepted = true;
                 }
             })
             .error(function(data) {
