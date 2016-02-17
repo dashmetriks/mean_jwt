@@ -558,7 +558,16 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
     }, function (error, invites) {
         if (error) res.json(error);
         console.log("find one invite");
-        console.log(invites);
+        console.log(invites["_id"]);
+            Player.create({
+                event_id: invites["event_id"], 
+                username: req.decoded.name,
+                in_or_out: "Accepted"
+            },
+            function (err, result) {
+                if (err) throw err;
+                res.json(result);
+            });
     });
 });
 

@@ -189,12 +189,14 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 }
             }).success(function(data) {
            //     $scope.events = data;
-          //      console.log("invite acccccccccepted");
+                console.log("invite 999999 acccccccccepted");
          //          $location.url('/events/' + event_id);
+                   $location.url('/events/' + event_id);
             })
             .error(function(data) {
                 console.log('Error: ' + data);
             });
+/*
             $http({
                 method: 'GET',
                 url: 'http://localhost:8080/api/adduserevent/' + event_id + '/invited' ,
@@ -210,6 +212,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             .error(function(data) {
                 console.log('Error: ' + data);
             });
+*/
     }
 
     $scope.invite_check = function () {
