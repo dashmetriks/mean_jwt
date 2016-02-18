@@ -477,7 +477,9 @@ app.get('/invites/:invite_code', function (req, res) {
         function (err, invites) {
             if (err) res.send(err)
     console.log('invite code 1111-----');
+          if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened" );
+          }
     console.log('invite code 22222-----');
             console.log(invites);
             res.json(invites); // return all todos in JSON format
