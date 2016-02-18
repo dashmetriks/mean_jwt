@@ -228,9 +228,9 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $scope.events = data;
                 console.log("invite scoppppppppe");
             //$rootScope.isUserLoggedIn = true;
-                console.log (data[0].invite_status);
+                console.log (data.invite_status);
                 //console.log ($window.sessionStorage.getItem('token').length);
-                if (data[0].invite_status == 'open') {
+                if (data.invite_status == 'Opened' || data.invite_status == 'Sent') {
                   if ($window.sessionStorage.getItem('token') == null  ) {   
                   
                     $scope.showRegToInvite = true;

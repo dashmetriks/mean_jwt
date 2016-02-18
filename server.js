@@ -354,7 +354,7 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         invited: req.body.text,
         invited_email: req.body.email,
         invite_code: randomValueHex(8),
-        invite_status: "open"
+        invite_status: "Sent"
     },
     function (err, new_invite) {
         transporter.sendMail({
@@ -466,18 +466,19 @@ apiRoutes.get('/getcomments/:event_id', function (req, res) {
 });
 
 app.get('/invites/:invite_code', function (req, res) {
-    console.log('invite code ------');
     console.log(req.params.invite_code);
 
 
     // use mongoose to get all todos in the database
 
-    Invite.find({
+    Invite.findOne({
     invite_code: req.params.invite_code
 },
         function (err, invites) {
-            if (err)
-                res.send(err)
+            if (err) res.send(err)
+    console.log('invite code 1111-----');
+            update_invite_status(invites["_id"], "Opened" );
+    console.log('invite code 22222-----');
             console.log(invites);
             res.json(invites); // return all todos in JSON format
         });
@@ -523,6 +524,9 @@ apiRoutes.get('/events/:event_id', function (req, res) {
 
 function update_invite_status(invite_id, ustatus) {
 
+        console.log("999999invite status hanged");
+        console.log(ustatus);
+        console.log(invite_id);
     Invite.update({
         _id: invite_id
     }, {
