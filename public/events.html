@@ -24,6 +24,7 @@
                 <!--                <div class="checkbox" ng-repeat="event in events">  --->
                 <label>
                     <h3>{{ event_title }} </h3>
+                    <h3><a href="/invited_list/{{ event_id }}" ng-show="isEventCreator"> Invites </a> </h3>
                     <input type="button" value="Yes" ng-click="addEvent(event_id,'Yes')">
                     <input type="button" value="No" ng-click="addEvent(event_id,'No')">
                     <input type="button" value="Maybe" ng-click="addEvent(event_id,'Maybe')">

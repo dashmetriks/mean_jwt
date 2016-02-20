@@ -66,6 +66,7 @@ var Invite = new Schema({
     inviter: String,
     invited: String,
     invited_email: String,
+    invited_username: String,
     invite_code: String,
     invite_status: String,
     created_at: {
@@ -445,15 +446,14 @@ apiRoutes.get('/getcomments/:event_id', function (req, res) {
                 in_or_out: 'No'
             },
             function (err, players_no) {
-                if (err)
-                    res.send(err)
+                if (err) res.send(err)
                 Event.find({
                     _id: req.params.event_id
                 },
                 function (err, events) {
-                    if (err)
-                        res.send(err)
+                    if (err) res.send(err)
                     res.json({
+                        'logged_in_userid': req.decoded._id ,
                         'event': events,
                         'players_yes': players_yes,
                         'players_no': players_no,
@@ -476,22 +476,16 @@ app.get('/invites/:invite_code', function (req, res) {
 },
         function (err, invites) {
             if (err) res.send(err)
-    console.log('invite code 1111-----');
           if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened" );
           }
-    console.log('invite code 22222-----');
             console.log(invites);
-            res.json(invites); // return all todos in JSON format
+            res.json(invites); 
         });
 });
 
-app.get('/invited/:event_id', function (req, res) {
+apiRoutes.get('/invited/:event_id', function (req, res) {
     console.log('invite list ------');
-    console.log(req.params.invite_code);
-
-
-    // use mongoose to get all todos in the database
     Invite.find({
         event_id: req.params.event_id
     },
@@ -501,34 +495,36 @@ app.get('/invited/:event_id', function (req, res) {
         }
     },
     function (err, invites) {
-        if (err)
-            res.send(err)
+        if (err) res.send(err)
+                Event.find({
+                    _id: req.params.event_id
+                },
+                function (err, events) {
+                    if (err) res.send(err)
         console.log(invites);
-        res.json(invites); // return all todos in JSON format
+      //  res.json(invites); 
+                    res.json({
+                        'logged_in_userid': req.decoded._id ,
+                        'event': events,
+                        'invites': invites
+                    });
+    });
     });
 });
 
 apiRoutes.get('/events/:event_id', function (req, res) {
-    console.log('event id');
-    console.log(req.params.event_id);
 
-
-    // use mongoose to get all todos in the database
     Event.find({
         _id: req.params.event_id
     },
     function (err, events) {
         if (err)
             res.send(err)
-        res.json(events); // return all todos in JSON format
+        res.json(events); 
     });
 });
 
 function update_invite_status(invite_id, ustatus) {
-
-        console.log("999999invite status hanged");
-        console.log(ustatus);
-        console.log(invite_id);
     Invite.update({
         _id: invite_id
     }, {
@@ -537,36 +533,30 @@ function update_invite_status(invite_id, ustatus) {
         }
     },
     function (err, result) {
-        if (err)
-            throw err;
-        console.log("invite status hanged");
+        if (err) throw err;
         console.log(result);
+    });
+}
+function add_invite_username(invite_id, username) {
+    Invite.update({
+        _id: invite_id
+    }, {
+        $set: {
+            invited_username: username
+        }
+    },
+    function (err, result) {
+        if (err) throw err;
     });
 }
 
 apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
-/*
-    console.log('change invite status');
-    Invite.update({
-        invite_code: req.params.invite_code
-    }, {
-        $set: {
-            invite_status: "Accepted"
-                    //  "persons.$.userstatus": req.params.ustatus
-        }
-    },
-    function (err, result) {
-        if (err)
-            throw err;
-        console.log("invite status hanged");
-        console.log(result);
-    });
-*/
     Invite.findOne({
         invite_code: req.params.invite_code
     }, function (error, invites) {
         if (error) res.json(error);
         update_invite_status(invites["_id"], "Accepted" );
+        add_invite_username(invites["_id"], req.decoded.name  );
         console.log("find one invite");
         console.log(invites["_id"]);
             Player.create({
@@ -596,7 +586,9 @@ apiRoutes.post('/events', function (req, res) {
     console.log("po po");
     // create a todo, information comes from AJAX request from Angular
     Event.create({
-        event_title: req.body.text
+        event_title: req.body.text,
+        event_creator: req.decoded._id 
+
     }, function (err, todo) {
         if (err)
             res.send(err);

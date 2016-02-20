@@ -337,14 +337,18 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.getInvites = function(id) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/invited/' + $routeParams.event_id,
-              //  url: 'http://localhost:8080/api/events/' + $routeParams.event_id,
+                url: 'http://localhost:8080/api/invited/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.invites = data; 
+                
+                $scope.event_id = $routeParams.event_id;
+                $scope.invites = data['invites']; 
+                if ( data['event'][0].event_creator == data['logged_in_userid']){
+                $rootScope.isEventCreator = true;
+                } 
       /*
                 $scope.event_title = data['event'][0].event_title; 
                 console.log (data['event'][0].event_title);
@@ -353,6 +357,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $scope.comments = data['comments'];
                 console.log("get Event 9999 scope");
      */
+                $rootScope.isUserLoggedIn = true;
                 console.log (data);
                 
             })
@@ -372,13 +377,17 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             }).success(function(data) {
                 $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
-                console.log (data['event'][0].event_title);
+                console.log (data['logged_in_userid']);
+                console.log (data['event'][0].event_creator);
                 $scope.yeses = data['players_yes'];
                 $scope.nos = data['players_no'];
                 $scope.comments = data['comments'];
+            $rootScope.isUserLoggedIn = true;
                 console.log("get Event 9999 scope");
                 console.log (data);
-                
+                if ( data['event'][0].event_creator == data['logged_in_userid']){
+                $rootScope.isEventCreator = true;
+                } 
             })
             .error(function(data) {
                 console.log('Error: ' + data);
