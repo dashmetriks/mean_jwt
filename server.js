@@ -18,8 +18,8 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: config.username ,
-        pass: config.password 
+        user: config.username,
+        pass: config.password
     }
 });
 
@@ -82,6 +82,7 @@ var Player = new Schema({
     event_id: String,
     invite_id: String,
     username: String,
+    user_id: String,
     in_or_out: String,
     created_at: {
         type: Date,
@@ -115,6 +116,7 @@ var Todo = mongoose.model('Todo', TodoSchema);
 var EventSchema = new Schema({
     event_title: String,
     event_creator: String,
+    event_creator_username: String,
     event_start: String,
     event_end: String,
     created_at: {
@@ -291,25 +293,22 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
         event_id: req.params.event_id,
         username: req.decoded.name
     }, function (error, players) {
-        /*
-         if (error) {
-         res.json(error);
-         } else if (players == null) {
-         */
         if (error)
             res.json(error);
         if (players == null) {
             Player.create({
                 event_id: req.params.event_id,
                 username: req.decoded.name,
+                user_id: req.decoded._id,
                 in_or_out: req.params.ustatus
             },
             function (err, result) {
                 if (err)
                     throw err;
+                res.json(result);
             });
         } else {
-            update_invite_status(players["invite_id"], req.params.ustatus );
+            update_invite_status(players["invite_id"], req.params.ustatus);
             Player.update({
                 event_id: req.params.event_id,
                 username: req.decoded.name
@@ -321,8 +320,10 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             function (err, result) {
                 if (err)
                     throw err;
+                res.json(result);
             });
         }
+/*
         Player.find({
             event_id: req.params.event_id,
             in_or_out: 'Yes'
@@ -343,6 +344,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
                 });
             });
         });
+*/
     });
 });
 
@@ -421,8 +423,7 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
     });
 });
 
-apiRoutes.get('/getcomments/:event_id', function (req, res) {
-    console.log('heeeeeeeeeee');
+apiRoutes.get('/geteventdata/:event_id', function (req, res) {
     Comments.find({
         event_id: req.params.event_id
     },
@@ -441,23 +442,35 @@ apiRoutes.get('/getcomments/:event_id', function (req, res) {
         function (err, players_yes) {
             if (err)
                 res.send(err)
-            Player.find({
+            Player.findOne({
                 event_id: req.params.event_id,
-                in_or_out: 'No'
+                user_id: req.decoded._id
             },
-            function (err, players_no) {
-                if (err) res.send(err)
-                Event.find({
-                    _id: req.params.event_id
+            function (err, players_list) {
+                if (err)
+                    res.send(err)
+                Player.find({
+                    event_id: req.params.event_id,
+                    in_or_out: 'No'
                 },
-                function (err, events) {
-                    if (err) res.send(err)
-                    res.json({
-                        'logged_in_userid': req.decoded._id ,
-                        'event': events,
-                        'players_yes': players_yes,
-                        'players_no': players_no,
-                        'comments': comments,
+                function (err, players_no) {
+                    if (err)
+                        res.send(err)
+                    Event.find({
+                        _id: req.params.event_id
+                    },
+                    function (err, events) {
+                        if (err)
+                            res.send(err)
+                        res.json({
+                            'logged_in_userid': req.decoded._id,
+                            'logged_in_username': req.decoded.name,
+                            'event': events,
+                            'players_list': players_list,
+                            'players_yes': players_yes,
+                            'players_no': players_no,
+                            'comments': comments,
+                        });
                     });
                 });
             });
@@ -472,16 +485,17 @@ app.get('/invites/:invite_code', function (req, res) {
     // use mongoose to get all todos in the database
 
     Invite.findOne({
-    invite_code: req.params.invite_code
-},
-        function (err, invites) {
-            if (err) res.send(err)
-          if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
-            update_invite_status(invites["_id"], "Opened" );
-          }
-            console.log(invites);
-            res.json(invites); 
-        });
+        invite_code: req.params.invite_code
+    },
+    function (err, invites) {
+        if (err)
+            res.send(err)
+        if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
+            update_invite_status(invites["_id"], "Opened");
+        }
+        console.log(invites);
+        res.json(invites);
+    });
 });
 
 apiRoutes.get('/invited/:event_id', function (req, res) {
@@ -495,20 +509,22 @@ apiRoutes.get('/invited/:event_id', function (req, res) {
         }
     },
     function (err, invites) {
-        if (err) res.send(err)
-                Event.find({
-                    _id: req.params.event_id
-                },
-                function (err, events) {
-                    if (err) res.send(err)
-        console.log(invites);
-      //  res.json(invites); 
-                    res.json({
-                        'logged_in_userid': req.decoded._id ,
-                        'event': events,
-                        'invites': invites
-                    });
-    });
+        if (err)
+            res.send(err)
+        Event.find({
+            _id: req.params.event_id
+        },
+        function (err, events) {
+            if (err)
+                res.send(err)
+            console.log(invites);
+            //  res.json(invites); 
+            res.json({
+                'logged_in_userid': req.decoded._id,
+                'event': events,
+                'invites': invites
+            });
+        });
     });
 });
 
@@ -520,7 +536,7 @@ apiRoutes.get('/events/:event_id', function (req, res) {
     function (err, events) {
         if (err)
             res.send(err)
-        res.json(events); 
+        res.json(events);
     });
 });
 
@@ -533,7 +549,8 @@ function update_invite_status(invite_id, ustatus) {
         }
     },
     function (err, result) {
-        if (err) throw err;
+        if (err)
+            throw err;
         console.log(result);
     });
 }
@@ -546,7 +563,8 @@ function add_invite_username(invite_id, username) {
         }
     },
     function (err, result) {
-        if (err) throw err;
+        if (err)
+            throw err;
     });
 }
 
@@ -554,21 +572,24 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
     Invite.findOne({
         invite_code: req.params.invite_code
     }, function (error, invites) {
-        if (error) res.json(error);
-        update_invite_status(invites["_id"], "Accepted" );
-        add_invite_username(invites["_id"], req.decoded.name  );
+        if (error)
+            res.json(error);
+        update_invite_status(invites["_id"], "Accepted");
+        add_invite_username(invites["_id"], req.decoded.name);
         console.log("find one invite");
         console.log(invites["_id"]);
-            Player.create({
-                event_id: invites["event_id"], 
-                invite_id: invites["_id"], 
-                username: req.decoded.name,
-                in_or_out: "Accepted"
-            },
-            function (err, result) {
-                if (err) throw err;
-                res.json(result);
-            });
+        Player.create({
+            event_id: invites["event_id"],
+            invite_id: invites["_id"],
+            username: req.decoded.name,
+            user_id: req.decoded._id,
+            in_or_out: "Accepted"
+        },
+        function (err, result) {
+            if (err)
+                throw err;
+            res.json(result);
+        });
     });
 });
 
@@ -587,7 +608,8 @@ apiRoutes.post('/events', function (req, res) {
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
-        event_creator: req.decoded._id 
+        event_creator: req.decoded._id,
+        event_creator_username: req.decoded.name
 
     }, function (err, todo) {
         if (err)

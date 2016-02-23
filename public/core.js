@@ -368,25 +368,36 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.getEvent = function(id) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/getcomments/' + $routeParams.event_id,
+                url: 'http://localhost:8080/api/geteventdata/' + $routeParams.event_id,
               //  url: 'http://localhost:8080/api/events/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
+  
                 $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
-                console.log (data['logged_in_userid']);
+                $scope.event_creator_username = data['event'][0].event_creator_username; 
+                console.log (data['players_list']);
                 console.log (data['event'][0].event_creator);
                 $scope.yeses = data['players_yes'];
                 $scope.nos = data['players_no'];
                 $scope.comments = data['comments'];
-            $rootScope.isUserLoggedIn = true;
-                console.log("get Event 9999 scope");
+                $scope.loggedInUsername = data['logged_in_username']; 
+                $rootScope.isUserLoggedIn = true;
                 console.log (data);
+                if (data['players_list'] != null) {
+                  if ( data['players_list'].user_id == data['logged_in_userid']){
+                  console.log("is a member");
+                  $rootScope.isMember = true;
+                  } 
+                }else{
+                  $rootScope.isMember = false;
+                }  
                 if ( data['event'][0].event_creator == data['logged_in_userid']){
                 $rootScope.isEventCreator = true;
+                $rootScope.isMember = true;
                 } 
             })
             .error(function(data) {
@@ -403,10 +414,13 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.yeses = data['players_yes'];
-                $scope.nos = data['players_no'];
-                console.log("add Event scope");
-                console.log (data['players_yes']);
+           //     $scope.yeses = data['players_yes'];
+           //     $scope.nos = data['players_no'];
+           //     console.log("add Event scope");
+           //     console.log (data['players_yes']);
+                console.log("add 99999 Event scope");
+  
+               $scope.getEvent();
             })
             .error(function(data) {
                 console.log('Error: ' + data);
