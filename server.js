@@ -305,7 +305,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             function (err, result) {
                 if (err)
                     throw err;
-                res.json(result);
+         //       res.json(result);
             });
         } else {
             update_invite_status(players["invite_id"], req.params.ustatus);
@@ -320,10 +320,9 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             function (err, result) {
                 if (err)
                     throw err;
-                res.json(result);
+        //        res.json(result);
             });
         }
-/*
         Player.find({
             event_id: req.params.event_id,
             in_or_out: 'Yes'
@@ -344,7 +343,6 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
                 });
             });
         });
-*/
     });
 });
 
@@ -375,12 +373,17 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         Invite.find({
             event_id: req.params.event_id
         },
+        null, {
+        sort: {
+            "created_at": -1
+        }
+    },
         function (err, invites) {
             if (err)
                 res.send(err)
             // console.log('wooooot');
             // console.log(invites);
-            res.json(invites); // return all todos in JSON format
+            res.json({'invites': invites}); // return all todos in JSON format
         });
     });
 });
@@ -598,6 +601,19 @@ apiRoutes.get('/event_list', function (req, res) {
         if (err)
             res.send(err)
         res.json(events);
+    });
+});
+
+apiRoutes.get('/my_event_list', function (req, res) {
+    Event.find({
+        event_creator: req.decoded._id
+    },
+    function (err, events) {
+        if (err)
+            res.send(err)
+                    res.json({
+                        'my_events': events,
+                    });
     });
 });
 

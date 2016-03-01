@@ -317,16 +317,16 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.getEventList = function() {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/event_list/',
+                url: 'http://localhost:8080/api/my_event_list/',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.events = data;
+                $scope.events = data['my_events'];
                 console.log("get Event Lissssssssst scope");
             $rootScope.isUserLoggedIn = true;
-                console.log (data);
+                console.log (data['my_events']);
                 
             })
             .error(function(data) {
