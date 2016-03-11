@@ -5,6 +5,7 @@ var express = require('express');
 var app = express(); // create our app w/ express
 var mongoose = require('mongoose'); // mongoose for mongodb
 var autoIncrement = require('mongoose-auto-increment');
+var async = require("async");
 
 var morgan = require('morgan'); // log requests to the console (express4)
 var bodyParser = require('body-parser'); // pull information from HTML POST (express4)
@@ -116,6 +117,10 @@ var Todo = mongoose.model('Todo', TodoSchema);
 var EventSchema = new Schema({
     event_title: String,
     event_creator: String,
+    event_image: {
+        type: String,
+        default: "0"
+    },
     event_creator_username: String,
     event_start: String,
     event_end: String,
@@ -305,7 +310,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             function (err, result) {
                 if (err)
                     throw err;
-         //       res.json(result);
+                //       res.json(result);
             });
         } else {
             update_invite_status(players["invite_id"], req.params.ustatus);
@@ -320,7 +325,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             function (err, result) {
                 if (err)
                     throw err;
-        //        res.json(result);
+                //        res.json(result);
             });
         }
         Player.find({
@@ -374,10 +379,10 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
             event_id: req.params.event_id
         },
         null, {
-        sort: {
-            "created_at": -1
-        }
-    },
+            sort: {
+                "created_at": -1
+            }
+        },
         function (err, invites) {
             if (err)
                 res.send(err)
@@ -481,11 +486,26 @@ apiRoutes.get('/geteventdata/:event_id', function (req, res) {
     });
 });
 
+apiRoutes.post('/eventsave/:event_id', function (req, res) {
+    Event.update({
+        _id: req.params.event_id
+    }, {
+        $set: {
+            event_title: req.body.text,
+            event_image: req.body.image
+        }
+    },
+    function (err, result) {
+        if (err)
+            throw err;
+        console.log(req.body.text);
+        console.log(result);
+        res.json(result);
+    });
+});
+
+
 app.get('/invites/:invite_code', function (req, res) {
-    console.log(req.params.invite_code);
-
-
-    // use mongoose to get all todos in the database
 
     Invite.findOne({
         invite_code: req.params.invite_code
@@ -604,21 +624,54 @@ apiRoutes.get('/event_list', function (req, res) {
     });
 });
 
+apiRoutes.get('/my_event_list2', function (req, res) {
+    var player_data = []
+    var player_data2 = []
+    Player.find({user_id: req.decoded._id}, 
+    null, {
+        sort: {
+            "created_at": -1
+        }
+    },
+
+    function (err, records) {
+    async.each(records, function(events, callback) { 
+     //   records.forEach(function (record) {
+            Event.findOne({ _id: events.event_id },
+            function (err, events) {
+                if (err) res.send(err)
+                    player_data.push(events);
+            console.log(player_data);
+                    callback();
+            });
+        }, function(err){
+        res.json({ 'my_events': player_data, });
+    });
+    });
+});
+
+
+
 apiRoutes.get('/my_event_list', function (req, res) {
     Event.find({
         event_creator: req.decoded._id
     },
+    null, {
+        sort: {
+            "created_at": -1
+        }
+    },
     function (err, events) {
         if (err)
             res.send(err)
-                    res.json({
-                        'my_events': events,
-                    });
+        res.json({
+            'my_events': events,
+        });
     });
 });
 
 // create todo and send back all todos after creation
-apiRoutes.post('/events', function (req, res) {
+apiRoutes.post('/new_event', function (req, res) {
 
     console.log("po po");
     // create a todo, information comes from AJAX request from Angular

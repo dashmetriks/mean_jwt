@@ -431,7 +431,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.createTodo = function() {
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/api/events',
+                url: 'http://localhost:8080/api/new_event',
                 data: 'text=' + $scope.formData.text,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
