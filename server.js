@@ -627,25 +627,57 @@ apiRoutes.get('/event_list', function (req, res) {
 apiRoutes.get('/my_event_list2', function (req, res) {
     var player_data = []
     var player_data2 = []
+    var player_no_count = []
+    var pushY = {};
+    var pushN = {};
     Player.find({user_id: req.decoded._id}, 
     null, {
         sort: {
-            "created_at": -1
+            "event_id": -1
         }
     },
 
     function (err, records) {
+/*
+            Player.count({
+                    event_id: events.event_id,
+                    in_or_out: 'No'
+                },
+                function (err, players_no) {
+                    if (err) res.send(err)
+                    player_no.push(players_no);
+            });
+*/
     async.each(records, function(events, callback) { 
      //   records.forEach(function (record) {
             Event.findOne({ _id: events.event_id },
             function (err, events) {
                 if (err) res.send(err)
                     player_data.push(events);
-            console.log(player_data);
+            //        callback();
+            });
+            Player.count({
+                    event_id: events.event_id,
+                    in_or_out: 'No'
+                },
+                function (err, players_no) {
+                    if (err) res.send(err)
+            Player.count({
+                    event_id: events.event_id,
+                    in_or_out: 'Yes'
+                },
+                function (err, players_yes) {
+                    if (err) res.send(err)
+                    pushN[events.event_id] = players_no
+                    pushY[events.event_id] = players_yes
                     callback();
             });
+            });
         }, function(err){
-        res.json({ 'my_events': player_data, });
+        res.json({ 'my_events': player_data,
+                   'event_yes': [pushY] ,
+                   'event_no': [pushN] 
+                 });
     });
     });
 });
