@@ -624,6 +624,35 @@ apiRoutes.get('/event_list', function (req, res) {
     });
 });
 
+apiRoutes.get('/userget', function (req, res) {
+    User.find({_id: req.decoded._id},
+        function (err, users) {
+        if (err)
+            res.send(err)
+                    res.json({
+                        'user': users,
+                    });
+        console.log(users);
+    });
+});
+
+apiRoutes.post('/usersave', function (req, res) {
+    User.update({
+        _id: req.decoded._id 
+    }, {
+        $set: {
+            fname: req.body.fname,
+            lname: req.body.lname
+        }
+    },
+    function (err, result) {
+        if (err)
+            throw err;
+        console.log(req.body.text);
+        console.log(result);
+        res.json(result);
+    });
+});
 apiRoutes.get('/my_event_list2', function (req, res) {
     var player_data = []
     var player_data2 = []
