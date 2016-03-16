@@ -432,44 +432,21 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
 });
 
 apiRoutes.get('/geteventdata/:event_id', function (req, res) {
-    Comments.find({
-        event_id: req.params.event_id
-    },
-    null, {
-        sort: {
-            "created_at": -1
-        }
-    },
+    Comments.find({ event_id: req.params.event_id }, null, { sort: { "created_at": -1 } },
     function (err, comments) {
-        if (err)
-            res.send(err)
-        Player.find({
-            event_id: req.params.event_id,
-            in_or_out: 'Yes'
-        },
+        if (err) res.send(err)
+        Player.find({ event_id: req.params.event_id, in_or_out: 'Yes' },
         function (err, players_yes) {
-            if (err)
-                res.send(err)
-            Player.findOne({
-                event_id: req.params.event_id,
-                user_id: req.decoded._id
-            },
+            if (err) res.send(err)
+            Player.findOne({ event_id: req.params.event_id, user_id: req.decoded._id },
             function (err, players_list) {
-                if (err)
-                    res.send(err)
-                Player.find({
-                    event_id: req.params.event_id,
-                    in_or_out: 'No'
-                },
+                if (err) res.send(err)
+                Player.find({ event_id: req.params.event_id, in_or_out: 'No' },
                 function (err, players_no) {
-                    if (err)
-                        res.send(err)
-                    Event.find({
-                        _id: req.params.event_id
-                    },
+                    if (err) res.send(err)
+                    Event.find({ _id: req.params.event_id },
                     function (err, events) {
-                        if (err)
-                            res.send(err)
+                        if (err) res.send(err)
                         res.json({
                             'logged_in_userid': req.decoded._id,
                             'logged_in_username': req.decoded.name,
@@ -678,23 +655,15 @@ apiRoutes.get('/my_event_list2', function (req, res) {
             });
 */
     async.each(records, function(events, callback) { 
-     //   records.forEach(function (record) {
             Event.findOne({ _id: events.event_id },
             function (err, events) {
-                if (err) res.send(err)
-                    player_data.push(events);
-            //        callback();
+                if (err) res.send(err) 
+                  player_data.push(events);
             });
-            Player.count({
-                    event_id: events.event_id,
-                    in_or_out: 'No'
-                },
+            Player.count({ event_id: events.event_id, in_or_out: 'No' },
                 function (err, players_no) {
                     if (err) res.send(err)
-            Player.count({
-                    event_id: events.event_id,
-                    in_or_out: 'Yes'
-                },
+            Player.count({ event_id: events.event_id, in_or_out: 'Yes' },
                 function (err, players_yes) {
                     if (err) res.send(err)
                     pushN[events.event_id] = players_no
