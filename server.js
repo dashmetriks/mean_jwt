@@ -96,6 +96,7 @@ var Player = mongoose.model('Player', Player);
 var Comments = new Schema({
     event_id: String,
     username: String,
+    user_id: String,
     text: String,
     created_at: {
         type: Date,
@@ -405,6 +406,7 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
             Comments.create({
                 event_id: req.params.event_id,
                 username: req.decoded.name,
+                user_id: req.decoded._id,
                 text: req.body.text
             },
             function (err, result) {
@@ -432,22 +434,41 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
 });
 
 apiRoutes.get('/geteventdata/:event_id', function (req, res) {
+var pushY = {};
     Comments.find({ event_id: req.params.event_id }, null, { sort: { "created_at": -1 } },
     function (err, comments) {
         if (err) res.send(err)
         Player.find({ event_id: req.params.event_id, in_or_out: 'Yes' },
         function (err, players_yes) {
             if (err) res.send(err)
-            Player.findOne({ event_id: req.params.event_id, user_id: req.decoded._id },
-            function (err, players_list) {
-                if (err) res.send(err)
                 Player.find({ event_id: req.params.event_id, in_or_out: 'No' },
                 function (err, players_no) {
                     if (err) res.send(err)
                     Event.find({ _id: req.params.event_id },
                     function (err, events) {
                         if (err) res.send(err)
+            Player.find({ event_id: req.params.event_id },
+            function (err, players_list) {
+                if (err) res.send(err)
+
+    async.each(players_list, function(events, callback) { 
+            User.findOne({ _id: events.user_id },
+                function (err, user_list) {
+                    if (err) res.send(err)
+                    console.log(user_list)
+                    pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
+                    callback();
+            });
+        }, function(err){
+   //     res.json({ 'my_events': player_data,
+    //               'event_yes': [pushY] ,
+     //              'event_no': [pushN] 
+      //           });
+  //  });
+
+
                         res.json({
+                   'user_list': [pushY] ,
                             'logged_in_userid': req.decoded._id,
                             'logged_in_username': req.decoded.name,
                             'event': events,
@@ -458,6 +479,7 @@ apiRoutes.get('/geteventdata/:event_id', function (req, res) {
                         });
                     });
                 });
+            });
             });
         });
     });
@@ -677,6 +699,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                    'event_no': [pushN] 
                  });
     });
+
     });
 });
 
