@@ -329,26 +329,9 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
                 //        res.json(result);
             });
         }
-        Player.find({
-            event_id: req.params.event_id,
-            in_or_out: 'Yes'
-        },
-        function (err, players_yes) {
-            if (err)
-                res.send(err)
-            Player.find({
-                event_id: req.params.event_id,
-                in_or_out: 'No'
-            },
-            function (err, players_no) {
-                if (err)
-                    res.send(err)
-                res.json({
-                    'players_yes': players_yes,
-                    'players_no': players_no
-                });
-            });
-        });
+        get_event_data(req.params.event_id, req.decoded._id, function (data) {
+            res.json(data);
+        })
     });
 });
 
@@ -373,7 +356,6 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
             text: 'hello world asd!'
         });
         transporter.close();
-
         if (err)
             throw err;
         Invite.find({
@@ -393,98 +375,152 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         });
     });
 });
-
 apiRoutes.post('/addcomment/:event_id/', function (req, res) {
-    Player.findOne({
-        event_id: req.params.event_id
-    }, function (error, todos) {
-        if (error) {
-            res.json(error);
-        } else if (todos == null) {
-        } else {
-
-            Comments.create({
-                event_id: req.params.event_id,
-                username: req.decoded.name,
-                user_id: req.decoded._id,
-                text: req.body.text
-            },
-            function (err, result) {
-                if (err)
-                    throw err;
-                Comments.find({
-                    event_id: req.params.event_id
-                },
-                null, {
-                    sort: {
-                        "created_at": -1
-                    }
-                },
-                function (err, comments) {
-                    if (err)
-                        res.send(err)
-                    res.json({
-                        'comments': comments,
+    async.series([
+        function (callback) {
+            Player.findOne({
+                event_id: req.params.event_id
+            }, function (error, todos) {
+                if (error) {
+                    res.json(error);
+                } else if (todos == null) {
+                } else {
+                    Comments.create({
+                        event_id: req.params.event_id,
+                        username: req.decoded.name,
+                        user_id: req.decoded._id,
+                        text: req.body.text
+                    },
+                    function (err, result) {
+                        if (err)
+                            throw err;
+                        console.log("wooot1")
+                        callback(null, 'one');
                     });
-                });
+                }
+                ;
             });
+        },
+        function (callback) {
+            get_event_data(req.params.event_id, req.decoded._id, function (data) {
+                res.json(data);
+            })
+            callback();
         }
-        ;
+    ], function (error) {
+        if (error) {
+            //handle readFile error or processFile error here
+        }
     });
 });
+function get_event_data(event_id, user_id, callback) {
 
-apiRoutes.get('/geteventdata/:event_id', function (req, res) {
-var pushY = {};
-    Comments.find({ event_id: req.params.event_id }, null, { sort: { "created_at": -1 } },
+    var pushY = {};
+    Comments.find({event_id: event_id}, null, {sort: {"created_at": -1}},
     function (err, comments) {
-        if (err) res.send(err)
-        Player.find({ event_id: req.params.event_id, in_or_out: 'Yes' },
+        if (err)
+            res.send(err)
+        Player.find({event_id: event_id, in_or_out: 'Yes'},
         function (err, players_yes) {
-            if (err) res.send(err)
-                Player.find({ event_id: req.params.event_id, in_or_out: 'No' },
-                function (err, players_no) {
-                    if (err) res.send(err)
-                    Event.find({ _id: req.params.event_id },
-                    function (err, events) {
-                        if (err) res.send(err)
-            Player.find({ event_id: req.params.event_id },
-            function (err, players_list) {
-                if (err) res.send(err)
-
-    async.each(players_list, function(events, callback) { 
-            User.findOne({ _id: events.user_id },
-                function (err, user_list) {
-                    if (err) res.send(err)
-                    console.log(user_list)
-                    pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
-                    callback();
-            });
-        }, function(err){
-   //     res.json({ 'my_events': player_data,
-    //               'event_yes': [pushY] ,
-     //              'event_no': [pushN] 
-      //           });
-  //  });
-
-
-                        res.json({
-                   'user_list': [pushY] ,
-                            'logged_in_userid': req.decoded._id,
-                            'logged_in_username': req.decoded.name,
-                            'event': events,
-                            'players_list': players_list,
-                            'players_yes': players_yes,
-                            'players_no': players_no,
-                            'comments': comments,
+            if (err)
+                res.send(err)
+            Player.find({event_id: event_id, in_or_out: 'No'},
+            function (err, players_no) {
+                if (err)
+                    res.send(err)
+                Event.find({_id: event_id},
+                function (err, events) {
+                    if (err)
+                        res.send(err)
+                    Player.find({event_id: event_id},
+                    function (err, players_list) {
+                        if (err)
+                            res.send(err)
+                        async.each(players_list, function (events, callback) {
+                            User.findOne({_id: events.user_id},
+                            function (err, user_list) {
+                                if (err)
+                                    res.send(err)
+                                //                    console.log(user_list)
+                                pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
+                                callback();
+                            });
+                        }, function (err) {
+                            var data = ({
+                                'user_list': [pushY],
+                                'logged_in_userid': user_id,
+                                'event': events,
+                                'players_list': players_list,
+                                'players_yes': players_yes,
+                                'players_no': players_no,
+                                'comments': comments,
+                            });
+                            return callback(data);
                         });
                     });
                 });
             });
+        });
+    });
+}
+
+apiRoutes.get('/geteventdata/:event_id', function (req, res) {
+    var pushY = {};
+    Comments.find({event_id: req.params.event_id}, null, {sort: {"created_at": -1}},
+    function (err, comments) {
+        if (err)
+            res.send(err)
+        Player.find({event_id: req.params.event_id, in_or_out: 'Yes'},
+        function (err, players_yes) {
+            if (err)
+                res.send(err)
+            Player.find({event_id: req.params.event_id, in_or_out: 'No'},
+            function (err, players_no) {
+                if (err)
+                    res.send(err)
+                Event.find({_id: req.params.event_id},
+                function (err, events) {
+                    if (err)
+                        res.send(err)
+                    Player.find({event_id: req.params.event_id},
+                    function (err, players_list) {
+                        if (err)
+                            res.send(err)
+
+                        async.each(players_list, function (events, callback) {
+                            User.findOne({_id: events.user_id},
+                            function (err, user_list) {
+                                if (err)
+                                    res.send(err)
+                                console.log(user_list)
+                                pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
+                                callback();
+                            });
+                        }, function (err) {
+                            //     res.json({ 'my_events': player_data,
+                            //               'event_yes': [pushY] ,
+                            //              'event_no': [pushN] 
+                            //           });
+                            //  });
+
+
+                            res.json({
+                                'user_list': [pushY],
+                                'logged_in_userid': req.decoded._id,
+                                'logged_in_username': req.decoded.name,
+                                'event': events,
+                                'players_list': players_list,
+                                'players_yes': players_yes,
+                                'players_no': players_no,
+                                'comments': comments,
+                            });
+                        });
+                    });
+                });
             });
         });
     });
 });
-
 apiRoutes.post('/eventsave/:event_id', function (req, res) {
     Event.update({
         _id: req.params.event_id
@@ -502,8 +538,6 @@ apiRoutes.post('/eventsave/:event_id', function (req, res) {
         res.json(result);
     });
 });
-
-
 app.get('/invites/:invite_code', function (req, res) {
 
     Invite.findOne({
@@ -519,7 +553,6 @@ app.get('/invites/:invite_code', function (req, res) {
         res.json(invites);
     });
 });
-
 apiRoutes.get('/invited/:event_id', function (req, res) {
     console.log('invite list ------');
     Invite.find({
@@ -549,7 +582,6 @@ apiRoutes.get('/invited/:event_id', function (req, res) {
         });
     });
 });
-
 apiRoutes.get('/events/:event_id', function (req, res) {
 
     Event.find({
@@ -561,7 +593,6 @@ apiRoutes.get('/events/:event_id', function (req, res) {
         res.json(events);
     });
 });
-
 function update_invite_status(invite_id, ustatus) {
     Invite.update({
         _id: invite_id
@@ -614,7 +645,6 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
         });
     });
 });
-
 apiRoutes.get('/event_list', function (req, res) {
     Event.find(function (err, events) {
         if (err)
@@ -622,22 +652,20 @@ apiRoutes.get('/event_list', function (req, res) {
         res.json(events);
     });
 });
-
 apiRoutes.get('/userget', function (req, res) {
     User.find({_id: req.decoded._id},
-        function (err, users) {
+    function (err, users) {
         if (err)
             res.send(err)
-                    res.json({
-                        'user': users,
-                    });
+        res.json({
+            'user': users,
+        });
         console.log(users);
     });
 });
-
 apiRoutes.post('/usersave', function (req, res) {
     User.update({
-        _id: req.decoded._id 
+        _id: req.decoded._id
     }, {
         $set: {
             fname: req.body.fname,
@@ -658,53 +686,51 @@ apiRoutes.get('/my_event_list2', function (req, res) {
     var player_no_count = []
     var pushY = {};
     var pushN = {};
-    Player.find({user_id: req.decoded._id}, 
+    Player.find({user_id: req.decoded._id},
     null, {
         sort: {
             "event_id": -1
         }
     },
-
     function (err, records) {
-/*
-            Player.count({
-                    event_id: events.event_id,
-                    in_or_out: 'No'
-                },
-                function (err, players_no) {
-                    if (err) res.send(err)
-                    player_no.push(players_no);
-            });
-*/
-    async.each(records, function(events, callback) { 
-            Event.findOne({ _id: events.event_id },
+        /*
+         Player.count({
+         event_id: events.event_id,
+         in_or_out: 'No'
+         },
+         function (err, players_no) {
+         if (err) res.send(err)
+         player_no.push(players_no);
+         });
+         */
+        async.each(records, function (events, callback) {
+            Event.findOne({_id: events.event_id},
             function (err, events) {
-                if (err) res.send(err) 
-                  player_data.push(events);
+                if (err)
+                    res.send(err)
+                player_data.push(events);
             });
-            Player.count({ event_id: events.event_id, in_or_out: 'No' },
-                function (err, players_no) {
-                    if (err) res.send(err)
-            Player.count({ event_id: events.event_id, in_or_out: 'Yes' },
+            Player.count({event_id: events.event_id, in_or_out: 'No'},
+            function (err, players_no) {
+                if (err)
+                    res.send(err)
+                Player.count({event_id: events.event_id, in_or_out: 'Yes'},
                 function (err, players_yes) {
-                    if (err) res.send(err)
+                    if (err)
+                        res.send(err)
                     pushN[events.event_id] = players_no
                     pushY[events.event_id] = players_yes
                     callback();
+                });
             });
+        }, function (err) {
+            res.json({'my_events': player_data,
+                'event_yes': [pushY],
+                'event_no': [pushN]
             });
-        }, function(err){
-        res.json({ 'my_events': player_data,
-                   'event_yes': [pushY] ,
-                   'event_no': [pushN] 
-                 });
-    });
-
+        });
     });
 });
-
-
-
 apiRoutes.get('/my_event_list', function (req, res) {
     Event.find({
         event_creator: req.decoded._id
@@ -722,7 +748,6 @@ apiRoutes.get('/my_event_list', function (req, res) {
         });
     });
 });
-
 // create todo and send back all todos after creation
 apiRoutes.post('/new_event', function (req, res) {
 
@@ -736,20 +761,16 @@ apiRoutes.post('/new_event', function (req, res) {
     }, function (err, todo) {
         if (err)
             res.send(err);
-
         // get and return all the todos after you create another
         Event.find(function (err, events) {
             if (err)
                 res.send(err)
             console.log("now now");
             console.log(events);
-
             res.json(events);
         });
     });
-
 });
-
 // delete a todo
 app.delete('/api/todos/:todo_id', function (req, res) {
     Todo.remove({
@@ -757,7 +778,6 @@ app.delete('/api/todos/:todo_id', function (req, res) {
     }, function (err, todo) {
         if (err)
             res.send(err);
-
         // get and return all the todos after you create another
         Todo.find(function (err, todos) {
             if (err)
@@ -766,13 +786,10 @@ app.delete('/api/todos/:todo_id', function (req, res) {
         });
     });
 });
-
-
 app.use('/api', apiRoutes);
 app.use(function (req, res) {
     res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
 });
-
 // listen (start app with node server.js) ======================================
 app.listen(8080);
 console.log("App listening on port 8080");
