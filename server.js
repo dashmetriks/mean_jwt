@@ -465,6 +465,12 @@ function get_event_data(event_id, user_id, callback) {
 }
 
 apiRoutes.get('/geteventdata/:event_id', function (req, res) {
+ get_event_data(req.params.event_id, req.decoded._id, function (data) {
+            res.json(data);
+        })
+});
+
+apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
     var pushY = {};
     Comments.find({event_id: req.params.event_id}, null, {sort: {"created_at": -1}},
     function (err, comments) {
