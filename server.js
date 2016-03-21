@@ -730,6 +730,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                 });
             });
         }, function (err) {
+            console.log(player_data);
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_no': [pushN]
@@ -764,15 +765,25 @@ apiRoutes.post('/new_event', function (req, res) {
         event_creator: req.decoded._id,
         event_creator_username: req.decoded.name
 
-    }, function (err, todo) {
+    }, function (err, event_created) {
         if (err)
             res.send(err);
+            console.log("now now");
+            console.log(event_created);
+            Player.create({
+                event_id: event_created._id ,
+                username: req.decoded.name,
+                user_id: req.decoded._id,
+                in_or_out: 'Yes' 
+            },
+            function (err, result) {
+                if (err)
+                    throw err;
+            });
         // get and return all the todos after you create another
         Event.find(function (err, events) {
             if (err)
                 res.send(err)
-            console.log("now now");
-            console.log(events);
             res.json(events);
         });
     });
