@@ -533,6 +533,7 @@ apiRoutes.post('/eventsave/:event_id', function (req, res) {
     }, {
         $set: {
             event_title: req.body.text,
+            event_start: req.body.event_start,
             event_image: req.body.image
         }
     },
@@ -692,6 +693,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
     var player_no_count = []
     var pushY = {};
     var pushN = {};
+    var invites_cnt = {};
     Player.find({user_id: req.decoded._id},
     null, {
         sort: {
@@ -724,16 +726,23 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                 function (err, players_yes) {
                     if (err)
                         res.send(err)
+                Invite.count({event_id: events.event_id},
+                function (err, invite_count) {
+                    if (err)
+                        res.send(err)
                     pushN[events.event_id] = players_no
                     pushY[events.event_id] = players_yes
+                    invites_cnt[events.event_id] = invite_count
                     callback();
                 });
+            });
             });
         }, function (err) {
             console.log(player_data);
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
-                'event_no': [pushN]
+                'event_no': [pushN],
+                'invites': [invites_cnt]
             });
         });
     });
@@ -762,6 +771,7 @@ apiRoutes.post('/new_event', function (req, res) {
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
+        event_start: req.body.event_start,
         event_creator: req.decoded._id,
         event_creator_username: req.decoded.name
 
