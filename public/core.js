@@ -317,7 +317,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.getEventList = function() {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/my_event_list/',
+                url: 'http://localhost:8080/api/my_event_list2/',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -379,19 +379,19 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
                 $scope.event_creator_username = data['event'][0].event_creator_username; 
-                console.log (data['players_list']);
+                console.log (data['is_member']);
                 console.log (data['event'][0].event_creator);
                 $scope.yeses = data['players_yes'];
                 $scope.nos = data['players_no'];
                 $scope.comments = data['comments'];
                 $scope.loggedInUsername = data['logged_in_username']; 
                 $rootScope.isUserLoggedIn = true;
-                console.log (data);
-                if (data['players_list'] != null) {
-                  if ( data['players_list'].user_id == data['logged_in_userid']){
+                //console.log (data);
+                if (data['is_member'] != null) {
+                 // if ( data['players_list'].user_id == data['logged_in_userid']){
                   console.log("is a member");
                   $rootScope.isMember = true;
-                  } 
+                //  } 
                 }else{
                   $rootScope.isMember = false;
                 }  

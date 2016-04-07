@@ -67,8 +67,12 @@ var Invite = new Schema({
     inviter: String,
     invited: String,
     invited_email: String,
+    invited_phone: String,
+    invited_type: String,
     invited_username: String,
     invite_code: String,
+    date_opened: Date,
+    date_accepted: Date,
     invite_status: String,
     created_at: {
         type: Date,
@@ -343,6 +347,8 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         inviter: req.decoded.name,
         invited: req.body.text,
         invited_email: req.body.email,
+        invited_phone: req.body.phone,
+        invited_type: req.body.type,
         invite_code: randomValueHex(8),
         invite_status: "Sent"
     },
@@ -424,8 +430,16 @@ function get_event_data(event_id, user_id, callback) {
         function (err, players_yes) {
             if (err)
                 res.send(err)
+        Player.find({event_id: event_id, user_id: user_id},
+        function (err, is_member) {
+            if (err)
+                res.send(err)
             Player.find({event_id: event_id, in_or_out: 'No'},
             function (err, players_no) {
+                if (err)
+                    res.send(err)
+            Player.find({event_id: event_id, in_or_out: 'Maybe'},
+            function (err, players_maybe) {
                 if (err)
                     res.send(err)
                 Event.find({_id: event_id},
@@ -441,7 +455,6 @@ function get_event_data(event_id, user_id, callback) {
                             function (err, user_list) {
                                 if (err)
                                     res.send(err)
-                                //                    console.log(user_list)
                                 pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
                                 callback();
                             });
@@ -451,14 +464,18 @@ function get_event_data(event_id, user_id, callback) {
                                 'logged_in_userid': user_id,
                                 'event': events,
                                 'players_list': players_list,
+                                'is_member': is_member,
                                 'players_yes': players_yes,
                                 'players_no': players_no,
+                                'players_maybe': players_maybe,
                                 'comments': comments,
                             });
                             return callback(data);
                         });
                     });
                 });
+            });
+            });
             });
         });
     });
@@ -545,8 +562,8 @@ apiRoutes.post('/eventsave/:event_id', function (req, res) {
         res.json(result);
     });
 });
-app.get('/invites/:invite_code', function (req, res) {
 
+app.get('/invites/:invite_code', function (req, res) {
     Invite.findOne({
         invite_code: req.params.invite_code
     },
@@ -560,6 +577,20 @@ app.get('/invites/:invite_code', function (req, res) {
         res.json(invites);
     });
 });
+
+apiRoutes.get('/invitedetail/:invite_id', function (req, res) {
+    Invite.findOne({
+        _id: req.params.invite_id
+    },
+    function (err, invites) {
+        if (err)
+            res.send(err)
+    //    }
+        console.log(invites);
+        res.json({'invite_detail': [invites]});
+    });
+});
+
 apiRoutes.get('/invited/:event_id', function (req, res) {
     console.log('invite list ------');
     Invite.find({
@@ -600,12 +631,14 @@ apiRoutes.get('/events/:event_id', function (req, res) {
         res.json(events);
     });
 });
+
 function update_invite_status(invite_id, ustatus) {
     Invite.update({
         _id: invite_id
     }, {
         $set: {
-            invite_status: ustatus
+            invite_status: ustatus,
+            date_opened: new Date() 
         }
     },
     function (err, result) {
@@ -614,6 +647,23 @@ function update_invite_status(invite_id, ustatus) {
         console.log(result);
     });
 }
+
+function update_invite_status_accepted(invite_id, ustatus) {
+    Invite.update({
+        _id: invite_id
+    }, {
+        $set: {
+            invite_status: ustatus,
+            date_accepted: new Date() 
+        }
+    },
+    function (err, result) {
+        if (err)
+            throw err;
+        console.log(result);
+    });
+}
+
 function add_invite_username(invite_id, username) {
     Invite.update({
         _id: invite_id
@@ -634,7 +684,7 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
     }, function (error, invites) {
         if (error)
             res.json(error);
-        update_invite_status(invites["_id"], "Accepted");
+        update_invite_status_accepted(invites["_id"], "Accepted");
         add_invite_username(invites["_id"], req.decoded.name);
         console.log("find one invite");
         console.log(invites["_id"]);
