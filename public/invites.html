@@ -1,80 +1,80 @@
-<body >
-    <div class="container">
-
+<body>
+    <div class="container" >
         <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
             <h1>I'm a Todo-woot <span class="label label-info">{{ todos2.length }}</span></h1>
         </div>
-
- </div>
-
         <!-- TODO LIST -->
+        <div id="todo-list" class="row" ng-controller="mainController" ng-init="getEventInvite()">
 
+                        <div ng-if="isMember">
+				<label> you replied {{invited_reply}}  </label>                               
+                           <input  class="btn btn-primary btn-lg" type="button" value="Change Reply" ng-click="invite_change()">
+                        </div>
+                        <div ng-if="newInvite">
+                            <input  class="btn btn-primary btn-lg" type="button" value="Yes" ng-click="invite_open( 'Yes')">
+                            <input  class="btn btn-primary btn-lg" type="button" value="No" ng-click="invite_open( 'No')">
+                            <input  class="btn btn-primary btn-lg" type="button" value="Maybe" ng-click="invite_open( 'Maybe')">
+                        </div>
+                        <div ng-if="showAcceptInvite">
+                            <form class="well">
+                                <div  class="form-group" >
+                                    <label>Username</label>
+                                    <label>{{event_id}}</label>
+                                    <input type="text" name="username" placeholder={{invited_name}} ng-model="formData1.text"/>
+                                    <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
+                                    <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary"/>
+                                </div>
+                            </form>
+                        </div>
+            <div class="col-sm-4 col-sm-offset-4">
+                <!-- LOOP OVER THE TODOS IN $scope.todos -->
+                <!--                <div class="checkbox" ng-repeat="event in events">  --->
+                <label>
+                    <h3>{{ event_title }} created by {{event_creator_username}} </h3>
+                    <h5>logged in as  $route.current.params  </h5>
+                    <h3><a href="/invited_list/{{ event_id }}" ng-show="isEventCreator"> Invites </a> </h3>
+                </label>
+                <div ng-repeat="user in yeses">
+                    {{user.in_or_out}} - {{user.username}} 
+                    <span ng-if="invite_code == user.invite_code"> You </span>
+                    <span ng-if="event_creator_id == user.user_id"> Host </span>
+                </div>
+                <div ng-repeat="user in nos">
+                    {{user.in_or_out}} - {{user.username}} 
+                    <span ng-if="invite_code == user.invite_code"> You </span>
+                </div>
+                    <h3>Comments </h3>
+            <div ng-repeat="comment in comments">
+                {{comment.text}} - {{comment.username}}
+            </div>
+        </div>
         <!-- FORM TO CREATE TODOS -->
-<div id="todo-list" class="row" ng-controller="mainController" ng-init="invite_check()">
-
         <div id="todo-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
                 <form>
                     <div class="form-group">
-   <h3> todos   {{todos[0].event_id}}  </h3>
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-
-
+                        <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
+                    </div>
                     <!-- createToDo() WILL CREATE NEW TODOS -->
- <div ng-if="showAcceptInvite">
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="invite_accept(events.event_id)">Accept Invite</button>
-</div>
-
- <div ng-if="showAlreadyAccepted">
-<h3>This invite has already been accepted.  Please contact the inviter to request another invite.</h3>
-</div>
-
- <div ng-if="showLoginToInvite">
-    <div class="container" ng-controller="mainController">
-
-        <form class="well">
-           <div  class="form-group" >
-    <label>Username</label>
-        <input type="text" name="username" ng-model="user.username"/>
-    </div>
-    <div class="form-group" >
-    <label>Password</label>
-        <input type="password" name="password" ng-model="user.password"/>
-    </div>
-     <input type="button" value="Login" ng-click="login()" class="btn btn-primary"/>
-    </form>
-
-     <h3> {{login_message}} </h3>
-    </div>
-   <h3>or <a href="" ng-click="display_reg_form()">Register</a></h3>
- </div>
-
-
- <div ng-if="showRegToInvite">
-    <div class="container" ng-controller="mainController">
-
-        <form class="well">
-           <div  class="form-group" >
-    <label>Username</label>
-        <input type="text" name="username" ng-model="user.username"/>
-    </div>
-    <div class="form-group" >
-    <label>Password</label>
-        <input type="password" name="password" ng-model="user.password"/>
-    </div>
-     <input type="button" value="Register" ng-click="register()" class="btn btn-primary"/>
-    </form>
-    <h3> {{reg_message}} </h3>
-    </div>
-
-   <h3>or <a href="" ng-click="display_login_form()">Login</a></h3>
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="addComment()">Add</button>
+                </form>
             </div>
         </div>
-
     </div>
-
-
-    </div>
+    <div id="todo-form" class="row">
+        <div class="col-sm-8 col-sm-offset-2 text-center">
+            <form>
+                <div class="form-group">
+                    <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                    <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
+                </div>
+                <!-- createToDo() WILL CREATE NEW TODOS -->
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="addInvite()">Invite</button>
+            </form>
         </div>
+    </div>
+    </div>
+    </div>
 </body>

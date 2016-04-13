@@ -86,6 +86,7 @@ var Invite = mongoose.model('Invite', Invite);
 var Player = new Schema({
     event_id: String,
     invite_id: String,
+    invite_code: String,
     username: String,
     user_id: String,
     in_or_out: String,
@@ -298,6 +299,66 @@ app.get('/adduser/:username', function (req, res) {
     });
 });
 
+app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
+console.log(req.body)
+    Player.findOne({
+        event_id: req.params.event_id,
+        invite_code: req.params.invite_code
+    }, function (error, players) {
+        if (error) res.json(error);
+        if (players == null) {
+    Invite.findOne({
+        invite_code: req.params.invite_code
+    },
+    function (err, invites) {
+        if (err) res.send(err)
+
+            Player.create({
+                event_id: req.params.event_id,
+                invite_code: req.params.invite_code,
+                //username: invites.invited,
+                username: req.body.username,
+                in_or_out: req.params.ustatus
+            },
+            function (err, result) {
+                if (err)
+                    throw err;
+                //       res.json(result);
+            });
+                    Comments.create({
+                        event_id: req.params.event_id,
+                        username: req.body.username,
+                //        user_id: req.decoded._id,
+                        text: req.body.comment
+                    },
+                    function (err, result) {
+                        if (err)
+                            throw err;
+    });
+    });
+        } else {
+            update_invite_status(players["invite_id"], req.params.ustatus);
+            Player.update({
+                event_id: req.params.event_id,
+           //     username: req.decoded.name
+            }, {
+                $set: {
+                    in_or_out: req.params.ustatus
+                }
+            },
+            function (err, result) {
+                if (err)
+                    throw err;
+                //        res.json(result);
+            });
+        }
+      //  get_event_data(req.params.event_id, req.decoded._id, function (data) {
+ get_event_data(req.params.event_id, "10000", function (data) {
+            res.json(data);
+        })
+    });
+});
+
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
     Player.findOne({
         event_id: req.params.event_id,
@@ -430,7 +491,7 @@ function get_event_data(event_id, user_id, callback) {
         function (err, players_yes) {
             if (err)
                 res.send(err)
-        Player.find({event_id: event_id, user_id: user_id},
+        Player.find({event_id: event_id, invite_code: user_id},
         function (err, is_member) {
             if (err)
                 res.send(err)
@@ -455,12 +516,16 @@ function get_event_data(event_id, user_id, callback) {
                             function (err, user_list) {
                                 if (err)
                                     res.send(err)
-                                pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
+                                //pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
                                 callback();
                             });
                         }, function (err) {
+                        
+                        console.log("woooooooeeee")
+                        console.log(players_yes)
                             var data = ({
-                                'user_list': [pushY],
+                              //  'user_list': [pushY],
+
                                 'logged_in_userid': user_id,
                                 'event': events,
                                 'players_list': players_list,
@@ -485,6 +550,19 @@ apiRoutes.get('/geteventdata/:event_id', function (req, res) {
  get_event_data(req.params.event_id, req.decoded._id, function (data) {
             res.json(data);
         })
+});
+
+app.get('/geteventinvite/:invite_code', function (req, res) {
+    Invite.findOne({
+        invite_code: req.params.invite_code
+    },
+    function (err, invites) {
+        if (err)
+            res.send(err)
+ get_event_data(invites.event_id, req.params.invite_code, function (data) {
+            res.json(data);
+        })
+    });
 });
 
 apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
