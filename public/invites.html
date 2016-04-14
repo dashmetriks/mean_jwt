@@ -21,7 +21,8 @@
                                 <div  class="form-group" >
                                     <label>Username</label>
                                     <label>{{event_id}}</label>
-                                    <input type="text" name="username" placeholder={{invited_name}} ng-model="formData1.text"/>
+                                    <input type="text" name="username" value="invited.username" ng-model="invited.username"/> 
+                                <!--    <input type="text" name="username" value="widget.title"  ng-model="formData1.text"/> -->
                                     <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
                                     <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary"/>
                                 </div>

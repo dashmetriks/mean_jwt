@@ -254,7 +254,11 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 //  } else {
                  // if ($window.sessionStorage.getItem('token').length > 5) {   
              //       $scope.showAcceptInvite = false;
-                    $scope.invited_name = data.invited;
+                  //  $scope.invited_name = data.invited;
+                  $scope.invited =  {username: data.invited }
+                  $scope.set = function(invited_username) {
+                    this.invited.username = invited_username;
+                  }
                  //   $scope.showRegToInvite = false;
                 //  } else {
                //     $scope.showLoginToInvite = true;
@@ -393,6 +397,12 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
   
                 console.log ("dedededededeedededededededede")
                 $scope.invite_code =  $routeParams.invite_code
+                $scope.wtf = "lets do this" 
+              //  $scope.widget = {title: 'abc444'};
+        
+      //  $scope.set = function(new_title) {
+       //     this.widget.title = new_title;
+      //  }
                 console.log (data)
              //   $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
@@ -408,6 +418,10 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $rootScope.isUserLoggedIn = true;
                 //if (data['is_member'] == null) {
                 if(data['is_member'].length > 0){  
+                  $scope.invited = {username: data['is_member'][0].username};
+                  $scope.set = function(invited_username) {
+                    this.invited.username = invited_username;
+                  }
                   $scope.invited_reply = data['is_member'][0].in_or_out;
                   $rootScope.isMember = true;
                   $rootScope.newInvite = false;
@@ -474,7 +488,8 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         $http({
                 method: 'POST',
                 url: 'http://localhost:8080/adduserevent2/' + id + '/' + ustatus + '/' + $routeParams.invite_code,
-                data: 'username=' + $scope.formData1.text + '&comment=' + $scope.formData.text,
+             //   data: 'username=' + $scope.formData1.text + '&comment=' + $scope.formData.text,
+                data: 'username=' + $scope.invited.username + '&comment=' + $scope.formData.text,
               //  data: 'username=' + $scope.formData1.text,
                 headers: {
                  //   'Content-Type': 'application/json',
@@ -491,6 +506,8 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
             //   console.log(data['players_yes'])
              //   $scope.$apply();
            //    $scope.invite_check();
+               $scope.showAcceptInvite = false;
+               $scope.newInvite = false;
                $scope.getEventInvite();
             })
             .error(function(data) {

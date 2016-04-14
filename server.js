@@ -300,7 +300,6 @@ app.get('/adduser/:username', function (req, res) {
 });
 
 app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
-console.log(req.body)
     Player.findOne({
         event_id: req.params.event_id,
         invite_code: req.params.invite_code
@@ -313,6 +312,7 @@ console.log(req.body)
     function (err, invites) {
         if (err) res.send(err)
 
+            update_invite_status(invites["_id"], req.params.ustatus);
             Player.create({
                 event_id: req.params.event_id,
                 invite_code: req.params.invite_code,
@@ -325,6 +325,7 @@ console.log(req.body)
                     throw err;
                 //       res.json(result);
             });
+               if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
                         username: req.body.username,
@@ -334,15 +335,18 @@ console.log(req.body)
                     function (err, result) {
                         if (err)
                             throw err;
-    });
+                     });
+                }
     });
         } else {
             update_invite_status(players["invite_id"], req.params.ustatus);
             Player.update({
                 event_id: req.params.event_id,
+                invite_code: req.params.invite_code
            //     username: req.decoded.name
             }, {
                 $set: {
+                    username: req.body.username,
                     in_or_out: req.params.ustatus
                 }
             },
@@ -351,6 +355,18 @@ console.log(req.body)
                     throw err;
                 //        res.json(result);
             });
+               if (req.body.comment != "undefined") {
+                    Comments.create({
+                        event_id: req.params.event_id,
+                        username: req.body.username,
+                //        user_id: req.decoded._id,
+                        text: req.body.comment
+                    },
+                    function (err, result) {
+                        if (err)
+                            throw err;
+                     });
+                }
         }
       //  get_event_data(req.params.event_id, req.decoded._id, function (data) {
  get_event_data(req.params.event_id, "10000", function (data) {
