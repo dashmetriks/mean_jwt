@@ -575,6 +575,9 @@ app.get('/geteventinvite/:invite_code', function (req, res) {
     function (err, invites) {
         if (err)
             res.send(err)
+        if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
+            update_invite_status(invites["_id"], "Opened");
+        }
  get_event_data(invites.event_id, req.params.invite_code, function (data) {
             res.json(data);
         })
