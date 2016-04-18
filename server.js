@@ -89,6 +89,12 @@ var Player = new Schema({
     invite_code: String,
     username: String,
     user_id: String,
+    email: String,
+    email_notice: Boolean,
+    phone_notice: Boolean,
+    notice_rsvp: String,
+    notice_comments: String,
+    user_id: String,
     in_or_out: String,
     created_at: {
         type: Date,
@@ -160,7 +166,6 @@ apiRoutes.use(function (req, res, next) {
 
     } else {
 
-        console.log("nooooooo tookeennnnn");
         // if there is no token
         // return an error
         return res.status(403).send({
@@ -190,7 +195,6 @@ app.get('/setup', function (req, res) {
         if (err)
             throw err;
 
-        console.log('User saved successfully');
         res.json({
             success: true
         });
@@ -198,7 +202,6 @@ app.get('/setup', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-    console.log("registers now");
     // find the user
     User.findOne({
         name: req.body.name
@@ -218,7 +221,6 @@ app.post('/register', function (req, res) {
                 if (err)
                     throw err;
 
-                console.log('User saved successfully');
                 res.json({
                     success: true
                 });
@@ -231,7 +233,6 @@ app.post('/register', function (req, res) {
                 message: 'User already exists.'
             });
 
-            console.log('User already exists');
         }
 
     });
@@ -268,7 +269,6 @@ app.post('/authenticate', function (req, res) {
                     expiresInMinutes: 1440 // expires in 24 hours
                 });
 
-                console.log(user._id);
 
                 // return the information including token as JSON
                 res.json({
@@ -300,6 +300,7 @@ app.get('/adduser/:username', function (req, res) {
 });
 
 app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
+console.log(req.body)
     Player.findOne({
         event_id: req.params.event_id,
         invite_code: req.params.invite_code
@@ -316,8 +317,11 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
             Player.create({
                 event_id: req.params.event_id,
                 invite_code: req.params.invite_code,
+                notice_rsvp: req.body.rsvp,
+                notice_comments: req.body.comment_alert,
                 //username: invites.invited,
                 username: req.body.username,
+                email: req.body.email,
                 in_or_out: req.params.ustatus
             },
             function (err, result) {
@@ -452,8 +456,6 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         function (err, invites) {
             if (err)
                 res.send(err)
-            // console.log('wooooot');
-            // console.log(invites);
             res.json({'invites': invites}); // return all todos in JSON format
         });
     });
@@ -477,7 +479,6 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
                     function (err, result) {
                         if (err)
                             throw err;
-                        console.log("wooot1")
                         callback(null, 'one');
                     });
                 }
@@ -537,8 +538,6 @@ function get_event_data(event_id, user_id, callback) {
                             });
                         }, function (err) {
                         
-                        console.log("woooooooeeee")
-                        console.log(players_yes)
                             var data = ({
                               //  'user_list': [pushY],
 
@@ -612,7 +611,6 @@ apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
                             function (err, user_list) {
                                 if (err)
                                     res.send(err)
-                                console.log(user_list)
                                 pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
                                 callback();
                             });
@@ -654,8 +652,6 @@ apiRoutes.post('/eventsave/:event_id', function (req, res) {
     function (err, result) {
         if (err)
             throw err;
-        console.log(req.body.text);
-        console.log(result);
         res.json(result);
     });
 });
@@ -670,7 +666,6 @@ app.get('/invites/:invite_code', function (req, res) {
         if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened");
         }
-        console.log(invites);
         res.json(invites);
     });
 });
@@ -683,13 +678,11 @@ apiRoutes.get('/invitedetail/:invite_id', function (req, res) {
         if (err)
             res.send(err)
     //    }
-        console.log(invites);
         res.json({'invite_detail': [invites]});
     });
 });
 
 apiRoutes.get('/invited/:event_id', function (req, res) {
-    console.log('invite list ------');
     Invite.find({
         event_id: req.params.event_id
     },
@@ -707,7 +700,6 @@ apiRoutes.get('/invited/:event_id', function (req, res) {
         function (err, events) {
             if (err)
                 res.send(err)
-            console.log(invites);
             //  res.json(invites); 
             res.json({
                 'logged_in_userid': req.decoded._id,
@@ -741,7 +733,6 @@ function update_invite_status(invite_id, ustatus) {
     function (err, result) {
         if (err)
             throw err;
-        console.log(result);
     });
 }
 
@@ -757,7 +748,6 @@ function update_invite_status_accepted(invite_id, ustatus) {
     function (err, result) {
         if (err)
             throw err;
-        console.log(result);
     });
 }
 
@@ -783,8 +773,6 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
             res.json(error);
         update_invite_status_accepted(invites["_id"], "Accepted");
         add_invite_username(invites["_id"], req.decoded.name);
-        console.log("find one invite");
-        console.log(invites["_id"]);
         Player.create({
             event_id: invites["event_id"],
             invite_id: invites["_id"],
@@ -814,7 +802,6 @@ apiRoutes.get('/userget', function (req, res) {
         res.json({
             'user': users,
         });
-        console.log(users);
     });
 });
 apiRoutes.post('/usersave', function (req, res) {
@@ -829,8 +816,6 @@ apiRoutes.post('/usersave', function (req, res) {
     function (err, result) {
         if (err)
             throw err;
-        console.log(req.body.text);
-        console.log(result);
         res.json(result);
     });
 });
@@ -885,7 +870,6 @@ apiRoutes.get('/my_event_list2', function (req, res) {
             });
             });
         }, function (err) {
-            console.log(player_data);
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_no': [pushN],
@@ -914,7 +898,6 @@ apiRoutes.get('/my_event_list', function (req, res) {
 // create todo and send back all todos after creation
 apiRoutes.post('/new_event', function (req, res) {
 
-    console.log("po po");
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
@@ -925,8 +908,6 @@ apiRoutes.post('/new_event', function (req, res) {
     }, function (err, event_created) {
         if (err)
             res.send(err);
-            console.log("now now");
-            console.log(event_created);
             Player.create({
                 event_id: event_created._id ,
                 username: req.decoded.name,
