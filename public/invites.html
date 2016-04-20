@@ -18,11 +18,15 @@
                             <input ng-class="{'Maybe':'btn btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open( 'Maybe')">
                         </div>
                         <div ng-if="showAcceptInvite">
-                            <form class="well">
+                            <form class="well" name="myForm">
                                 <div  class="form-group" >
                                     <label>Username</label>
                                     <label>{{event_id}}</label>
-                                    <input type="text" name="username" value="invited.username" ng-model="invited.username"/> 
+                                    <input type="text" name="username" value="invited.username" ng-model="invited.username" required/> 
+                                    <span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
+<span ng-show="myForm.username.$error.required">Username is required.</span>
+</span>
+
                                 <!--    <input type="text" name="username" value="widget.title"  ng-model="formData1.text"/> -->
 <br/>
   <label>Receive rsvp updates:
@@ -35,7 +39,7 @@
                                     <input type="text" name="email" value="invited.email" ng-model="invited.email"/> 
   </label>
                                     <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
-                                    <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary"/>
+                                    <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
                                 </div>
                             </form>
                         </div>

@@ -95,7 +95,7 @@ var Player = new Schema({
     notice_rsvp: String,
     notice_comments: String,
     user_id: String,
-    in_or_out: String,
+            in_or_out: String,
     created_at: {
         type: Date,
         default: Date.now
@@ -300,57 +300,67 @@ app.get('/adduser/:username', function (req, res) {
 });
 
 app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
-console.log(req.body)
+    console.log(req.body)
     Player.findOne({
         event_id: req.params.event_id,
         invite_code: req.params.invite_code
     }, function (error, players) {
-        if (error) res.json(error);
+        if (error)
+            res.json(error);
         if (players == null) {
-    Invite.findOne({
-        invite_code: req.params.invite_code
-    },
-    function (err, invites) {
-        if (err) res.send(err)
-
-            update_invite_status(invites["_id"], req.params.ustatus);
-            Player.create({
-                event_id: req.params.event_id,
-                invite_code: req.params.invite_code,
-                notice_rsvp: req.body.rsvp,
-                notice_comments: req.body.comment_alert,
-                //username: invites.invited,
-                username: req.body.username,
-                email: req.body.email,
-                in_or_out: req.params.ustatus
+            Invite.findOne({
+                invite_code: req.params.invite_code
             },
-            function (err, result) {
+            function (err, invites) {
                 if (err)
-                    throw err;
-                //       res.json(result);
-            });
-               if (req.body.comment != "undefined") {
+                    res.send(err)
+
+                update_invite_status(invites["_id"], req.params.ustatus);
+                Player.create({
+                    event_id: req.params.event_id,
+                    invite_code: req.params.invite_code,
+                    notice_rsvp: req.body.rsvp,
+                    notice_comments: req.body.comment_alert,
+                    username: req.body.username,
+                    email: req.body.email,
+                    in_or_out: req.params.ustatus
+                },
+                function (err, result) {
+                    if (err)
+                        throw err;
+                    //       res.json(result);
+                });
+                if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
                         username: req.body.username,
-                //        user_id: req.decoded._id,
+                        //        user_id: req.decoded._id,
                         text: req.body.comment
                     },
                     function (err, result) {
                         if (err)
                             throw err;
-                     });
+                    });
+        //            send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username)
+        get_event_data(req.params.event_id, "10000", function (data) {
+                send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username, data)
+            res.json(data);
+        })
                 }
-    });
+            });
         } else {
             update_invite_status(players["invite_id"], req.params.ustatus);
             Player.update({
                 event_id: req.params.event_id,
                 invite_code: req.params.invite_code
-           //     username: req.decoded.name
             }, {
                 $set: {
+                    //    username: req.body.username,
+                    //   in_or_out: req.params.ustatus
+                    notice_rsvp: req.body.rsvp,
+                    notice_comments: req.body.comment_alert,
                     username: req.body.username,
+                    email: req.body.email,
                     in_or_out: req.params.ustatus
                 }
             },
@@ -359,25 +369,51 @@ console.log(req.body)
                     throw err;
                 //        res.json(result);
             });
-               if (req.body.comment != "undefined") {
-                    Comments.create({
-                        event_id: req.params.event_id,
-                        username: req.body.username,
-                //        user_id: req.decoded._id,
-                        text: req.body.comment
-                    },
-                    function (err, result) {
-                        if (err)
-                            throw err;
-                     });
-                }
-        }
-      //  get_event_data(req.params.event_id, req.decoded._id, function (data) {
- get_event_data(req.params.event_id, "10000", function (data) {
+            if (req.body.comment != "undefined") {
+                Comments.create({
+                    event_id: req.params.event_id,
+                    username: req.body.username,
+                    //        user_id: req.decoded._id,
+                    text: req.body.comment
+                },
+                function (err, result) {
+                    if (err)
+                        throw err;
+                });
+        get_event_data(req.params.event_id, "10000", function (data) {
+                send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username, data)
             res.json(data);
         })
+            }
+        }
+        //get_event_data(req.params.event_id, "10000", function (data) {
+       //     res.json(data);
+      //  })
     });
 });
+
+
+function send_email_alert(event_id, invite_id, comment, username, event_data) {
+    
+             console.log("dfasfdsa 55555555")
+             console.log(event_data.event[0])
+    Player.find({event_id: event_id, notice_comments: 'YES'},
+    function (err, players_list) {
+        if (err)
+            res.send(err)
+        async.each(players_list, function (players, callback) {
+             transporter.sendMail({
+             from: 'slatterytom@gmail.com',
+             to: players.email ,
+             subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"]  ,
+             html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
+             text: 'hello world asd!'
+             });
+             transporter.close();
+
+        });
+    });
+}
 
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
     Player.findOne({
@@ -508,63 +544,63 @@ function get_event_data(event_id, user_id, callback) {
         function (err, players_yes) {
             if (err)
                 res.send(err)
-        Player.find({event_id: event_id, invite_code: user_id},
-        function (err, is_member) {
-            if (err)
-                res.send(err)
-            Player.find({event_id: event_id, in_or_out: 'No'},
-            function (err, players_no) {
+            Player.find({event_id: event_id, invite_code: user_id},
+            function (err, is_member) {
                 if (err)
                     res.send(err)
-            Player.find({event_id: event_id, in_or_out: 'Maybe'},
-            function (err, players_maybe) {
-                if (err)
-                    res.send(err)
-                Event.find({_id: event_id},
-                function (err, events) {
+                Player.find({event_id: event_id, in_or_out: 'No'},
+                function (err, players_no) {
                     if (err)
                         res.send(err)
-                    Player.find({event_id: event_id},
-                    function (err, players_list) {
+                    Player.find({event_id: event_id, in_or_out: 'Maybe'},
+                    function (err, players_maybe) {
                         if (err)
                             res.send(err)
-                        async.each(players_list, function (events, callback) {
-                            User.findOne({_id: events.user_id},
-                            function (err, user_list) {
+                        Event.find({_id: event_id},
+                        function (err, events) {
+                            if (err)
+                                res.send(err)
+                            Player.find({event_id: event_id},
+                            function (err, players_list) {
                                 if (err)
                                     res.send(err)
-                                //pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
-                                callback();
-                            });
-                        }, function (err) {
-                        
-                            var data = ({
-                              //  'user_list': [pushY],
+                                async.each(players_list, function (events, callback) {
+                                    User.findOne({_id: events.user_id},
+                                    function (err, user_list) {
+                                        if (err)
+                                            res.send(err)
+                                        //pushY[events.user_id] = (user_list.fname + user_list.password.substring(0, 1)).toString()
+                                        callback();
+                                    });
+                                }, function (err) {
 
-                                'logged_in_userid': user_id,
-                                'event': events,
-                                'players_list': players_list,
-                                'is_member': is_member,
-                                'players_yes': players_yes,
-                                'players_no': players_no,
-                                'players_maybe': players_maybe,
-                                'comments': comments,
+                                    var data = ({
+                                        //  'user_list': [pushY],
+
+                                        'logged_in_userid': user_id,
+                                        'event': events,
+                                        'players_list': players_list,
+                                        'is_member': is_member,
+                                        'players_yes': players_yes,
+                                        'players_no': players_no,
+                                        'players_maybe': players_maybe,
+                                        'comments': comments,
+                                    });
+                                    return callback(data);
+                                });
                             });
-                            return callback(data);
                         });
                     });
                 });
-            });
-            });
             });
         });
     });
 }
 
 apiRoutes.get('/geteventdata/:event_id', function (req, res) {
- get_event_data(req.params.event_id, req.decoded._id, function (data) {
-            res.json(data);
-        })
+    get_event_data(req.params.event_id, req.decoded._id, function (data) {
+        res.json(data);
+    })
 });
 
 app.get('/geteventinvite/:invite_code', function (req, res) {
@@ -577,7 +613,7 @@ app.get('/geteventinvite/:invite_code', function (req, res) {
         if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened");
         }
- get_event_data(invites.event_id, req.params.invite_code, function (data) {
+        get_event_data(invites.event_id, req.params.invite_code, function (data) {
             res.json(data);
         })
     });
@@ -605,7 +641,6 @@ apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
                     function (err, players_list) {
                         if (err)
                             res.send(err)
-
                         async.each(players_list, function (events, callback) {
                             User.findOne({_id: events.user_id},
                             function (err, user_list) {
@@ -677,7 +712,7 @@ apiRoutes.get('/invitedetail/:invite_id', function (req, res) {
     function (err, invites) {
         if (err)
             res.send(err)
-    //    }
+        //    }
         res.json({'invite_detail': [invites]});
     });
 });
@@ -727,7 +762,7 @@ function update_invite_status(invite_id, ustatus) {
     }, {
         $set: {
             invite_status: ustatus,
-            date_opened: new Date() 
+            date_opened: new Date()
         }
     },
     function (err, result) {
@@ -742,7 +777,7 @@ function update_invite_status_accepted(invite_id, ustatus) {
     }, {
         $set: {
             invite_status: ustatus,
-            date_accepted: new Date() 
+            date_accepted: new Date()
         }
     },
     function (err, result) {
@@ -858,16 +893,16 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                 function (err, players_yes) {
                     if (err)
                         res.send(err)
-                Invite.count({event_id: events.event_id},
-                function (err, invite_count) {
-                    if (err)
-                        res.send(err)
-                    pushN[events.event_id] = players_no
-                    pushY[events.event_id] = players_yes
-                    invites_cnt[events.event_id] = invite_count
-                    callback();
+                    Invite.count({event_id: events.event_id},
+                    function (err, invite_count) {
+                        if (err)
+                            res.send(err)
+                        pushN[events.event_id] = players_no
+                        pushY[events.event_id] = players_yes
+                        invites_cnt[events.event_id] = invite_count
+                        callback();
+                    });
                 });
-            });
             });
         }, function (err) {
             res.json({'my_events': player_data,
@@ -908,16 +943,16 @@ apiRoutes.post('/new_event', function (req, res) {
     }, function (err, event_created) {
         if (err)
             res.send(err);
-            Player.create({
-                event_id: event_created._id ,
-                username: req.decoded.name,
-                user_id: req.decoded._id,
-                in_or_out: 'Yes' 
-            },
-            function (err, result) {
-                if (err)
-                    throw err;
-            });
+        Player.create({
+            event_id: event_created._id,
+            username: req.decoded.name,
+            user_id: req.decoded._id,
+            in_or_out: 'Yes'
+        },
+        function (err, result) {
+            if (err)
+                throw err;
+        });
         // get and return all the todos after you create another
         Event.find(function (err, events) {
             if (err)
