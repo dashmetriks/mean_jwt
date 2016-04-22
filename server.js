@@ -418,10 +418,10 @@ function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
                var email_subject = 'you posted an rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
             }else{
                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html= username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
@@ -445,10 +445,12 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
                var email_subject =  'you posted comment posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
             }else{
                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html= username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
@@ -470,10 +472,12 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
                var email_subject =  'you posted comment and rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as' + ' rsvp ' + ustatus + username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html = 'you posted a comment as' + ' rsvp ' + ustatus + username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
             }else{
                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new comment ' + ' rsvp ' + ustatus + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html= username + ' posted a new comment ' + ' rsvp ' + ustatus + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
@@ -533,6 +537,12 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
 
 apiRoutes.post('/addinvite/:event_id/', function (req, res) {
 
+    Event.find({
+        _id: req.params.event_id
+    },
+    function (err, events) {
+        if (err)
+            throw err;
     Invite.create({
         event_id: req.params.event_id,
         inviter: req.decoded.name,
@@ -544,12 +554,12 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
         invite_status: "Sent"
     },
     function (err, new_invite) {
+console.log(events[0]["event_title"])
         transporter.sendMail({
             from: 'slatterytom@gmail.com',
-            //to: req.body.email, 
             to: 'slatterytom@gmail.com',
-            subject: 'hello',
-            html: 'hello world html! You are invited to http://localhost:8080/invite/' + new_invite.invite_code,
+            subject: 'You are invited to the event ' + events[0]["event_title"] +  ' at ' + events[0]["event_start"] ,
+            html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + events[0]["event_title"] + '</a>' + ' at ' + events[0]["event_start"] ,
             text: 'hello world asd!'
         });
         transporter.close();
@@ -568,6 +578,7 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
                 res.send(err)
             res.json({'invites': invites}); // return all todos in JSON format
         });
+    });
     });
 });
 apiRoutes.post('/addcomment/:event_id/', function (req, res) {
