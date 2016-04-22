@@ -330,6 +330,8 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                         throw err;
                     //       res.json(result);
                 });
+ console.log("boooooooooooooooody")
+ console.log(req.body.comment.length)
                 if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
@@ -341,14 +343,20 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                         if (err)
                             throw err;
                     });
-        //            send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username)
-        get_event_data(req.params.event_id, "10000", function (data) {
-                send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username, data)
-            res.json(data);
-        })
+                    //            send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username)
+                    get_event_data(req.params.event_id, "10000", function (data) {
+                        send_email_alert_comment(req.params.event_id, req.params.invite_code, req.params.ustatus, req.body.comment, req.body.username, data)
+                        res.json(data);
+                    })
+                }else{
+                    get_event_data(req.params.event_id, "10000", function (data) {
+                        send_email_alert_rsvp(req.params.event_id, req.params.invite_code, req.params.ustatus, "", req.body.username, data)
+                        res.json(data);
+                    })
+
                 }
             });
-        } else {
+        } else { // player == null
             update_invite_status(players["invite_id"], req.params.ustatus);
             Player.update({
                 event_id: req.params.event_id,
@@ -369,6 +377,8 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     throw err;
                 //        res.json(result);
             });
+ console.log("boooooooooooooooody")
+ console.log(req.body.comment.length)
             if (req.body.comment != "undefined") {
                 Comments.create({
                     event_id: req.params.event_id,
@@ -380,37 +390,101 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     if (err)
                         throw err;
                 });
-        get_event_data(req.params.event_id, "10000", function (data) {
-                send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username, data)
-            res.json(data);
-        })
+                get_event_data(req.params.event_id, "10000", function (data) {
+                    send_email_alert_comment(req.params.event_id, req.params.invite_code, req.params.ustatus, req.body.comment, req.body.username, data)
+                    res.json(data);
+                })
+            }else{
+                get_event_data(req.params.event_id, "10000", function (data) {
+                    send_email_alert_rsvp(req.params.event_id, req.params.invite_code, req.params.ustatus, "", req.body.username, data)
+                    res.json(data);
+                })
             }
         }
         //get_event_data(req.params.event_id, "10000", function (data) {
-       //     res.json(data);
-      //  })
+        //     res.json(data);
+        //  })
     });
 });
 
 
-function send_email_alert(event_id, invite_id, comment, username, event_data) {
-    
-             console.log("dfasfdsa 55555555")
-             console.log(event_data.event[0])
-    Player.find({event_id: event_id, notice_comments: 'YES'},
+function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username, event_data) {
+    console.log("dfasfdsa 55555555")
+    //console.log(event_data.event[0])
+    Player.find({event_id: event_id, notice_rsvp: 'YES'},
     function (err, players_list) {
         if (err)
             res.send(err)
         async.each(players_list, function (players, callback) {
-             transporter.sendMail({
-             from: 'slatterytom@gmail.com',
-             to: players.email ,
-             subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"]  ,
-             html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
-             text: 'hello world asd!'
-             });
-             transporter.close();
+            if (invite_code == players.invite_code){
+               var email_subject = 'you posted an rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }else{
+               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + ' rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: players.email,
+                //subject: 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"],
+                subject: email_subject,
+                //html: username + ' rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length,
+                html: email_html,
+                text: 'hello world asd!'
+            });
+            transporter.close();
+        });
+    });
+}
 
+function send_email_alert_comment(event_id, invite_code, ustatus, comment, username, event_data) {
+    Player.find({event_id: event_id, notice_comments: 'YES', notice_comments: 'NO'},
+    function (err, players_list) {
+        if (err)
+            res.send(err)
+        async.each(players_list, function (players, callback) {
+            if (invite_code == players.invite_code){
+               var email_subject =  'you posted comment posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
+               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }else{
+               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: players.email,
+                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
+                subject: email_subject,
+                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
+                html: email_html,
+                text: 'hello world asd!'
+            });
+            transporter.close();
+        });
+    });
+
+    Player.find({event_id: event_id, notice_comments: 'YES', notice_comments: 'YES'},
+    function (err, players_list) {
+        if (err)
+            res.send(err)
+        async.each(players_list, function (players, callback) {
+            if (invite_code == players.invite_code){
+               var email_subject =  'you posted comment and rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]
+               var email_html = 'you posted a comment as' + ' rsvp ' + ustatus + username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }else{
+               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + ' posted a new comment ' + ' rsvp ' + ustatus + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            }
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: players.email,
+                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
+                subject: email_subject,
+                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
+                html: email_html,
+                text: 'hello world asd!'
+            });
+            transporter.close();
         });
     });
 }
