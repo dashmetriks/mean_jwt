@@ -444,12 +444,12 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             res.send(err)
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
-               var email_subject =  'you rsvpd posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you rsvpd  as' +  username + + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_subject =  'you rsvpd ' + ustatus +  ' for event ' + event_data.event[0]["event_title"]
+               var email_html = 'you rsvpd ' + ustatus + ' as ' +  username  + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
  
             }else{
-               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_subject =  username + " rsvp'd " + ustatus +  ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + " rsvp'd " + ustatus + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
  
             }
             transporter.sendMail({
@@ -470,12 +470,12 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             res.send(err)
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
-               var email_subject =  'you posted comment posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_subject =  'you posted comment posted as for event ' + event_data.event[0]["event_title"]
+               var email_html = 'you posted a comment as ' +  username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
  
             }else{
                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html= username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
  
             }
             transporter.sendMail({
@@ -497,12 +497,12 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             res.send(err)
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
-               var email_subject =  'you posted comment and rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as' + ' rsvp ' + ustatus + username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_subject =  'You posted a comment and rsvpd for event ' + event_data.event[0]["event_title"]
+               var email_html = 'You rsvpd <b>' + ustatus + ' </b> as username <b>' +  username + '</b><br><br><b>Comment -</b> "'  + comment + '"<br><br>For event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br><br>' + 'Number of Yeses-' + event_data.players_yes.length + '<br>' + 'Number of Nos-' + event_data.players_no.length
  
             }else{
-               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new comment ' + ' rsvp ' + ustatus + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_subject = 'New comment and rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + ' rsvpd ' + ustatus + ' and posted a new comment-"' +  comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
  
             }
             transporter.sendMail({
