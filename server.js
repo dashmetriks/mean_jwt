@@ -438,14 +438,40 @@ function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username
 }
 
 function send_email_alert_comment(event_id, invite_code, ustatus, comment, username, event_data) {
-    Player.find({event_id: event_id, notice_comments: 'YES', notice_comments: 'NO'},
+    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'NO'}, {notice_rsvp: 'YES'}]},
+    function (err, players_list) {
+        if (err)
+            res.send(err)
+        async.each(players_list, function (players, callback) {
+            if (invite_code == players.invite_code){
+               var email_subject =  'you rsvpd posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
+               var email_html = 'you rsvpd  as' +  username + + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
+            }else{
+               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
+               var email_html= username + ' posted a new rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+ 
+            }
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: players.email,
+                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
+                subject: email_subject,
+                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
+                html: email_html,
+                text: 'hello world asd!'
+            });
+            transporter.close();
+        });
+    });
+    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'NO'}]},
     function (err, players_list) {
         if (err)
             res.send(err)
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code){
                var email_subject =  'you posted comment posted as ' + username + ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+               var email_html = 'you posted a comment as' +  username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
  
             }else{
                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
@@ -465,7 +491,7 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
         });
     });
 
-    Player.find({event_id: event_id, notice_comments: 'YES', notice_comments: 'YES'},
+    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'YES'}]},
     function (err, players_list) {
         if (err)
             res.send(err)
