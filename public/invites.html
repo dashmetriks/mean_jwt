@@ -1,15 +1,21 @@
 <body>
-    <div class="container" >
+    <div class="container" ng-init="getEventInvite()">
         <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
-            <h1>I'm a Todo-woot <span class="label label-info">{{ todos2.length }}</span></h1>
+            <h2>Event: {{ event_title }}</h2>
+            <h3>Date: {{event_date}} </h3>
+            <h3>Host: {{event_creator_username}} </h3>
         </div>
         <!-- TODO LIST -->
-        <div id="todo-list" class="row" ng-controller="mainController" ng-init="getEventInvite()">
-
+        <div id="todo-list" class="row" ng-controller="mainController" >
+                   <div class="col-xs-6">
                         <div ng-if="isMember">
 				<label> you replied {{invited_reply}}  </label>                               
+                            <form class="well" name="myForm">
+                                    <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.comments">
+                                    <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
                            <input  class="btn btn-primary btn-lg" type="button" value="Change Reply" ng-click="invite_change()">
+                            </form>
                         </div>
                         <div ng-if="newInvite" class="button-bar" >
                           <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
@@ -27,7 +33,6 @@
 <span ng-show="myForm.username.$error.required">Username is required.</span>
 </span>
 
-                                <!--    <input type="text" name="username" value="widget.title"  ng-model="formData1.text"/> -->
 <br/>
   <label>Receive rsvp updates:
     <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="YES" ng-false-value="NO">
@@ -43,14 +48,15 @@
                                 </div>
                             </form>
                         </div>
+                        </div>
+<div class="col-xs-6">
+<!--
             <div class="col-sm-4 col-sm-offset-4">
-                <!-- LOOP OVER THE TODOS IN $scope.todos -->
-                <!--                <div class="checkbox" ng-repeat="event in events">  --->
                 <label>
-                    <h3>{{ event_title }} created by {{event_creator_username}} </h3>
-                    <h5>logged in as  $route.current.params  </h5>
                     <h3><a href="/invited_list/{{ event_id }}" ng-show="isEventCreator"> Invites </a> </h3>
                 </label>
+-->
+                    <label>RSVPs </label>
                 <div ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.username}} 
                     <span ng-if="invite_code == user.invite_code"> You </span>
@@ -90,6 +96,7 @@
                 <button type="submit" class="btn btn-primary btn-lg" ng-click="addInvite()">Invite</button>
             </form>
         </div>
+    </div>
     </div>
     </div>
     </div>
