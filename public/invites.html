@@ -1,14 +1,14 @@
 <body>
     <div class="container" ng-init="getEventInvite()">
         <!-- HEADER AND TODO COUNT -->
-        <div class="jumbotron text-center">
-            <h2>Event: {{ event_title}}</h2>
+        <div id="todo-list" class="row" ng-controller="mainController" >
+            <div class="col-xs-4">
+        <div class="jumbotron text-left">
+            <h3>{{ event_title}}</h3>
             <h3>Date: {{event_date}} </h3>
             <h3>Host: {{event_creator_username}} </h3>
         </div>
         <!-- TODO LIST -->
-        <div id="todo-list" class="row" ng-controller="mainController" >
-            <div class="col-xs-4">
                 <div ng-if="isMember">
                     <label> you replied {{invited_reply}}  </label>                               
                     <form class="well" name="myForm">
