@@ -328,27 +328,22 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                 function (err, result) {
                     if (err)
                         throw err;
-                    //       res.json(result);
                 });
- console.log("boooooooooooooooody")
- console.log(req.body.comment.length)
                 if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
                         username: req.body.username,
-                        //        user_id: req.decoded._id,
                         text: req.body.comment
                     },
                     function (err, result) {
                         if (err)
                             throw err;
                     });
-                    //            send_email_alert(req.params.event_id, req.params.invite_code, req.body.comment, req.body.username)
                     get_event_data(req.params.event_id, "10000", function (data) {
                         send_email_alert_comment(req.params.event_id, req.params.invite_code, req.params.ustatus, req.body.comment, req.body.username, data)
                         res.json(data);
                     })
-                }else{
+                } else {
                     get_event_data(req.params.event_id, "10000", function (data) {
                         send_email_alert_rsvp(req.params.event_id, req.params.invite_code, req.params.ustatus, "", req.body.username, data)
                         res.json(data);
@@ -357,33 +352,29 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                 }
             });
         } else { // player == null
-            update_invite_status(players["invite_id"], req.params.ustatus);
-            Player.update({
-                event_id: req.params.event_id,
-                invite_code: req.params.invite_code
-            }, {
-                $set: {
-                    //    username: req.body.username,
-                    //   in_or_out: req.params.ustatus
-                    notice_rsvp: req.body.rsvp,
-                    notice_comments: req.body.comment_alert,
-                    username: req.body.username,
-                    email: req.body.email,
-                    in_or_out: req.params.ustatus
-                }
-            },
-            function (err, result) {
-                if (err)
-                    throw err;
-                //        res.json(result);
-            });
- console.log("boooooooooooooooody")
- console.log(req.body.comment.length)
+            if (req.params.ustatus != 'none') {
+                update_invite_status(players["invite_id"], req.params.ustatus);
+                Player.update({
+                    event_id: req.params.event_id,
+                    invite_code: req.params.invite_code
+                }, {
+                    $set: {
+                        notice_rsvp: req.body.rsvp,
+                        notice_comments: req.body.comment_alert,
+                        username: req.body.username,
+                        email: req.body.email,
+                        in_or_out: req.params.ustatus
+                    }
+                },
+                function (err, result) {
+                    if (err)
+                        throw err;
+                });
+            }  // req.params.ustatus != 'none'
             if (req.body.comment != "undefined") {
                 Comments.create({
                     event_id: req.params.event_id,
                     username: req.body.username,
-                    //        user_id: req.decoded._id,
                     text: req.body.comment
                 },
                 function (err, result) {
@@ -394,41 +385,35 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     send_email_alert_comment(req.params.event_id, req.params.invite_code, req.params.ustatus, req.body.comment, req.body.username, data)
                     res.json(data);
                 })
-            }else{
+            } else { // req.body.comment != "undefined"
                 get_event_data(req.params.event_id, "10000", function (data) {
                     send_email_alert_rsvp(req.params.event_id, req.params.invite_code, req.params.ustatus, "", req.body.username, data)
                     res.json(data);
                 })
             }
-        }
-        //get_event_data(req.params.event_id, "10000", function (data) {
-        //     res.json(data);
-        //  })
+        } // else   players = null
     });
 });
 
 
 function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username, event_data) {
     console.log("dfasfdsa 55555555")
-    //console.log(event_data.event[0])
     Player.find({event_id: event_id, notice_rsvp: 'YES'},
     function (err, players_list) {
         if (err)
             res.send(err)
         async.each(players_list, function (players, callback) {
-            if (invite_code == players.invite_code){
-               var email_subject = 'you posted an rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
-            }else{
-               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length
+            if (invite_code == players.invite_code) {
+                var email_subject = 'you posted an rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]
+                var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
+            } else {
+                var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
+                var email_html = username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
                 to: players.email,
-                //subject: 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"],
                 subject: email_subject,
-                //html: username + ' rsvp ' + ustatus + '<br>' + 'number of yeses-' + event_data.players_yes.length,
                 html: email_html,
                 text: 'hello world asd!'
             });
@@ -438,85 +423,111 @@ function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username
 }
 
 function send_email_alert_comment(event_id, invite_code, ustatus, comment, username, event_data) {
-    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'NO'}, {notice_rsvp: 'YES'}]},
-    function (err, players_list) {
-        if (err)
-            res.send(err)
-        async.each(players_list, function (players, callback) {
-            if (invite_code == players.invite_code){
-               var email_subject =  'you rsvpd ' + ustatus +  ' for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you rsvpd ' + ustatus + ' as ' +  username  + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
- 
-            }else{
-               var email_subject =  username + " rsvp'd " + ustatus +  ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + " rsvp'd " + ustatus + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
- 
-            }
-            transporter.sendMail({
-                from: 'slatterytom@gmail.com',
-                to: players.email,
-                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
-                subject: email_subject,
-                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
-                html: email_html,
-                text: 'hello world asd!'
-            });
-            transporter.close();
-        });
-    });
-    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'NO'}]},
-    function (err, players_list) {
-        if (err)
-            res.send(err)
-        async.each(players_list, function (players, callback) {
-            if (invite_code == players.invite_code){
-               var email_subject =  'you posted comment posted as for event ' + event_data.event[0]["event_title"]
-               var email_html = 'you posted a comment as ' +  username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
- 
-            }else{
-               var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
- 
-            }
-            transporter.sendMail({
-                from: 'slatterytom@gmail.com',
-                to: players.email,
-                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
-                subject: email_subject,
-                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
-                html: email_html,
-                text: 'hello world asd!'
-            });
-            transporter.close();
-        });
-    });
 
-    Player.find({ $and: [{ event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'YES'}]},
-    function (err, players_list) {
-        if (err)
-            res.send(err)
-        async.each(players_list, function (players, callback) {
-            if (invite_code == players.invite_code){
-               var email_subject =  'You posted a comment and rsvpd for event ' + event_data.event[0]["event_title"]
-               var email_html = 'You rsvpd <b>' + ustatus + ' </b> as username <b>' +  username + '</b><br><br><b>Comment -</b> "'  + comment + '"<br><br>For event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br><br>' + 'Number of Yeses-' + event_data.players_yes.length + '<br>' + 'Number of Nos-' + event_data.players_no.length
- 
-            }else{
-               var email_subject = 'New comment and rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]   
-               var email_html= username + ' rsvpd ' + ustatus + ' and posted a new comment-"' +  comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] +  '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
- 
-            }
-            transporter.sendMail({
-                from: 'slatterytom@gmail.com',
-                to: players.email,
-                //subject: 'New comment posted by ' + username + ' for event id ' + event_data.event[0]["event_title"],
-                subject: email_subject,
-                //html: username + ' posted a new comment ' + comment + '<br>' + 'number of yeses-' + event_data.players_yes.length,
-                html: email_html,
-                text: 'hello world asd!'
+    if (ustatus == 'none') {
+        Player.find({event_id: event_id, notice_comments: 'YES'},
+        function (err, players_list) {
+            if (err)
+                res.send(err)
+            async.each(players_list, function (players, callback) {
+                if (invite_code == players.invite_code) {
+                    var email_subject = 'you posted comment posted as for event ' + event_data.event[0]["event_title"]
+                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                } else {
+                    var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
+                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                }
+                transporter.sendMail({
+                    from: 'slatterytom@gmail.com',
+                    to: players.email,
+                    subject: email_subject,
+                    html: email_html,
+                    text: 'hello world asd!'
+                });
+                transporter.close();
             });
-            transporter.close();
         });
-    });
+
+
+    } else {
+
+        Player.find({$and: [{event_id: event_id}, {notice_comments: 'NO'}, {notice_rsvp: 'YES'}]},
+        function (err, players_list) {
+            if (err)
+                res.send(err)
+            async.each(players_list, function (players, callback) {
+                if (invite_code == players.invite_code) {
+                    var email_subject = 'you rsvpd ' + ustatus + ' for event ' + event_data.event[0]["event_title"]
+                    var email_html = 'you rsvpd ' + ustatus + ' as ' + username + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                } else {
+                    var email_subject = username + " rsvp'd " + ustatus + ' for event ' + event_data.event[0]["event_title"]
+                    var email_html = username + " rsvp'd " + ustatus + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                }
+                transporter.sendMail({
+                    from: 'slatterytom@gmail.com',
+                    to: players.email,
+                    subject: email_subject,
+                    html: email_html,
+                    text: 'hello world asd!'
+                });
+                transporter.close();
+            });
+        });
+
+        Player.find({$and: [{event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'NO'}]},
+        function (err, players_list) {
+            if (err)
+                res.send(err)
+            async.each(players_list, function (players, callback) {
+                if (invite_code == players.invite_code) {
+                    var email_subject = 'you posted comment posted as for event ' + event_data.event[0]["event_title"]
+                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                } else {
+                    var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
+                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                }
+                transporter.sendMail({
+                    from: 'slatterytom@gmail.com',
+                    to: players.email,
+                    subject: email_subject,
+                    html: email_html,
+                    text: 'hello world asd!'
+                });
+                transporter.close();
+            });
+        });
+
+        Player.find({$and: [{event_id: event_id}, {notice_comments: 'YES'}, {notice_rsvp: 'YES'}]},
+        function (err, players_list) {
+            if (err)
+                res.send(err)
+            async.each(players_list, function (players, callback) {
+                if (invite_code == players.invite_code) {
+                    var email_subject = 'You posted a comment and rsvpd for event ' + event_data.event[0]["event_title"]
+                    var email_html = 'You rsvpd <b>' + ustatus + ' </b> as username <b>' + username + '</b><br><br><b>Comment -</b> "' + comment + '"<br><br>For event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br><br>' + 'Number of Yeses-' + event_data.players_yes.length + '<br>' + 'Number of Nos-' + event_data.players_no.length
+
+                } else {
+                    var email_subject = 'New comment and rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
+                    var email_html = username + ' rsvpd ' + ustatus + ' and posted a new comment-"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+
+                }
+                transporter.sendMail({
+                    from: 'slatterytom@gmail.com',
+                    to: players.email,
+                    subject: email_subject,
+                    html: email_html,
+                    text: 'hello world asd!'
+                });
+                transporter.close();
+            });
+        });
+    }
 }
 
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
@@ -569,42 +580,42 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
     function (err, events) {
         if (err)
             throw err;
-    Invite.create({
-        event_id: req.params.event_id,
-        inviter: req.decoded.name,
-        invited: req.body.text,
-        invited_email: req.body.email,
-        invited_phone: req.body.phone,
-        invited_type: req.body.type,
-        invite_code: randomValueHex(8),
-        invite_status: "Sent"
-    },
-    function (err, new_invite) {
-console.log(events[0]["event_title"])
-        transporter.sendMail({
-            from: 'slatterytom@gmail.com',
-            to: 'slatterytom@gmail.com',
-            subject: 'You are invited to the event ' + events[0]["event_title"] +  ' at ' + events[0]["event_start"] ,
-            html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + events[0]["event_title"] + '</a>' + ' at ' + events[0]["event_start"] ,
-            text: 'hello world asd!'
-        });
-        transporter.close();
-        if (err)
-            throw err;
-        Invite.find({
-            event_id: req.params.event_id
+        Invite.create({
+            event_id: req.params.event_id,
+            inviter: req.decoded.name,
+            invited: req.body.text,
+            invited_email: req.body.email,
+            invited_phone: req.body.phone,
+            invited_type: req.body.type,
+            invite_code: randomValueHex(8),
+            invite_status: "Sent"
         },
-        null, {
-            sort: {
-                "created_at": -1
-            }
-        },
-        function (err, invites) {
+        function (err, new_invite) {
+            console.log(events[0]["event_title"])
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: 'slatterytom@gmail.com',
+                subject: 'You are invited to the event ' + events[0]["event_title"] + ' at ' + events[0]["event_start"],
+                html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + events[0]["event_title"] + '</a>' + ' at ' + events[0]["event_start"],
+                text: 'hello world asd!'
+            });
+            transporter.close();
             if (err)
-                res.send(err)
-            res.json({'invites': invites}); // return all todos in JSON format
+                throw err;
+            Invite.find({
+                event_id: req.params.event_id
+            },
+            null, {
+                sort: {
+                    "created_at": -1
+                }
+            },
+            function (err, invites) {
+                if (err)
+                    res.send(err)
+                res.json({'invites': invites}); // return all todos in JSON format
+            });
         });
-    });
     });
 });
 apiRoutes.post('/addcomment/:event_id/', function (req, res) {
