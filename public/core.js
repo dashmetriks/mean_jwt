@@ -225,7 +225,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     $scope.invite_change = function () {
       $scope.showAcceptInvite = true;
       $scope.newInvite = true;
-      $scope.ustatus = ustatus
+    //  $scope.ustatus = ustatus
       //$scope.event_id = id
     }
 
@@ -413,6 +413,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 console.log (data)
              //   $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
+                $scope.event_date = data['event'][0].event_start; 
                 $scope.event_creator_username = data['event'][0].event_creator_username; 
                 $scope.event_creator_id = data['event'][0].event_creator;
                 console.log (data['is_member']);
@@ -422,7 +423,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $scope.nos = data['players_no'];
                 $scope.comments = data['comments'];
                 $scope.loggedInUsername = data['logged_in_username']; 
-                $rootScope.isUserLoggedIn = true;
+              //  $rootScope.isUserLoggedIn = true;
                 //if (data['is_member'] == null) {
                 if(data['is_member'].length > 0){  
                   $scope.invited = {username: data['is_member'][0].username, email: data['is_member'][0].email };
@@ -467,7 +468,51 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-  
+                $scope.event_title = data['event'][0].event_title; 
+                $scope.event_date = data['event'][0].event_start; 
+                $scope.event_creator_username = data['event'][0].event_creator_username; 
+                $scope.event_creator_id = data['event'][0].event_creator;
+                console.log (data['is_member']);
+                console.log (data['event'][0].event_creator);
+                $scope.event_id = data['event'][0]._id;
+                $scope.yeses = data['players_yes'];
+                $scope.nos = data['players_no'];
+                $scope.comments = data['comments'];
+                $scope.loggedInUsername = data['logged_in_username']; 
+              //  $rootScope.isUserLoggedIn = true;
+                //if (data['is_member'] == null) {
+                if(data['is_member'].length > 0){  
+                  $scope.invited = {username: data['is_member'][0].username, email: data['is_member'][0].email, invite_code: data['is_member'][0].invite_code };
+                  $scope.set = function(invited_username) {
+                    this.invited.username = invited_username;
+                  }
+                  $scope.set = function(invited_email) {
+                    this.invited.email = invited_email;
+                  }
+                  $scope.set = function(invite_code) {
+                    this.invited.code = invite_code;
+                  }
+                  $scope.checkboxModel = {
+                     rsvp : data['is_member'][0].notice_rsvp ,
+                     comment_alert : data['is_member'][0].notice_comments 
+                  };
+
+                  $scope.invited_reply = data['is_member'][0].in_or_out;
+                  $scope.ustatus = data['is_member'][0].in_or_out;
+                  $rootScope.isMember = true;
+                  $rootScope.newInvite = false;
+                  console.log(" is a member");
+                }else{
+                  console.log("not is a member");
+                  $rootScope.isMember = false;
+                  $rootScope.newInvite = true;
+                }  
+                if ( data['event'][0].event_creator == data['logged_in_userid']){
+                $rootScope.isEventCreator = true;
+                $rootScope.isMember = true;
+                } 
+ /* 
+                console.log (data)
                 $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
                 $scope.event_creator_username = data['event'][0].event_creator_username; 
@@ -491,6 +536,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $rootScope.isEventCreator = true;
                 $rootScope.isMember = true;
                 } 
+*/
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -498,12 +544,19 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
     };
 
     $scope.addEvent = function(id,ustatus) {
+       if (ustatus == 'none'){
+          Comments = $scope.formData.comments
+       }else{
+          Comments = $scope.formData.text
+      }
+          
        
         $http({
                 method: 'POST',
                 url: 'http://localhost:8080/adduserevent2/' + id + '/' + ustatus + '/' + $routeParams.invite_code,
              //   data: 'username=' + $scope.formData1.text + '&comment=' + $scope.formData.text,
-                data: 'username=' + $scope.invited.username + '&comment=' + $scope.formData.text + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
+              //  data: 'username=' + $scope.invited.username + '&comment=' + $scope.formData.text + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
+                data: 'username=' + $scope.invited.username + '&comment=' + Comments + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
    
               //  data: 'username=' + $scope.formData1.text,
                 headers: {
