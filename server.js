@@ -615,7 +615,7 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
                     res.send(err)
                 res.json({'invites': invites}); // return all todos in JSON format
             });
-        });
+        }); //d8d88d
     });
 });
 apiRoutes.post('/addcomment/:event_id/', function (req, res) {
@@ -1065,15 +1065,54 @@ apiRoutes.post('/new_event', function (req, res) {
     }, function (err, event_created) {
         if (err)
             res.send(err);
+        Invite.create({
+            event_id: event_created._id, 
+            inviter: req.decoded.name,
+            invited: req.decoded.name,
+            invited_email: req.decoded.name,
+       //     invited_email: req.body.email,
+        //    invited_phone: req.body.phone,
+       //     invited_type: req.body.type,
+            invite_code: randomValueHex(8),
+            invite_status: "Sent"
+        },
+        function (err, new_invite) {
         Player.create({
             event_id: event_created._id,
             username: req.decoded.name,
+            invite_code: new_invite.invite_code,
             user_id: req.decoded._id,
             in_or_out: 'Yes'
         },
         function (err, result) {
             if (err)
                 throw err;
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: 'slatterytom@gmail.com',
+                subject: 'You created the event ' + event_created.event_title + ' at ' + event_created.event_start,
+                html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_created.event_title + '</a>' + ' at ' + event_created.event_start,
+                text: 'hello world asd!'
+            });
+            transporter.close();
+            if (err)
+                throw err;
+/*
+            Invite.find({
+                event_id: req.params.event_id
+            },
+            null, {
+                sort: {
+                    "created_at": -1
+                }
+            },
+            function (err, invites) {
+                if (err)
+                    res.send(err)
+                res.json({'invites': invites}); // return all todos in JSON format
+            });
+       */
+        }); //d8d88d
         });
         // get and return all the todos after you create another
         Event.find(function (err, events) {
