@@ -19,11 +19,9 @@
                 </div>
                 <div ng-if="newInvite" class="button-bar" >
                     <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
-                    <input ng-class="{'Yes':'btn btn - success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="invite_open('Yes')">
-                    <input ng-class="{'No':'btn
-                                btn - danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="invite_open('No')">
-                    <input ng-class="{'Maybe':'btn
-                                btn - warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open('Maybe')">
+                    <input ng-class="{'Yes':'btn btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="invite_open('Yes')">
+                    <input ng-class="{'No':'btn btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="invite_open('No')">
+                    <input ng-class="{'Maybe':'btn btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open('Maybe')">
                 </div>
                 <div ng-if="showAcceptInvite">
                     <form class="well" name="myForm">
@@ -61,16 +59,17 @@
                 <label>RSVPs </label>
                 <div ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.username}} 
-                    <span ng-if="invite_code == user.invite_code"> You </span>
-                    <span ng-if="event_creator_id == user.user_id"> Host </span>
+                  <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
+                   <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
                 </div>
                 <div ng-repeat="user in nos">
                     {{user.in_or_out}} - {{user.username}} 
-                    <span ng-if="invite_code == user.invite_code"> You </span>
+                  <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
+                   <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
                 </div>
                 <h3>Comments </h3>
                 <div ng-repeat="comment in comments">
-                    {{comment.text}} - {{comment.username}}
+                    "{{comment.text}}" by <b>  {{comment.username}} </b>
                 </div>
             </div>
         </div>
