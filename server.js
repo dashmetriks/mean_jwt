@@ -1074,13 +1074,15 @@ apiRoutes.post('/new_event', function (req, res) {
         //    invited_phone: req.body.phone,
        //     invited_type: req.body.type,
             invite_code: randomValueHex(8),
-            invite_status: "Sent"
+            invite_status: "Yes"
         },
         function (err, new_invite) {
         Player.create({
             event_id: event_created._id,
             username: req.decoded.name,
             invite_code: new_invite.invite_code,
+            notice_rsvp: 'YES', 
+            notice_comments:  'YES',
             user_id: req.decoded._id,
             in_or_out: 'Yes'
         },
