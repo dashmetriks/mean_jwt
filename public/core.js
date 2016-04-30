@@ -16,7 +16,7 @@ var interceptor = function ($q, $location) {
 	responseError: function (rejection) {
 		console.log('Failed with', rejection.status, 'status');
 		if (rejection.status == 403) {
-			$location.url('/login');
+	//		$location.url('/login');
 		}
 
 		return $q.reject(rejection);
@@ -317,6 +317,40 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         });
     }
 
+    $scope.checkLogin = function() {
+        $http({
+            method: 'GET',
+            url: 'http://localhost:8080/api/userget/',
+             headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+        }).success(function(data) {
+            console.log(data['user'][0]['email']);
+            if (data['user'][0]['email']) { 
+              console.log("kkmkmkoooo");
+              $scope.showLoginToInvite = false;
+            } else {
+$scope.showLoginToInvite = true;
+
+            }
+/*
+            if (data.success == true) {
+              $window.sessionStorage.setItem('token', data.token);
+            //  $location.url('/event_list');
+           //   $location.url('/invite/e4d091cc');
+                $window.location.reload();
+            } else {
+              $scope.login_message = data.message    
+            }
+*/
+        })
+        .error(function(data) {
+$scope.showLoginToInvite = true;
+                console.log('Error: ' + data);
+            });
+    }
+
     $scope.login = function() {
         $http({
             method: 'POST',
@@ -339,6 +373,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
         });
     }
 
+
     $scope.getEventList = function() {
         $http({
                 method: 'GET',
@@ -349,9 +384,10 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 }
             }).success(function(data) {
                 $scope.events = data['my_events'];
+                $scope.events_invite = data['event_invites'][0];
                 console.log("get Event Lissssssssst scope");
             $rootScope.isUserLoggedIn = true;
-                console.log (data['my_events']);
+                console.log (data['event_invites'][0]);
                 
             })
             .error(function(data) {
@@ -369,6 +405,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 }
             }).success(function(data) {
                 
+                $scope.invite_code = data['invite_creator']['invite_code']
                 $scope.event_id = $routeParams.event_id;
                 $scope.invites = data['invites']; 
                 if ( data['event'][0].event_creator == data['logged_in_userid']){
@@ -421,6 +458,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                 $scope.event_id = data['event'][0]._id;
                 $scope.yeses = data['players_yes'];
                 $scope.nos = data['players_no'];
+                $scope.players_list = data['players_list'];
                 $scope.comments = data['comments'];
                 $scope.loggedInUsername = data['logged_in_username']; 
               //  $rootScope.isUserLoggedIn = true;
@@ -449,6 +487,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                   $rootScope.newInvite = true;
                 }  
                 if ( data['event'][0].event_creator == data['logged_in_userid']){
+                  console.log(" is a dkdkkasdkfsdakfasdkfkaskdfaksfkasdk");
                 $rootScope.isEventCreator = true;
                 $rootScope.isMember = true;
                 } 

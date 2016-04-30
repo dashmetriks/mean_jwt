@@ -3,12 +3,13 @@
         <!-- HEADER AND TODO COUNT -->
         <div id="todo-list" class="row" ng-controller="mainController" >
             <div class="col-xs-4">
-        <div class="jumbotron text-left">
-            <h3>{{ event_title}}</h3>
-            <h3>Date: {{event_date}} </h3>
-            <h3>Host: {{event_creator_username}} </h3>
-        </div>
-        <!-- TODO LIST -->
+                <div class="jumbotron text-left">
+                    <h3>{{ event_title}}</h3>
+                    <h3>Date: {{event_date}} </h3>
+                    <h3>Host: {{event_creator_username}} </h3>
+                </div>
+                <!-- TODO LIST -->
+      <input  type="button" value="Logout" ng-click="logOut()">
                 <div ng-if="isMember">
                     <label> you replied {{invited_reply}}  </label>                               
                     <form class="well" name="myForm">
@@ -50,22 +51,23 @@
                 </div>
             </div>
             <div class="col-xs-8">
-                <!--
-                            <div class="col-sm-4 col-sm-offset-4">
-                                <label>
-                                    <h3><a href="/invited_list/{{ event_id }}" ng-show="isEventCreator"> Invites </a> </h3>
-                                </label>
-                -->
+                <label>
+                    <div ng-repeat="user in players_list">
+                        <span ng-if="invite_code == user.invite_code">
+                            <h3><a href="/invited_list/{{ event_id}}" > Invites </a> </h3>
+                        </span>
+                    </div>
+                </label>
                 <label>RSVPs </label>
                 <div ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.username}} 
-                  <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
-                   <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
+                    <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
+                    <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
                 </div>
                 <div ng-repeat="user in nos">
                     {{user.in_or_out}} - {{user.username}} 
-                  <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
-                   <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
+                    <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
+                    <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
                 </div>
                 <h3>Comments </h3>
                 <div ng-repeat="comment in comments">

@@ -64,6 +64,7 @@ var Person = mongoose.model('Person', Person);
 
 var Invite = new Schema({
     event_id: String,
+    event_creator: String,
     inviter: String,
     invited: String,
     invited_email: String,
@@ -840,28 +841,26 @@ apiRoutes.get('/invitedetail/:invite_id', function (req, res) {
 });
 
 apiRoutes.get('/invited/:event_id', function (req, res) {
-    Invite.find({
-        event_id: req.params.event_id
-    },
+    Invite.find({ event_id: req.params.event_id },
     null, {
         sort: {
             "created_at": -1
         }
     },
     function (err, invites) {
-        if (err)
-            res.send(err)
-        Event.find({
-            _id: req.params.event_id
-        },
+        if (err) res.send(err)
+        Event.find({ _id: req.params.event_id },
         function (err, events) {
-            if (err)
-                res.send(err)
-            //  res.json(invites); 
+            if (err) res.send(err)
+        Invite.findOne({ event_id: req.params.event_id, event_creator : 'Yes' },
+        function (err, invite_creator) {
+            if (err) res.send(err)
             res.json({
                 'logged_in_userid': req.decoded._id,
+                'invite_creator':  invite_creator,
                 'event': events,
                 'invites': invites
+            });
             });
         });
     });
@@ -967,7 +966,8 @@ apiRoutes.post('/usersave', function (req, res) {
     }, {
         $set: {
             fname: req.body.fname,
-            lname: req.body.lname
+            lname: req.body.lname,
+            email: req.body.email
         }
     },
     function (err, result) {
@@ -982,6 +982,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
     var player_no_count = []
     var pushY = {};
     var pushN = {};
+    var pushList = {};
     var invites_cnt = {};
     Player.find({user_id: req.decoded._id},
     null, {
@@ -1019,16 +1020,23 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                     function (err, invite_count) {
                         if (err)
                             res.send(err)
+                Player.find({event_id: events.event_id},
+                function (err, players_list) {
+                    if (err)
+                        res.send(err)
+                        pushList[events.event_id] = players_list
                         pushN[events.event_id] = players_no
                         pushY[events.event_id] = players_yes
                         invites_cnt[events.event_id] = invite_count
                         callback();
                     });
                 });
+                });
             });
         }, function (err) {
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
+                'event_invites': [pushList],
                 'event_no': [pushN],
                 'invites': [invites_cnt]
             });
@@ -1055,6 +1063,8 @@ apiRoutes.get('/my_event_list', function (req, res) {
 // create todo and send back all todos after creation
 apiRoutes.post('/new_event', function (req, res) {
 
+console.log("fasdfadsfdsf")
+console.log(req.decoded)
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
@@ -1069,11 +1079,12 @@ apiRoutes.post('/new_event', function (req, res) {
             event_id: event_created._id, 
             inviter: req.decoded.name,
             invited: req.decoded.name,
-            invited_email: req.decoded.name,
+            invited_email: req.decoded.email,
        //     invited_email: req.body.email,
         //    invited_phone: req.body.phone,
        //     invited_type: req.body.type,
             invite_code: randomValueHex(8),
+            event_creator: "Yes",
             invite_status: "Yes"
         },
         function (err, new_invite) {
@@ -1081,6 +1092,7 @@ apiRoutes.post('/new_event', function (req, res) {
             event_id: event_created._id,
             username: req.decoded.name,
             invite_code: new_invite.invite_code,
+            email: req.decoded.email,
             notice_rsvp: 'YES', 
             notice_comments:  'YES',
             user_id: req.decoded._id,
