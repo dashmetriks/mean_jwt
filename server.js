@@ -90,7 +90,7 @@ var Player = new Schema({
     invite_code: String,
     username: String,
     user_id: String,
-    email: String,
+    displayname: String,
     email_notice: Boolean,
     phone_notice: Boolean,
     notice_rsvp: String,
@@ -187,7 +187,7 @@ app.get('/setup', function (req, res) {
 
     // create a sample user
     var nick = new User({
-        name: 'woot8',
+        username: 'slatterytom@gmail.com',
         password: '77jump'
     });
 
@@ -205,7 +205,7 @@ app.get('/setup', function (req, res) {
 app.post('/register', function (req, res) {
     // find the user
     User.findOne({
-        name: req.body.name
+        username: req.body.name
     }, function (err, user) {
 
         if (err)
@@ -213,7 +213,7 @@ app.post('/register', function (req, res) {
 
         if (!user) {
             var newuser = new User({
-                name: req.body.name,
+                username: req.body.name,
                 password: req.body.password
             });
 
@@ -243,7 +243,7 @@ app.post('/authenticate', function (req, res) {
 
     // find the user
     User.findOne({
-        name: req.body.name
+        username: req.body.name
     }, function (err, user) {
 
         if (err)
@@ -301,6 +301,7 @@ app.get('/adduser/:username', function (req, res) {
 });
 
 app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
+                    var new_user_id 
     console.log(req.body)
     Player.findOne({
         event_id: req.params.event_id,
@@ -317,18 +318,37 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     res.send(err)
 
                 update_invite_status(invites["_id"], req.params.ustatus);
+              //  if (req.body.create_account == 'YES') {
+                    User.create({       
+        		username: req.body.username, 
+                        displayname: req.body.displayname,
+        		password: '77jump'
+                },
+                function (err, usernew) {
+                    if (err) throw err;
+                     new_user_id = usernew._id
+                  console.log("asdfsadfdaf  sadfdasfdas  ")
+                  console.log( new_user_id)
+  
+ 
+             //   });
+             //   } 
+
+
                 Player.create({
                     event_id: req.params.event_id,
                     invite_code: req.params.invite_code,
                     notice_rsvp: req.body.rsvp,
+                    user_id: usernew._id,
                     notice_comments: req.body.comment_alert,
                     username: req.body.username,
-                    email: req.body.email,
+                    displayname: req.body.displayname,
                     in_or_out: req.params.ustatus
                 },
                 function (err, result) {
                     if (err)
                         throw err;
+                });
                 });
                 if (req.body.comment != "undefined") {
                     Comments.create({
@@ -363,7 +383,7 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                         notice_rsvp: req.body.rsvp,
                         notice_comments: req.body.comment_alert,
                         username: req.body.username,
-                        email: req.body.email,
+                        displayname: req.body.displayname,
                         in_or_out: req.params.ustatus
                     }
                 },
@@ -409,7 +429,7 @@ function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username
                 var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
             } else {
                 var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
-                var email_html = username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
+                var email_html = username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
@@ -965,9 +985,8 @@ apiRoutes.post('/usersave', function (req, res) {
         _id: req.decoded._id
     }, {
         $set: {
-            fname: req.body.fname,
-            lname: req.body.lname,
-            email: req.body.email
+            username: req.body.username,
+            displayname: req.body.displayname
         }
     },
     function (err, result) {
@@ -1090,9 +1109,9 @@ console.log(req.decoded)
         function (err, new_invite) {
         Player.create({
             event_id: event_created._id,
-            username: req.decoded.name,
+            displayname: req.decoded.displayname,
             invite_code: new_invite.invite_code,
-            email: req.decoded.email,
+            username: req.decoded.username,
             notice_rsvp: 'YES', 
             notice_comments:  'YES',
             user_id: req.decoded._id,

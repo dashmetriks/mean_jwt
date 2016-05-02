@@ -255,12 +255,15 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                  // if ($window.sessionStorage.getItem('token').length > 5) {   
              //       $scope.showAcceptInvite = false;
                   //  $scope.invited_name = data.invited;
-                  $scope.invited =  {username: data.invited, email: data.invited_email }
+
+
+
+                  $scope.invited =  {username: data.invited_email, displayname: data.invited }
                   $scope.set = function(invited_username) {
                     this.invited.username = invited_username;
                   }
                   $scope.set = function(invited_email) {
-                    this.invited.email = invited_email;
+                    this.invited.displayname = invited_displayname;
                   }
                    $scope.checkboxModel = {
                      rsvp : 'NO',
@@ -464,12 +467,12 @@ $scope.showLoginToInvite = true;
               //  $rootScope.isUserLoggedIn = true;
                 //if (data['is_member'] == null) {
                 if(data['is_member'].length > 0){  
-                  $scope.invited = {username: data['is_member'][0].username, email: data['is_member'][0].email };
+                  $scope.invited = {username: data['is_member'][0].username, displayname: data['is_member'][0].displayname };
                   $scope.set = function(invited_username) {
                     this.invited.username = invited_username;
                   }
-                  $scope.set = function(invited_email) {
-                    this.invited.email = invited_email;
+                  $scope.set = function(invited_displayname) {
+                    this.invited.displayname = invited_displayname;
                   }
                   $scope.checkboxModel = {
                      rsvp : data['is_member'][0].notice_rsvp ,
@@ -595,7 +598,7 @@ $scope.showLoginToInvite = true;
                 url: 'http://localhost:8080/adduserevent2/' + id + '/' + ustatus + '/' + $routeParams.invite_code,
              //   data: 'username=' + $scope.formData1.text + '&comment=' + $scope.formData.text,
               //  data: 'username=' + $scope.invited.username + '&comment=' + $scope.formData.text + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
-                data: 'username=' + $scope.invited.username + '&comment=' + Comments + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
+                data: 'username=' + $scope.invited.username + '&comment=' + Comments + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&displayname=' + $scope.invited.displayname  + '&create_account=' + $scope.checkboxModel.create_account,
    
               //  data: 'username=' + $scope.formData1.text,
                 headers: {
