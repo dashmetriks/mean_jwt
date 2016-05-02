@@ -327,9 +327,14 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                 function (err, usernew) {
                     if (err) throw err;
                      new_user_id = usernew._id
-                  console.log("asdfsadfdaf  sadfdasfdas  ")
-                  console.log( new_user_id)
   
+            transporter.sendMail({
+                from: 'slatterytom@gmail.com',
+                to: 'slatterytom@gmail.com',
+                subject: req.body.username + '- click here to complete reg' ,
+                html: 'Login here  <a href="http://localhost:8080/login/"> login </a> ' +  req.body.username ,
+            });
+            transporter.close();
  
              //   });
              //   } 
@@ -998,6 +1003,7 @@ apiRoutes.post('/usersave', function (req, res) {
 apiRoutes.get('/my_event_list2', function (req, res) {
     var player_data = []
     var player_data2 = []
+    var player_data3 = []
     var player_no_count = []
     var pushY = {};
     var pushN = {};
@@ -1022,10 +1028,10 @@ apiRoutes.get('/my_event_list2', function (req, res) {
          */
         async.each(records, function (events, callback) {
             Event.findOne({_id: events.event_id},
-            function (err, events) {
+            function (err, events2) {
                 if (err)
                     res.send(err)
-                player_data.push(events);
+                player_data.push(events2);
             });
             Player.count({event_id: events.event_id, in_or_out: 'No'},
             function (err, players_no) {
@@ -1039,10 +1045,11 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                     function (err, invite_count) {
                         if (err)
                             res.send(err)
-                Player.find({event_id: events.event_id},
+    //            Player.find({event_id: events.event_id},
+    Player.find({user_id: req.decoded._id, event_id: events.event_id},
                 function (err, players_list) {
-                    if (err)
-                        res.send(err)
+                    if (err) res.send(err)
+               // player_data3.push(players_list);
                         pushList[events.event_id] = players_list
                         pushN[events.event_id] = players_no
                         pushY[events.event_id] = players_yes
@@ -1056,6 +1063,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_invites': [pushList],
+            //  'event_invites': player_data3,
                 'event_no': [pushN],
                 'invites': [invites_cnt]
             });
