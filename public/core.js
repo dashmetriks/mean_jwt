@@ -329,8 +329,8 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
         }).success(function(data) {
-            console.log(data['user'][0]['email']);
-            if (data['user'][0]['email']) { 
+            console.log(data['user'][0]['username']);
+            if (data['user'][0]['username']) { 
               console.log("kkmkmkoooo");
               $scope.showLoginToInvite = false;
             } else {
@@ -454,7 +454,7 @@ $scope.showLoginToInvite = true;
              //   $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
                 $scope.event_date = data['event'][0].event_start; 
-                $scope.event_creator_username = data['event'][0].event_creator_username; 
+                $scope.event_creator_displayname = data['event'][0].event_creator_displayname; 
                 $scope.event_creator_id = data['event'][0].event_creator;
                 console.log (data['is_member']);
                 console.log (data['event'][0].event_creator);
@@ -510,9 +510,10 @@ $scope.showLoginToInvite = true;
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
+                console.log (data['event'][0].event_creator_displayname);
                 $scope.event_title = data['event'][0].event_title; 
                 $scope.event_date = data['event'][0].event_start; 
-                $scope.event_creator_username = data['event'][0].event_creator_username; 
+                $scope.event_creator_displayname = data['event'][0].event_creator_displayname; 
                 $scope.event_creator_id = data['event'][0].event_creator;
                 console.log (data['is_member']);
                 console.log (data['event'][0].event_creator);

@@ -134,7 +134,7 @@ var EventSchema = new Schema({
         type: String,
         default: "0"
     },
-    event_creator_username: String,
+    event_creator_displayname: String,
     event_start: String,
     event_end: String,
     created_at: {
@@ -1123,16 +1123,16 @@ apiRoutes.post('/new_event', function (req, res) {
         event_title: req.body.text,
         event_start: req.body.event_start,
         event_creator: req.decoded._id,
-        event_creator_username: req.decoded.name
+        event_creator_displayname: req.decoded.displayname
 
     }, function (err, event_created) {
         if (err)
             res.send(err);
         Invite.create({
             event_id: event_created._id,
-            inviter: req.decoded.name,
-            invited: req.decoded.name,
-            invited_email: req.decoded.email,
+            inviter: req.decoded.username,
+            invited: req.decoded.displayname,
+            invited_email: req.decoded.username,
             //     invited_email: req.body.email,
             //    invited_phone: req.body.phone,
             //     invited_type: req.body.type,
