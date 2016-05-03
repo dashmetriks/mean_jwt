@@ -301,7 +301,7 @@ app.get('/adduser/:username', function (req, res) {
 });
 
 app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
-                    var new_user_id 
+    var new_user_id
     console.log(req.body)
     Player.findOne({
         event_id: req.params.event_id,
@@ -318,43 +318,65 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     res.send(err)
 
                 update_invite_status(invites["_id"], req.params.ustatus);
-              //  if (req.body.create_account == 'YES') {
-                    User.create({       
-        		username: req.body.username, 
-                        displayname: req.body.displayname,
-        		password: '77jump'
-                },
-                function (err, usernew) {
-                    if (err) throw err;
-                     new_user_id = usernew._id
-  
-            transporter.sendMail({
-                from: 'slatterytom@gmail.com',
-                to: 'slatterytom@gmail.com',
-                subject: req.body.username + '- click here to complete reg' ,
-                html: 'Login here  <a href="http://localhost:8080/login/"> login </a> ' +  req.body.username ,
-            });
-            transporter.close();
- 
-             //   });
-             //   } 
-
-
-                Player.create({
-                    event_id: req.params.event_id,
-                    invite_code: req.params.invite_code,
-                    notice_rsvp: req.body.rsvp,
-                    user_id: usernew._id,
-                    notice_comments: req.body.comment_alert,
-                    username: req.body.username,
-                    displayname: req.body.displayname,
-                    in_or_out: req.params.ustatus
-                },
-                function (err, result) {
+                //  if (req.body.create_account == 'YES') {
+                User.findOne({
+                    username: req.body.username
+                }, function (err, user) {
                     if (err)
                         throw err;
+                    if (!user) {
+                        User.create({
+                            username: req.body.username,
+                            displayname: req.body.displayname,
+                            password: '77jump'
+                        },
+                        function (err, usernew) {
+                            if (err)
+                                throw err;
+                            new_user_id = usernew._id
+
+                            transporter.sendMail({
+                                from: 'slatterytom@gmail.com',
+                                to: 'slatterytom@gmail.com',
+                                subject: req.body.username + '- click here to complete reg',
+                                html: 'Login here  <a href="http://localhost:8080/login/"> login </a> ' + req.body.username,
+                            });
+                            transporter.close();
+
+
+                            Player.create({
+                                event_id: req.params.event_id,
+                                invite_code: req.params.invite_code,
+                                notice_rsvp: req.body.rsvp,
+                                user_id: usernew._id,
+                                notice_comments: req.body.comment_alert,
+                                username: req.body.username,
+                                displayname: req.body.displayname,
+                                in_or_out: req.params.ustatus
+                            },
+                            function (err, result) {
+                                if (err)
+                                    throw err;
+                            });
+                        });
+                    } else { // !user
+                        Player.create({
+                            event_id: req.params.event_id,
+                            invite_code: req.params.invite_code,
+                            notice_rsvp: req.body.rsvp,
+                            user_id: user._id,
+                            notice_comments: req.body.comment_alert,
+                            username: req.body.username,
+                            displayname: req.body.displayname,
+                            in_or_out: req.params.ustatus
+                        },
+                        function (err, result) {
+                            if (err)
+                                throw err;
+                        });
+                    }
                 });
-                });
+
                 if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
@@ -866,26 +888,29 @@ apiRoutes.get('/invitedetail/:invite_id', function (req, res) {
 });
 
 apiRoutes.get('/invited/:event_id', function (req, res) {
-    Invite.find({ event_id: req.params.event_id },
+    Invite.find({event_id: req.params.event_id},
     null, {
         sort: {
             "created_at": -1
         }
     },
     function (err, invites) {
-        if (err) res.send(err)
-        Event.find({ _id: req.params.event_id },
+        if (err)
+            res.send(err)
+        Event.find({_id: req.params.event_id},
         function (err, events) {
-            if (err) res.send(err)
-        Invite.findOne({ event_id: req.params.event_id, event_creator : 'Yes' },
-        function (err, invite_creator) {
-            if (err) res.send(err)
-            res.json({
-                'logged_in_userid': req.decoded._id,
-                'invite_creator':  invite_creator,
-                'event': events,
-                'invites': invites
-            });
+            if (err)
+                res.send(err)
+            Invite.findOne({event_id: req.params.event_id, event_creator: 'Yes'},
+            function (err, invite_creator) {
+                if (err)
+                    res.send(err)
+                res.json({
+                    'logged_in_userid': req.decoded._id,
+                    'invite_creator': invite_creator,
+                    'event': events,
+                    'invites': invites
+                });
             });
         });
     });
@@ -1045,25 +1070,26 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                     function (err, invite_count) {
                         if (err)
                             res.send(err)
-    //            Player.find({event_id: events.event_id},
-    Player.find({user_id: req.decoded._id, event_id: events.event_id},
-                function (err, players_list) {
-                    if (err) res.send(err)
-               // player_data3.push(players_list);
-                        pushList[events.event_id] = players_list
-                        pushN[events.event_id] = players_no
-                        pushY[events.event_id] = players_yes
-                        invites_cnt[events.event_id] = invite_count
-                        callback();
+                        //            Player.find({event_id: events.event_id},
+                        Player.find({user_id: req.decoded._id, event_id: events.event_id},
+                        function (err, players_list) {
+                            if (err)
+                                res.send(err)
+                            // player_data3.push(players_list);
+                            pushList[events.event_id] = players_list
+                            pushN[events.event_id] = players_no
+                            pushY[events.event_id] = players_yes
+                            invites_cnt[events.event_id] = invite_count
+                            callback();
+                        });
                     });
-                });
                 });
             });
         }, function (err) {
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_invites': [pushList],
-            //  'event_invites': player_data3,
+                //  'event_invites': player_data3,
                 'event_no': [pushN],
                 'invites': [invites_cnt]
             });
@@ -1090,8 +1116,8 @@ apiRoutes.get('/my_event_list', function (req, res) {
 // create todo and send back all todos after creation
 apiRoutes.post('/new_event', function (req, res) {
 
-console.log("fasdfadsfdsf")
-console.log(req.decoded)
+    console.log("fasdfadsfdsf")
+    console.log(req.decoded)
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
@@ -1103,57 +1129,57 @@ console.log(req.decoded)
         if (err)
             res.send(err);
         Invite.create({
-            event_id: event_created._id, 
+            event_id: event_created._id,
             inviter: req.decoded.name,
             invited: req.decoded.name,
             invited_email: req.decoded.email,
-       //     invited_email: req.body.email,
-        //    invited_phone: req.body.phone,
-       //     invited_type: req.body.type,
+            //     invited_email: req.body.email,
+            //    invited_phone: req.body.phone,
+            //     invited_type: req.body.type,
             invite_code: randomValueHex(8),
             event_creator: "Yes",
             invite_status: "Yes"
         },
         function (err, new_invite) {
-        Player.create({
-            event_id: event_created._id,
-            displayname: req.decoded.displayname,
-            invite_code: new_invite.invite_code,
-            username: req.decoded.username,
-            notice_rsvp: 'YES', 
-            notice_comments:  'YES',
-            user_id: req.decoded._id,
-            in_or_out: 'Yes'
-        },
-        function (err, result) {
-            if (err)
-                throw err;
-            transporter.sendMail({
-                from: 'slatterytom@gmail.com',
-                to: 'slatterytom@gmail.com',
-                subject: 'You created the event ' + event_created.event_title + ' at ' + event_created.event_start,
-                html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_created.event_title + '</a>' + ' at ' + event_created.event_start,
-                text: 'hello world asd!'
-            });
-            transporter.close();
-            if (err)
-                throw err;
-/*
-            Invite.find({
-                event_id: req.params.event_id
+            Player.create({
+                event_id: event_created._id,
+                displayname: req.decoded.displayname,
+                invite_code: new_invite.invite_code,
+                username: req.decoded.username,
+                notice_rsvp: 'YES',
+                notice_comments: 'YES',
+                user_id: req.decoded._id,
+                in_or_out: 'Yes'
             },
-            null, {
-                sort: {
-                    "created_at": -1
-                }
-            },
-            function (err, invites) {
+            function (err, result) {
                 if (err)
-                    res.send(err)
-                res.json({'invites': invites}); // return all todos in JSON format
-            });
-       */
-        }); //d8d88d
+                    throw err;
+                transporter.sendMail({
+                    from: 'slatterytom@gmail.com',
+                    to: 'slatterytom@gmail.com',
+                    subject: 'You created the event ' + event_created.event_title + ' at ' + event_created.event_start,
+                    html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_created.event_title + '</a>' + ' at ' + event_created.event_start,
+                    text: 'hello world asd!'
+                });
+                transporter.close();
+                if (err)
+                    throw err;
+                /*
+                 Invite.find({
+                 event_id: req.params.event_id
+                 },
+                 null, {
+                 sort: {
+                 "created_at": -1
+                 }
+                 },
+                 function (err, invites) {
+                 if (err)
+                 res.send(err)
+                 res.json({'invites': invites}); // return all todos in JSON format
+                 });
+                 */
+            }); //d8d88d
         });
         // get and return all the todos after you create another
         Event.find(function (err, events) {
