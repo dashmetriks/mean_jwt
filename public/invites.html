@@ -43,13 +43,13 @@
 
                             <br/>
                             <label>Receive rsvp updates:
-                                <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="YES" ng-false-value="NO">
+                                <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
                             <label>Receive comments from guest :
-                                <input type="checkbox" ng-model="checkboxModel.comment_alert" ng-true-value="YES" ng-false-value="NO">
+                                <input type="checkbox" ng-model="checkboxModel.comment_alert" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
                             <label> Create Account
-                                <input type="checkbox" ng-model="checkboxModel.create_account" ng-true-value="YES" ng-false-value="NO">
+                                <input type="checkbox" ng-model="checkboxModel.create_account" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
                             <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">username:
                                 <input type="text" name="username" value="invited.username" ng-model="invited.username"/> 

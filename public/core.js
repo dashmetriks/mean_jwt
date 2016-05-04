@@ -339,10 +339,14 @@ var that = this;
                   $scope.set = function(invited_email) {
                     this.invited.displayname = invited_displayname;
                   }
-                   $scope.checkboxModel = {
-                     rsvp : 'NO',
-                     comment_alert : 'NO',
-                   };
+                  $scope.checkboxModel = { rsvp : 'NO', comment_alert : 'NO', };
+                  $scope.set = function(invited_rsvp) {
+                    this.checkboxModel.rsvp = invited_rsvp;
+                  }
+                  $scope.set = function(invited_comment_alert) {
+                    this.checkboxModel.comment_alert = invited_comment_alert;
+                  }
+
                  //   $scope.showRegToInvite = false;
                 //  } else {
                //     $scope.showLoginToInvite = true;
@@ -706,13 +710,15 @@ $scope.showLoginToInvite = true;
         $http({
                 method: 'POST',
                 url: 'http://localhost:8080/api/new_event',
-                data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3,
+                data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3 + '&event_location=' + $scope.formData.event_location, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
             }).success(function(data) {
-                $scope.events = data;
+              //  $scope.events = data;
+               $scope.getEventList();
+
                 console.log("add commment");
                 console.log (data);
             })

@@ -1,59 +1,45 @@
 <body >
-    <div class="container">
+    <div class="container" ng-controller="mainController" ng-init="getEventList()">
+        <div class="col-xs-4"> 
+            <form>
+                <div class="form-group">
+                    <input type="text" class="form-control input-lg text-center" placeholder="Event Title" ng-model="formData.text">
+                    <input type="text" class="form-control input-lg text-center" placeholder="Event Location" ng-model="formData.event_location">
+                    <h3>Pick a date and time</h3>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="ctrl.dates.date3" is-open="ctrl.open.date3" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'date3')"><i class="fa fa-calendar"></i></button>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{ ctrl.dates.date3}}</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-        <!-- HEADER AND TODO COUNT -->
-
-        <!-- TODO LIST -->
-        <div id="todo-list" class="row" ng-controller="mainController" ng-init="getEventList()">
-            <div class="col-sm-4 col-sm-offset-4">
-
-                <!-- LOOP OVER THE TODOS IN $scope.todos -->
-                <div class="checkbox" ng-repeat="event in events">
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Create New Event</button>
+            </form>
+        </div>
+        <div class="col-xs-4"> 
+            <div id="todo-list" class="row"  >
+                <div class="checkbox" ng-repeat="event in events | orderBy:'-_id'"> 
                     <label>
-                        <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"] }}'> {{ event.event_title }} </a> by  {{ event.event_creator_username }} </h3>
-                   date: {{ event.event_start }}
+                        <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"]}}'> {{ event.event_title}} </a> by  {{ event.event_creator_username}}  {{ events_invite[event._id][0]['event_id']}} </h3>
+                        date: {{ event._id}} </br>
+                        date: {{ event.event_start}} </br>
+                        location: {{ event.event_location}} </br>
                     </label>
                 </div>
 
             </div>
-
-        <!-- FORM TO CREATE TODOS -->
-        <div id="todo-form" class="row">
-            <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form>
-                    <div class="form-group">
-
-                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                        <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-<h3>Pick a date and time</h3>
-<form class="form-horizontal">
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Both</label>
-        <div class="col-sm-10">
-            <p class="input-group">
-                <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="ctrl.dates.date3" is-open="ctrl.open.date3" />
-            <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'date3')"><i class="fa fa-calendar"></i></button>
-            </span>
-            </p>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-2 control-label">model</label>
-        <div class="col-sm-10">
-            <p class="form-control-static">{{ ctrl.dates.date3 }}</p>
-        </div>
-    </div>
-</form>
-                    </div>
-
-                    <!-- createToDo() WILL CREATE NEW TODOS -->
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Create New Event</button>
-                </form>
-            </div>
-        </div>
-
-    </div>
-
-        </div>
 </body>

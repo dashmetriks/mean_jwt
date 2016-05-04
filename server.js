@@ -137,6 +137,7 @@ var EventSchema = new Schema({
     },
     event_creator_displayname: String,
     event_start: String,
+    event_location: String,
     event_end: String,
     created_at: {
         type: Date,
@@ -1052,12 +1053,12 @@ apiRoutes.get('/my_event_list2', function (req, res) {
     var pushN = {};
     var pushList = {};
     var invites_cnt = {};
-    Player.find({user_id: req.decoded._id},
-    null, {
-        sort: {
-            "event_id": -1
-        }
-    },
+    Player.find({user_id: req.decoded._id}, null, {sort: {"created_at": -1}},
+  //  null, {
+   //     sort: {
+    //        "event_id": -1
+  //      }
+   // },
     function (err, records) {
         /*
          Player.count({
@@ -1104,6 +1105,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                 });
             });
         }, function (err) {
+       console.log(player_data)
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_invites': [pushList],
@@ -1140,6 +1142,7 @@ apiRoutes.post('/new_event', function (req, res) {
     Event.create({
         event_title: req.body.text,
         event_start: req.body.event_start,
+        event_location: req.body.event_location,
         event_creator: req.decoded._id,
         event_creator_displayname: req.decoded.displayname
 
