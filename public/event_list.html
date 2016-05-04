@@ -2,9 +2,6 @@
     <div class="container">
 
         <!-- HEADER AND TODO COUNT -->
-        <div class="jumbotron text-center">
-            <h1>I'm a Todo-woot <span class="label label-info">{{ todos2.length }}</span></h1>
-        </div>
 
         <!-- TODO LIST -->
         <div id="todo-list" class="row" ng-controller="mainController" ng-init="getEventList()">
@@ -14,6 +11,7 @@
                 <div class="checkbox" ng-repeat="event in events">
                     <label>
                         <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"] }}'> {{ event.event_title }} </a> by  {{ event.event_creator_username }} </h3>
+                   date: {{ event.event_start }}
                     </label>
                 </div>
 
@@ -27,10 +25,30 @@
 
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
                         <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
+<h3>Pick a date and time</h3>
+<form class="form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Both</label>
+        <div class="col-sm-10">
+            <p class="input-group">
+                <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="ctrl.dates.date3" is-open="ctrl.open.date3" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'date3')"><i class="fa fa-calendar"></i></button>
+            </span>
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">model</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">{{ ctrl.dates.date3 }}</p>
+        </div>
+    </div>
+</form>
                     </div>
 
                     <!-- createToDo() WILL CREATE NEW TODOS -->
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Create New Event</button>
                 </form>
             </div>
         </div>

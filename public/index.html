@@ -19,21 +19,34 @@
         #todo-list              { margin-bottom:30px; }
     </style>
 
+    <link rel="stylesheet" href="style.css" />
     <!-- SPELLS -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+      <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+   <!-- 
     <script src="https://code.angularjs.org/1.2.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+   -->
+     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.js"></script>
+
     <script src="core.js"></script>
+    <script src="datetime-picker.js"></script>
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
 <body>
-<div ng-app="scotchTodo" ng-controller="mainController">
+<div ng-app="scotchTodo" ng-controller="mainController as ctrl">
 <div class="text-center">
 <a href="#/event_list" ng-show="isUserLoggedIn" > list </a>
+<!--
 <a href="#/register" ng-hide="isUserLoggedIn" > register </a>
 <a href="#/login" ng-hide="isUserLoggedIn"> login </a>
 <a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > logout </a>
+-->
 
 </div>
         <ng-view></ng-view>

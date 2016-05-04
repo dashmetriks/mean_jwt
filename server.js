@@ -1135,7 +1135,7 @@ apiRoutes.get('/my_event_list', function (req, res) {
 apiRoutes.post('/new_event', function (req, res) {
 
     console.log("fasdfadsfdsf")
-    console.log(req.decoded)
+    console.log(req.body)
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,

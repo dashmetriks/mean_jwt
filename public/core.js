@@ -25,7 +25,7 @@ var interceptor = function ($q, $location) {
 };
 
 
-var scotchTodo = angular.module('scotchTodo', ['ngRoute']);
+var scotchTodo = angular.module('scotchTodo', [ 'ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 
 (function (module) {
      
@@ -158,6 +158,80 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
 
 scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams', '$rootScope',
   function ($scope, $http, $window, $location , $routeParams, $rootScope) {
+
+var that = this;
+
+    var in10Days = new Date();
+    in10Days.setDate(in10Days.getDate() + 10);
+
+    this.dates = {
+        date1: new Date('2015-03-01T00:00:00Z'),
+        date2: new Date('2015-03-01T12:30:00Z'),
+        date3: new Date(),
+        date4: new Date(),
+        date5: in10Days,
+        date6: new Date(),
+        date7: new Date(),
+        date8: new Date(),
+        date9: null,
+        date10: new Date('2015-03-01T09:00:00Z'),
+        date11: new Date('2015-03-01T10:00:00Z')
+    };
+
+    this.open = {
+        date1: false,
+        date2: false,
+        date3: false,
+        date4: false,
+        date5: false,
+        date6: false,
+        date7: false,
+        date8: false,
+        date9: false,
+        date10: false,
+        date11: false
+    };
+
+    // Disable today selection
+    this.disabled = function(date, mode) {
+        return (mode === 'day' && (new Date().toDateString() == date.toDateString()));
+    };
+
+    this.dateOptions = {
+        showWeeks: false,
+        startingDay: 1
+    };
+
+    this.timeOptions = {
+        readonlyInput: false,
+        showMeridian: false
+    };
+
+    this.dateModeOptions = {
+        minMode: 'year',
+        maxMode: 'year'
+    };
+
+    this.openCalendar = function(e, date) {
+        that.open[date] = true;
+    };
+
+    // watch date4 and date5 to calculate difference
+    var unwatch = $scope.$watch(function() {
+        return that.dates;
+    }, function() {
+        if (that.dates.date4 && that.dates.date5) {
+            var diff = that.dates.date4.getTime() - that.dates.date5.getTime();
+            that.dayRange = Math.round(Math.abs(diff/(1000*60*60*24)))
+        } else {
+            that.dayRange = 'n/a';
+        }
+    }, true);
+
+    $scope.$on('$destroy', function() {
+        unwatch();
+    });
+
     $scope.formData = {};
     $scope.formData1 = {};
 
@@ -366,7 +440,7 @@ $scope.showLoginToInvite = true;
             console.log(data);
             if (data.success == true) {
               $window.sessionStorage.setItem('token', data.token);
-            //  $location.url('/event_list');
+              $location.url('/event_list');
            //   $location.url('/invite/e4d091cc');
                 $window.location.reload();
             } else {
@@ -628,10 +702,11 @@ $scope.showLoginToInvite = true;
 
 
     $scope.createTodo = function() {
+      console.log($scope.ctrl.dates.date3)
         $http({
                 method: 'POST',
                 url: 'http://localhost:8080/api/new_event',
-                data: 'text=' + $scope.formData.text,
+                data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'x-access-token': $window.sessionStorage.getItem('token')
