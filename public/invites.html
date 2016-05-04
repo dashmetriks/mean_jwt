@@ -8,6 +8,13 @@
                     <h3>Date: {{event_date}} </h3>
                     <h3>Host: {{event_creator_displayname}} </h3>
                 </div>
+                <label>
+                    <div ng-repeat="user in players_list">
+                        <span ng-if="invite_code == user.invite_code && event_creator_id == user.user_id">
+                            <h3><a href="/invited_list/{{ event_id}}" > Invites </a> </h3>
+                        </span>
+                    </div>
+                </label>
                 <!-- TODO LIST -->
       <input  type="button" value="Logout" ng-click="logOut()">
                 <div ng-if="isMember">
@@ -54,13 +61,6 @@
                 </div>
             </div>
             <div class="col-xs-8">
-                <label>
-                    <div ng-repeat="user in players_list">
-                        <span ng-if="invite_code == user.invite_code && event_creator_id == user.user_id">
-                            <h3><a href="/invited_list/{{ event_id}}" > Invites </a> </h3>
-                        </span>
-                    </div>
-                </label>
                 <label>RSVPs </label>
                 <div ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.displayname}} 

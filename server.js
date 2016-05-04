@@ -71,6 +71,7 @@ var Invite = new Schema({
     invited_phone: String,
     invited_type: String,
     invited_username: String,
+    accepted_displayname: String,
     invite_code: String,
     date_opened: Date,
     date_accepted: Date,
@@ -107,7 +108,7 @@ var Player = mongoose.model('Player', Player);
 
 var Comments = new Schema({
     event_id: String,
-    username: String,
+    displayname: String,
     user_id: String,
     text: String,
     created_at: {
@@ -317,7 +318,7 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                 if (err)
                     res.send(err)
 
-                update_invite_status(invites["_id"], req.params.ustatus);
+                update_invite_status_displayname(invites["_id"], req.params.ustatus, req.body.displayname,req.body.username);
                 //  if (req.body.create_account == 'YES') {
                 User.findOne({
                     username: req.body.username
@@ -380,7 +381,7 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                 if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,
-                        username: req.body.username,
+                        displayname: req.body.displayname,
                         text: req.body.comment
                     },
                     function (err, result) {
@@ -422,7 +423,7 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
             if (req.body.comment != "undefined") {
                 Comments.create({
                     event_id: req.params.event_id,
-                    username: req.body.username,
+                    displayname: req.body.displayname,
                     text: req.body.comment
                 },
                 function (err, result) {
@@ -678,7 +679,7 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
                 } else {
                     Comments.create({
                         event_id: req.params.event_id,
-                        username: req.decoded.name,
+                        displayname: req.decoded.displayname,
                         user_id: req.decoded._id,
                         text: req.body.text
                     },
@@ -933,6 +934,23 @@ function update_invite_status(invite_id, ustatus) {
     }, {
         $set: {
             invite_status: ustatus,
+            date_opened: new Date()
+        }
+    },
+    function (err, result) {
+        if (err)
+            throw err;
+    });
+}
+
+function update_invite_status_displayname(invite_id, ustatus, displayname, username) {
+    Invite.update({
+        _id: invite_id
+    }, {
+        $set: {
+            invite_status: ustatus,
+            invited_email: username,
+            accepted_displayname: displayname,
             date_opened: new Date()
         }
     },
