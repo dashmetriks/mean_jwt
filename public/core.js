@@ -23,7 +23,10 @@ var interceptor = function ($q, $location) {
 	}
 	}
 };
+ 
 
+//var express_endpoint = "http://dashmetriks.com:3000"
+var express_endpoint = "http://localhost:8080"
 
 var scotchTodo = angular.module('scotchTodo', [ 'ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 
@@ -261,7 +264,7 @@ var that = this;
        console.log ($routeParams.invite_code);
             $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/change_invite_status/' + $routeParams.invite_code ,
+                url: express_endpoint + '/api/change_invite_status/' + $routeParams.invite_code ,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -278,7 +281,7 @@ var that = this;
 /*
             $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/adduserevent/' + event_id + '/invited' ,
+                url: 'http://dashmetriks.com:3000/api/adduserevent/' + event_id + '/invited' ,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -315,7 +318,7 @@ var that = this;
        console.log ($routeParams.invite_code);
        $http({
                 method: 'GET',
-                url: 'http://localhost:8080/invites/' + $routeParams.invite_code
+                url: express_endpoint + '/invites/' + $routeParams.invite_code
            //     headers: {
             //        'Content-Type': 'application/json',
             //    }
@@ -380,7 +383,7 @@ var that = this;
     $scope.register = function() {
         $http({
             method: 'POST',
-            url: 'http://localhost:8080/register',
+            url: express_endpoint + '/register',
             data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -405,13 +408,13 @@ var that = this;
     $scope.checkLogin = function() {
         $http({
             method: 'GET',
-            url: 'http://localhost:8080/api/userget/',
+            url: express_endpoint + '/api/userget/',
              headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
         }).success(function(data) {
-            console.log(data['user'][0]);
+            console.log(data);
             if (data['user'][0]['username']) { 
               console.log("kkmkmkoooo");
               $scope.user_data = data['user'][0]
@@ -429,7 +432,7 @@ $scope.showLoginToInvite = true;
     $scope.userSave = function() {
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/api/usersave/', 
+                url: express_endpoint + '/api/usersave/', 
                 data: 'username=' + $scope.user_data.username + '&displayname=' + $scope.user_data.displayname, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -454,7 +457,7 @@ $scope.showLoginToInvite = true;
     $scope.login = function() {
         $http({
             method: 'POST',
-            url: 'http://localhost:8080/authenticate',
+            url: express_endpoint + '/authenticate',
             data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -477,7 +480,7 @@ $scope.showLoginToInvite = true;
     $scope.getEventList = function() {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/my_event_list2/',
+                url: express_endpoint + '/api/my_event_list2/',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -498,7 +501,7 @@ $scope.showLoginToInvite = true;
     $scope.getInvites = function(id) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/invited/' + $routeParams.event_id,
+                url: express_endpoint + '/api/invited/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -531,8 +534,8 @@ $scope.showLoginToInvite = true;
     $scope.getEventInvite = function(id) {
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/geteventinvite/' + $routeParams.invite_code,
-              //  url: 'http://localhost:8080/api/events/' + $routeParams.event_id,
+                url: express_endpoint + '/geteventinvite/' + $routeParams.invite_code,
+              //  url: 'http://dashmetriks.com:3000/api/events/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                 //    'x-access-token': $window.sessionStorage.getItem('token')
@@ -600,8 +603,8 @@ $scope.showLoginToInvite = true;
        console.log($scope)
         $http({
                 method: 'GET',
-                url: 'http://localhost:8080/api/geteventdata/' + $routeParams.event_id,
-              //  url: 'http://localhost:8080/api/events/' + $routeParams.event_id,
+                url: express_endpoint + '/api/geteventdata/' + $routeParams.event_id,
+              //  url: 'http://dashmetriks.com:3000/api/events/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': $window.sessionStorage.getItem('token')
@@ -693,7 +696,7 @@ $scope.showLoginToInvite = true;
        
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/adduserevent2/' + id + '/' + ustatus + '/' + $routeParams.invite_code,
+                url: express_endpoint + '/adduserevent2/' + id + '/' + ustatus + '/' + $routeParams.invite_code,
              //   data: 'username=' + $scope.formData1.text + '&comment=' + $scope.formData.text,
               //  data: 'username=' + $scope.invited.username + '&comment=' + $scope.formData.text + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&email=' + $scope.invited.email ,
                 data: 'username=' + $scope.invited.username + '&comment=' + Comments + '&rsvp=' + $scope.checkboxModel.rsvp +  '&comment_alert=' + $scope.checkboxModel.comment_alert + '&displayname=' + $scope.invited.displayname  + '&create_account=' + $scope.checkboxModel.create_account,
@@ -728,7 +731,7 @@ $scope.showLoginToInvite = true;
       console.log($scope.ctrl.dates.date3)
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/api/new_event',
+                url: express_endpoint + '/api/new_event',
                 data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3 + '&event_location=' + $scope.formData.event_location, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -749,7 +752,7 @@ $scope.showLoginToInvite = true;
     $scope.addComment = function() {
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/api/addcomment/' + $routeParams.event_id,
+                url: express_endpoint + '/api/addcomment/' + $routeParams.event_id,
                 data: 'text=' + $scope.formData.text,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -772,7 +775,7 @@ $scope.showLoginToInvite = true;
     $scope.addInvite = function() {
         $http({
                 method: 'POST',
-                url: 'http://localhost:8080/api/addinvite/' + $routeParams.event_id,
+                url: express_endpoint + '/api/addinvite/' + $routeParams.event_id,
                 data: 'text=' + $scope.formData.text + '&email=' + $scope.formData.email,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
