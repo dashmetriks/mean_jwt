@@ -1038,10 +1038,13 @@ apiRoutes.post('/usersave', function (req, res) {
             displayname: req.body.displayname
         }
     },
-    function (err, result) {
+    function (err, users) {
         if (err)
             throw err;
-        res.json(result);
+        //res.json(result);
+        res.json({
+            'user': users,
+        });
     });
 });
 apiRoutes.get('/my_event_list2', function (req, res) {

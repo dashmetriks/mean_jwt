@@ -32,8 +32,8 @@
             <div id="todo-list" class="row"  >
                 <div class="checkbox" ng-repeat="event in events | orderBy:'-_id'"> 
                     <label>
-                        <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"]}}'> {{ event.event_title}} </a> by  {{ event.event_creator_username}}  {{ events_invite[event._id][0]['event_id']}} </h3>
-                        date: {{ event._id}} </br>
+                        <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"]}}'> {{ event.event_title}} </a>  </h3>
+                        Host: {{ event.event_creator_displayname}} </br>
                         date: {{ event.event_start}} </br>
                         location: {{ event.event_location}} </br>
                     </label>

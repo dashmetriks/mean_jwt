@@ -52,10 +52,13 @@
                                 <input type="checkbox" ng-model="checkboxModel.create_account" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
                             <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">username:
-                                <input type="text" name="username" value="invited.username" ng-model="invited.username"/> 
+                                <input type="text" name="username" value="invited.username" ng-model="invited.username" required/> 
+                            <span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
+                                <span ng-show="myForm.username.$error.required">username is required.</span>
+                            </span>
                             </label>
                             <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
-                            <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
+                            <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.displayname.$dirty && myForm.displayname.$invalid && myForm.username.$dirty && myForm.username.$invalid" >
                         </div>
                     </form>
                 </div>

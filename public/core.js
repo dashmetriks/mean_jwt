@@ -146,6 +146,10 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
 		templateUrl: 'login.html',
 		controller: 'mainController'
 	})
+	.when('/user', {
+		templateUrl: 'user_account.html',
+		controller: 'mainController'
+	})
 	.when('/register', {
 		templateUrl: 'register.html',
 		controller: 'mainController'
@@ -407,30 +411,45 @@ var that = this;
                     'x-access-token': $window.sessionStorage.getItem('token')
                 }
         }).success(function(data) {
-            console.log(data['user'][0]['username']);
+            console.log(data['user'][0]);
             if (data['user'][0]['username']) { 
               console.log("kkmkmkoooo");
+              $scope.user_data = data['user'][0]
               $scope.showLoginToInvite = false;
             } else {
 $scope.showLoginToInvite = true;
-
             }
-/*
-            if (data.success == true) {
-              $window.sessionStorage.setItem('token', data.token);
-            //  $location.url('/event_list');
-           //   $location.url('/invite/e4d091cc');
-                $window.location.reload();
-            } else {
-              $scope.login_message = data.message    
-            }
-*/
         })
         .error(function(data) {
 $scope.showLoginToInvite = true;
                 console.log('Error: ' + data);
             });
     }
+
+    $scope.userSave = function() {
+        $http({
+                method: 'POST',
+                url: 'http://localhost:8080/api/usersave/', 
+                data: 'username=' + $scope.user_data.username + '&displayname=' + $scope.user_data.displayname, 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+             // $scope.checkLogin()
+              $location.url('/event_list');
+             // $scope.user_data = data['user'][0]
+              // $scope.getEvent();
+              //  console.log($window.sessionStorage.getItem('token'));
+              //  $scope.todos = data;
+           //     $scope.comments = data;
+            //    console.log("add commment");
+             //   console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
 
     $scope.login = function() {
         $http({
@@ -468,7 +487,7 @@ $scope.showLoginToInvite = true;
                 $scope.events_invite = data['event_invites'][0];
                 console.log("get Event Lissssssssst scope");
             $rootScope.isUserLoggedIn = true;
-                console.log (data['event_invites'][0]);
+                console.log (data['my_events']);
                 
             })
             .error(function(data) {
