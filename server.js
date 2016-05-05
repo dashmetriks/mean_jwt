@@ -341,7 +341,7 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                                 from: 'slatterytom@gmail.com',
                                 to: 'slatterytom@gmail.com',
                                 subject: req.body.username + '- click here to complete reg',
-                                html: 'Login here  <a href="http://localhost:8080/login/"> login </a> ' + req.body.username,
+                                html: 'Login here  <a href="' + config.endpoint + '/login/"> login </a> ' + req.body.username,
                             });
                             transporter.close();
 
@@ -455,10 +455,10 @@ function send_email_alert_rsvp(event_id, invite_code, ustatus, comment, username
         async.each(players_list, function (players, callback) {
             if (invite_code == players.invite_code) {
                 var email_subject = 'you posted an rsvp ' + username + ' for event ' + event_data.event[0]["event_title"]
-                var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
+                var email_html = 'you posted as ' + username + 'a rsvp ' + ustatus + '<br> <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
             } else {
                 var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
-                var email_html = username + ' rsvp ' + ustatus + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
+                var email_html = username + ' rsvp ' + ustatus + '<br> <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length
             }
             transporter.sendMail({
                 from: 'slatterytom@gmail.com',
@@ -482,11 +482,11 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             async.each(players_list, function (players, callback) {
                 if (invite_code == players.invite_code) {
                     var email_subject = 'you posted comment posted as for event ' + event_data.event[0]["event_title"]
-                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 } else {
                     var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
-                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 }
                 transporter.sendMail({
@@ -510,11 +510,11 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             async.each(players_list, function (players, callback) {
                 if (invite_code == players.invite_code) {
                     var email_subject = 'you rsvpd ' + ustatus + ' for event ' + event_data.event[0]["event_title"]
-                    var email_html = 'you rsvpd ' + ustatus + ' as ' + username + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = 'you rsvpd ' + ustatus + ' as ' + username + '<br>for event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 } else {
                     var email_subject = username + " rsvp'd " + ustatus + ' for event ' + event_data.event[0]["event_title"]
-                    var email_html = username + " rsvp'd " + ustatus + '<br>for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = username + " rsvp'd " + ustatus + '<br>for event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 }
                 transporter.sendMail({
@@ -535,11 +535,11 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             async.each(players_list, function (players, callback) {
                 if (invite_code == players.invite_code) {
                     var email_subject = 'you posted comment posted as for event ' + event_data.event[0]["event_title"]
-                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = 'you posted a comment as ' + username + '<br>"' + comment + '"<br> for event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 } else {
                     var email_subject = 'New rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
-                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = username + ' posted a new comment ' + comment + '<br> <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 }
                 transporter.sendMail({
@@ -560,11 +560,11 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
             async.each(players_list, function (players, callback) {
                 if (invite_code == players.invite_code) {
                     var email_subject = 'You posted a comment and rsvpd for event ' + event_data.event[0]["event_title"]
-                    var email_html = 'You rsvpd <b>' + ustatus + ' </b> as username <b>' + username + '</b><br><br><b>Comment -</b> "' + comment + '"<br><br>For event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br><br>' + 'Number of Yeses-' + event_data.players_yes.length + '<br>' + 'Number of Nos-' + event_data.players_no.length
+                    var email_html = 'You rsvpd <b>' + ustatus + ' </b> as username <b>' + username + '</b><br><br><b>Comment -</b> "' + comment + '"<br><br>For event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br><br>' + 'Number of Yeses-' + event_data.players_yes.length + '<br>' + 'Number of Nos-' + event_data.players_no.length
 
                 } else {
                     var email_subject = 'New comment and rsvp posted by ' + username + ' for event ' + event_data.event[0]["event_title"]
-                    var email_html = username + ' rsvpd ' + ustatus + ' and posted a new comment-"' + comment + '"<br> for event <a href="http://localhost:8080/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
+                    var email_html = username + ' rsvpd ' + ustatus + ' and posted a new comment-"' + comment + '"<br> for event <a href="' + config.endpoint + '/invite/' + players.invite_code + '">' + event_data.event[0]["event_title"] + '</a>' + ' at ' + event_data.event[0]["event_start"] + '<br>' + 'number of yeses-' + event_data.players_yes.length + '<br>' + 'number of nos-' + event_data.players_no.length
 
                 }
                 transporter.sendMail({
@@ -583,15 +583,15 @@ function send_email_alert_comment(event_id, invite_code, ustatus, comment, usern
 apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
     Player.findOne({
         event_id: req.params.event_id,
-        username: req.decoded.name
+        username: req.decoded._doc.username
     }, function (error, players) {
         if (error)
             res.json(error);
         if (players == null) {
             Player.create({
                 event_id: req.params.event_id,
-                username: req.decoded.name,
-                user_id: req.decoded._id,
+                username: req.decoded._doc.username,
+                user_id: req.decoded._doc._id,
                 in_or_out: req.params.ustatus
             },
             function (err, result) {
@@ -603,7 +603,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
             update_invite_status(players["invite_id"], req.params.ustatus);
             Player.update({
                 event_id: req.params.event_id,
-                username: req.decoded.name
+                username: req.decoded._doc.username
             }, {
                 $set: {
                     in_or_out: req.params.ustatus
@@ -615,7 +615,7 @@ apiRoutes.get('/adduserevent/:event_id/:ustatus', function (req, res) {
                 //        res.json(result);
             });
         }
-        get_event_data(req.params.event_id, req.decoded._id, function (data) {
+        get_event_data(req.params.event_id, req.decoded._doc._id, function (data) {
             res.json(data);
         })
     });
@@ -632,7 +632,7 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
             throw err;
         Invite.create({
             event_id: req.params.event_id,
-            inviter: req.decoded.name,
+            inviter: req.decoded._doc.username,
             invited: req.body.text,
             invited_email: req.body.email,
             invited_phone: req.body.phone,
@@ -646,7 +646,7 @@ apiRoutes.post('/addinvite/:event_id/', function (req, res) {
                 from: 'slatterytom@gmail.com',
                 to: 'slatterytom@gmail.com',
                 subject: 'You are invited to the event ' + events[0]["event_title"] + ' at ' + events[0]["event_start"],
-                html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + events[0]["event_title"] + '</a>' + ' at ' + events[0]["event_start"],
+                html: 'You are invited to the event <a href="' + config.endpoint + '/invite/' + new_invite.invite_code + '">' + events[0]["event_title"] + '</a>' + ' at ' + events[0]["event_start"],
                 text: 'hello world asd!'
             });
             transporter.close();
@@ -680,8 +680,8 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
                 } else {
                     Comments.create({
                         event_id: req.params.event_id,
-                        displayname: req.decoded.displayname,
-                        user_id: req.decoded._id,
+                        displayname: req.decoded._doc.displayname,
+                        user_id: req.decoded._doc._id,
                         text: req.body.text
                     },
                     function (err, result) {
@@ -694,7 +694,7 @@ apiRoutes.post('/addcomment/:event_id/', function (req, res) {
             });
         },
         function (callback) {
-            get_event_data(req.params.event_id, req.decoded._id, function (data) {
+            get_event_data(req.params.event_id, req.decoded._doc._id, function (data) {
                 res.json(data);
             })
             callback();
@@ -770,7 +770,7 @@ function get_event_data(event_id, user_id, callback) {
 }
 
 apiRoutes.get('/geteventdata/:event_id', function (req, res) {
-    get_event_data(req.params.event_id, req.decoded._id, function (data) {
+    get_event_data(req.params.event_id, req.decoded._doc._id, function (data) {
         res.json(data);
     })
 });
@@ -831,8 +831,8 @@ apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
 
                             res.json({
                                 'user_list': [pushY],
-                                'logged_in_userid': req.decoded._id,
-                                'logged_in_username': req.decoded.name,
+                                'logged_in_userid': req.decoded._doc._id,
+                                'logged_in_username': req.decoded._doc.username,
                                 'event': events,
                                 'players_list': players_list,
                                 'players_yes': players_yes,
@@ -908,7 +908,7 @@ apiRoutes.get('/invited/:event_id', function (req, res) {
                 if (err)
                     res.send(err)
                 res.json({
-                    'logged_in_userid': req.decoded._id,
+                    'logged_in_userid': req.decoded._doc._id,
                     'invite_creator': invite_creator,
                     'event': events,
                     'invites': invites
@@ -997,12 +997,12 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
         if (error)
             res.json(error);
         update_invite_status_accepted(invites["_id"], "Accepted");
-        add_invite_username(invites["_id"], req.decoded.name);
+        add_invite_username(invites["_id"], req.decoded._doc.username);
         Player.create({
             event_id: invites["event_id"],
             invite_id: invites["_id"],
-            username: req.decoded.name,
-            user_id: req.decoded._id,
+            username: req.decoded._doc.username,
+            user_id: req.decoded._doc._id,
             in_or_out: "Accepted"
         },
         function (err, result) {
@@ -1020,7 +1020,9 @@ apiRoutes.get('/event_list', function (req, res) {
     });
 });
 apiRoutes.get('/userget', function (req, res) {
-    User.find({_id: req.decoded._id},
+console.log("fsdfasfdas 4444")
+console.log(req.decoded._doc._id)
+    User.find({_id: req.decoded._doc._id},
     function (err, users) {
         if (err)
             res.send(err)
@@ -1031,7 +1033,7 @@ apiRoutes.get('/userget', function (req, res) {
 });
 apiRoutes.post('/usersave', function (req, res) {
     User.update({
-        _id: req.decoded._id
+        _id: req.decoded._doc._id
     }, {
         $set: {
             username: req.body.username,
@@ -1056,7 +1058,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
     var pushN = {};
     var pushList = {};
     var invites_cnt = {};
-    Player.find({user_id: req.decoded._id}, null, {sort: {"created_at": -1}},
+    Player.find({user_id: req.decoded._doc._id}, null, {sort: {"created_at": -1}},
   //  null, {
    //     sort: {
     //        "event_id": -1
@@ -1093,7 +1095,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                         if (err)
                             res.send(err)
                         //            Player.find({event_id: events.event_id},
-                        Player.find({user_id: req.decoded._id, event_id: events.event_id},
+                        Player.find({user_id: req.decoded._doc._id, event_id: events.event_id},
                         function (err, players_list) {
                             if (err)
                                 res.send(err)
@@ -1121,7 +1123,7 @@ apiRoutes.get('/my_event_list2', function (req, res) {
 });
 apiRoutes.get('/my_event_list', function (req, res) {
     Event.find({
-        event_creator: req.decoded._id
+        event_creator: req.decoded._doc._id
     },
     null, {
         sort: {
@@ -1146,17 +1148,17 @@ apiRoutes.post('/new_event', function (req, res) {
         event_title: req.body.text,
         event_start: req.body.event_start,
         event_location: req.body.event_location,
-        event_creator: req.decoded._id,
-        event_creator_displayname: req.decoded.displayname
+        event_creator: req.decoded._doc._id,
+        event_creator_displayname: req.decoded._doc.displayname
 
     }, function (err, event_created) {
         if (err)
             res.send(err);
         Invite.create({
             event_id: event_created._id,
-            inviter: req.decoded.username,
-            invited: req.decoded.displayname,
-            invited_email: req.decoded.username,
+            inviter: req.decoded._doc.username,
+            invited: req.decoded._doc.displayname,
+            invited_email: req.decoded._doc.username,
             //     invited_email: req.body.email,
             //    invited_phone: req.body.phone,
             //     invited_type: req.body.type,
@@ -1167,12 +1169,12 @@ apiRoutes.post('/new_event', function (req, res) {
         function (err, new_invite) {
             Player.create({
                 event_id: event_created._id,
-                displayname: req.decoded.displayname,
+                displayname: req.decoded._doc.displayname,
                 invite_code: new_invite.invite_code,
-                username: req.decoded.username,
+                username: req.decoded._doc.username,
                 notice_rsvp: 'YES',
                 notice_comments: 'YES',
-                user_id: req.decoded._id,
+                user_id: req.decoded._doc._id,
                 in_or_out: 'Yes'
             },
             function (err, result) {
@@ -1182,7 +1184,7 @@ apiRoutes.post('/new_event', function (req, res) {
                     from: 'slatterytom@gmail.com',
                     to: 'slatterytom@gmail.com',
                     subject: 'You created the event ' + event_created.event_title + ' at ' + event_created.event_start,
-                    html: 'You are invited to the event <a href="http://localhost:8080/invite/' + new_invite.invite_code + '">' + event_created.event_title + '</a>' + ' at ' + event_created.event_start,
+                    html: 'You are invited to the event <a href="' + config.endpoint + '/invite/' + new_invite.invite_code + '">' + event_created.event_title + '</a>' + ' at ' + event_created.event_start,
                     text: 'hello world asd!'
                 });
                 transporter.close();
