@@ -144,8 +144,9 @@ var EventSchema = new Schema({
         default: Date.now
     }
 });
-
+if (config.auto_incr == "YES") {
 autoIncrement.initialize(mongoose.connection);
+}
 EventSchema.plugin(autoIncrement.plugin, 'Event');
 var Event = mongoose.model('Event', EventSchema);
 
