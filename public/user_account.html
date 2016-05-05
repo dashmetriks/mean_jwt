@@ -1,0 +1,21 @@
+<body ng-controller="mainController">
+    <div class="container" ng-init="checkLogin()">
+        <form class="well">
+            <div  class="form-group" >
+                <label>Username</label>
+                <input type="text" name="username" ng-model="user_data.username"/>
+            </div>
+            <div  class="form-group" >
+                <label>Displayname</label>
+                <input type="text" name="displayname" ng-model="user_data.displayname"/>
+            </div>
+            <div class="form-group" >
+                <label>Password</label>
+                <input type="password" name="password" ng-model="user.password"/>
+            </div>
+            <input type="button" value="Save" ng-click="userSave()" class="btn btn-primary"/>
+        </form>
+        <h3> {{login_message}} </h3>
+    </div>
+
+</body>
