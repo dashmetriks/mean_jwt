@@ -36,6 +36,8 @@
                         Host: {{ event.event_creator_displayname}} </br>
                         date: {{ event.event_start}} </br>
                         location: {{ event.event_location}} </br>
+            <button type="submit" class="btn btn-primary btn-xs" ng-click="deleteEventConfirm(event._id)">Delete Event</button>
+            <button type="submit" class="btn btn-primary btn-xs" ng-show="showDeleteEvent && showDeleteEventid == event._id" ng-click="deleteEvent(event._id)">Confirm Delete</button>
                     </label>
                 </div>
 

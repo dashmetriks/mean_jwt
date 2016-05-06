@@ -368,17 +368,37 @@ var that = this;
             });
     }
 
-    $scope.deleteTodo = function(id) {
-        $http.delete('/api/events/' + id)
-            .success(function(data) {
-                $scope.events = data;
-                console.log(data);
-            })
-            .error(function(data) {
+    $scope.deleteEventConfirm = function(id) {
+      if ($scope.showDeleteEvent == true){
+          $scope.showDeleteEvent = false;
+      }else{
+          $scope.showDeleteEvent = true;
+      }
+      $scope.showDeleteEventid = id;
+
+    };
+
+
+    $scope.deleteEvent = function(id) {
+           console.log("blah blah 0") 
+        $http({
+            method: 'DELETE',
+            url: express_endpoint + '/api/events/' + id ,
+         //   data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+            }
+        }).success(function(data) {
+           console.log("blah blah") 
+               $scope.getEventList();
+          $scope.showDeleteEvent = false;
+           console.log("blah blah2") 
+        })
+        .error(function(data) {
                 console.log('Error: ' + data);
             });
     };
-
 
     $scope.register = function() {
         $http({
@@ -490,7 +510,7 @@ $scope.showLoginToInvite = true;
                 $scope.events_invite = data['event_invites'][0];
                 console.log("get Event Lissssssssst scope");
             $rootScope.isUserLoggedIn = true;
-                console.log (data['my_events']);
+                console.log (data);
                 
             })
             .error(function(data) {

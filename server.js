@@ -1111,7 +1111,6 @@ apiRoutes.get('/my_event_list2', function (req, res) {
                 });
             });
         }, function (err) {
-       console.log(player_data)
             res.json({'my_events': player_data,
                 'event_yes': [pushY],
                 'event_invites': [pushList],
@@ -1217,18 +1216,15 @@ apiRoutes.post('/new_event', function (req, res) {
     });
 });
 // delete a todo
-app.delete('/api/todos/:todo_id', function (req, res) {
-    Todo.remove({
-        _id: req.params.todo_id
-    }, function (err, todo) {
-        if (err)
-            res.send(err);
-        // get and return all the todos after you create another
-        Todo.find(function (err, todos) {
-            if (err)
-                res.send(err)
-            res.json(todos);
-        });
+apiRoutes.delete('/events/:event_id', function (req, res) {
+console.log("fsdfasfdas 4444")
+console.log(req.params.event_id)
+    Event.remove({ _id: req.params.event_id }, function (err, events) {
+        if (err) res.send(err);
+    Player.remove({ event_id: req.params.event_id }, function (err, players) {
+        if (err) res.send(err);
+            res.json(events);
+    });
     });
 });
 app.use('/api', apiRoutes);
