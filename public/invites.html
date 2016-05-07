@@ -2,12 +2,48 @@
     <div class="container" ng-init="getEventInvite()">
         <!-- HEADER AND TODO COUNT -->
         <div id="todo-list" class="row" ng-controller="mainController" >
-            <div class="col-xs-4">
-                <div class="jumbotron text-left">
+            <div class="col-xs-5">
+                <div class="jumbotron text-left" ng-if="eventEdit != 'YES'">
                     <h3>{{ event_title}}</h3>
                     <h3>Date: {{event_date}} </h3>
+                    <h3>Location: {{event_location}} </h3>
                     <h3>Host: {{event_creator_displayname}} </h3>
+                    <input type="button" value="Edit Event" ng-click="editEvent()" class="btn btn-primary"  >
                 </div>
+                <div class="jumbotron text-left" ng-if="eventEdit == 'YES'">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>Title   </label>
+                            <input type="text" class="form-control input-md text-left" value="event_data.event_title" ng-model="event_data.event_title">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" class="form-control input-md text-left" value="event_data.event_location" ng-model="event_data.event_location">
+                        </div>
+                        <div class="form-group">
+                            <p class="form-control-static">{{ event_data.event_date}}</p>
+                        </div>
+                    </form>
+                    <h3>Pick a date and time</h3>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="event_data.event_date" is-open="ctrl.open.date3" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'date3')"><i class="fa fa-calendar"></i></button>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+
+                    <input type="button" value="Save Event" ng-click="editEventSave()" class="btn btn-primary"  >
+                    <input type="button" value="Cancel" ng-click="cancelEditEvent()" class="btn btn-primary"  >
+                </div>
+
+
+
                 <label>
                     <div ng-repeat="user in players_list">
                         <span ng-if="invite_code == user.invite_code && event_creator_id == user.user_id">
@@ -16,7 +52,7 @@
                     </div>
                 </label>
                 <!-- TODO LIST -->
-      <input  type="button" value="Logout" ng-click="logOut()">
+                <input  type="button" value="Logout" ng-click="logOut()">
                 <div ng-if="isMember">
                     <label> you replied {{invited_reply}}  </label>                               
                     <form class="well" name="myForm">
@@ -27,9 +63,11 @@
                 </div>
                 <div ng-if="newInvite" class="button-bar" >
                     <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
-                    <input ng-class="{'Yes':'btn btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="invite_open('Yes')">
-                    <input ng-class="{'No':'btn btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="invite_open('No')">
-                    <input ng-class="{'Maybe':'btn btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open('Maybe')">
+                    <input ng-class="{'Yes':'btn btn - success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="invite_open('Yes')">
+                    <input ng-class="{'No':'btn
+                                btn - danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="invite_open('No')">
+                    <input ng-class="{'Maybe':'btn
+                                btn - warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open('Maybe')">
                 </div>
                 <div ng-if="showAcceptInvite">
                     <form class="well" name="myForm">
@@ -53,9 +91,9 @@
                             </label><br/>
                             <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">username:
                                 <input type="text" name="username" value="invited.username" ng-model="invited.username" required/> 
-                            <span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
-                                <span ng-show="myForm.username.$error.required">username is required.</span>
-                            </span>
+                                <span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
+                                    <span ng-show="myForm.username.$error.required">username is required.</span>
+                                </span>
                             </label>
                             <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
                             <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.displayname.$dirty && myForm.displayname.$invalid && myForm.username.$dirty && myForm.username.$invalid" >
@@ -63,7 +101,7 @@
                     </form>
                 </div>
             </div>
-            <div class="col-xs-8">
+            <div class="col-xs-5">
                 <label>RSVPs </label>
                 <div ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.displayname}} 
@@ -82,6 +120,4 @@
             </div>
         </div>
     </div>
-</div>
-</div>
 </body>

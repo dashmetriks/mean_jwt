@@ -848,18 +848,21 @@ apiRoutes.get('/geteventdata1/:event_id', function (req, res) {
     });
 });
 apiRoutes.post('/eventsave/:event_id', function (req, res) {
+    console.log(req.body) 
     Event.update({
         _id: req.params.event_id
     }, {
         $set: {
-            event_title: req.body.text,
-            event_start: req.body.event_start,
-            event_image: req.body.image
+            event_title: req.body.event_title,
+            event_location: req.body.event_location,
+            event_start: req.body.event_start
+            //event_image: req.body.image
         }
     },
     function (err, result) {
         if (err)
             throw err;
+    console.log(result) 
         res.json(result);
     });
 });

@@ -298,10 +298,23 @@ var that = this;
     }
 
     
-    $scope.invite_open_tmp = function (id,ustatus) {
-      $scope.showAcceptInvite = true;
-      $scope.ustatus = ustatus
-      $scope.event_id = id
+    $scope.editEvent = function () {
+      $scope.eventEdit = 'YES';
+      console.log($scope.event_title);
+      $scope.event_data =  {event_title: $scope.event_title, event_date: $scope.event_date, event_location: $scope.event_location }
+      $scope.set = function(event_title) {
+          this.event_data.event_title = event_title;
+      }
+      $scope.set = function(event_location) {
+          this.event_data.event_location = event_location;
+      }
+      $scope.set = function(event_date) {
+          this.event_data.event_date = event_date;
+      }
+    }
+
+    $scope.cancelEditEvent = function () {
+      $scope.eventEdit = 'NO';
     }
     $scope.invite_change = function () {
       $scope.showAcceptInvite = true;
@@ -576,6 +589,7 @@ $scope.showLoginToInvite = true;
                 $scope.event_date = data['event'][0].event_start; 
                 $scope.event_creator_displayname = data['event'][0].event_creator_displayname; 
                 $scope.event_creator_id = data['event'][0].event_creator;
+                $scope.event_location = data['event'][0].event_location;
                 console.log (data['is_member']);
                 console.log (data['event'][0].event_creator);
                 $scope.event_id = data['event'][0]._id;
@@ -763,6 +777,25 @@ $scope.showLoginToInvite = true;
 
                 console.log("add commment");
                 console.log (data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+    $scope.editEventSave = function() {
+      console.log($scope.ctrl.dates.date3)
+        $http({
+                method: 'POST',
+                url: express_endpoint + '/api/eventsave/' + $scope.event_id,
+                data: 'event_title=' + $scope.event_data.event_title + '&event_start=' + $scope.event_data.event_date + '&event_location=' + $scope.event_data.event_location, 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-access-token': $window.sessionStorage.getItem('token')
+                }
+            }).success(function(data) {
+               $scope.eventEdit = 'NO';
+               $scope.getEventInvite();
             })
             .error(function(data) {
                 console.log('Error: ' + data);
