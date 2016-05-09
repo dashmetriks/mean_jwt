@@ -432,8 +432,8 @@ var that = this;
               console.log("kkmkmkoooo");
               $scope.showRegToInvite = false;
               $scope.showLoginToInvite = true;
-              $window.location.reload();
-             // $location.url('/login');
+           //   $window.location.reload();
+              $location.url('/login');
             }
         });
     }
@@ -499,9 +499,14 @@ $scope.showLoginToInvite = true;
             console.log(data);
             if (data.success == true) {
               $window.sessionStorage.setItem('token', data.token);
+         
+            if (data.user_displayname){
               $location.url('/event_list');
+            }else{
+              $location.url('/user');
+            }
            //   $location.url('/invite/e4d091cc');
-                $window.location.reload();
+           //     $window.location.reload();
             } else {
               $scope.login_message = data.message    
             }

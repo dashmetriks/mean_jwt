@@ -1,6 +1,8 @@
 <body ng-controller="mainController">
     <div class="container">
 
+       <div class="col-xs-3">
+    <h3> Register </h3> 
         <form class="well">
            <div  class="form-group" >
     <label>Username</label>
@@ -13,6 +15,8 @@
      <input type="button" value="Register" ng-click="register()" class="btn btn-primary"/>
     </form>
     <h3> {{reg_message}} </h3>
+    <h4> or <a href="/login">Login</a>
+    </div>
     </div>
 
 </body>

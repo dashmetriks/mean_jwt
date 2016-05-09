@@ -278,6 +278,7 @@ app.post('/authenticate', function (req, res) {
                 res.json({
                     success: true,
                     message: 'Enjoy your token!',
+                    user_displayname: user.displayname,
                     token: token
                 });
             }
@@ -1145,23 +1146,29 @@ apiRoutes.get('/my_event_list', function (req, res) {
 apiRoutes.post('/new_event', function (req, res) {
 
     console.log("fasdfadsfdsf")
-    console.log(req.body)
+    console.log(req.decoded._doc)
+    User.findOne({
+        _id: req.decoded._doc._id
+    }, function (err, user) {
+
+        if (err)
+            throw err;
     // create a todo, information comes from AJAX request from Angular
     Event.create({
         event_title: req.body.text,
         event_start: req.body.event_start,
         event_location: req.body.event_location,
         event_creator: req.decoded._doc._id,
-        event_creator_displayname: req.decoded._doc.displayname
+        event_creator_displayname: user.displayname
 
     }, function (err, event_created) {
         if (err)
             res.send(err);
         Invite.create({
             event_id: event_created._id,
-            inviter: req.decoded._doc.username,
-            invited: req.decoded._doc.displayname,
-            invited_email: req.decoded._doc.username,
+            inviter: user.username,
+            invited: user.displayname,
+            invited_email: user.username,
             //     invited_email: req.body.email,
             //    invited_phone: req.body.phone,
             //     invited_type: req.body.type,
@@ -1172,9 +1179,9 @@ apiRoutes.post('/new_event', function (req, res) {
         function (err, new_invite) {
             Player.create({
                 event_id: event_created._id,
-                displayname: req.decoded._doc.displayname,
+                displayname: user.displayname,
                 invite_code: new_invite.invite_code,
-                username: req.decoded._doc.username,
+                username: user.username,
                 notice_rsvp: 'YES',
                 notice_comments: 'YES',
                 user_id: req.decoded._doc._id,
@@ -1216,6 +1223,7 @@ apiRoutes.post('/new_event', function (req, res) {
                 res.send(err)
             res.json(events);
         });
+    });
     });
 });
 // delete a todo

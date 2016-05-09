@@ -1,21 +1,35 @@
 <body ng-controller="mainController">
     <div class="container" ng-init="checkLogin()">
-        <form class="well">
+       <div class="col-xs-3">
+       <h3> User Account </h3>
+        <form class="well" name="myForm">
             <div  class="form-group" >
                 <label>Username</label>
-                <input type="text" name="username" ng-model="user_data.username"/>
+                <input type="text" name="username" ng-model="user_data.username" required/>
+<span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
+                                <span ng-show="myForm.username.$error.required">Username is required.</span>
+                            </span>
             </div>
             <div  class="form-group" >
                 <label>Displayname</label>
-                <input type="text" name="displayname" ng-model="user_data.displayname"/>
+                <input type="text" name="displayname" ng-model="user_data.displayname" required/>
+                            <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
+                                <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
+                            </span>
             </div>
+<!--
             <div class="form-group" >
                 <label>Password</label>
-                <input type="password" name="password" ng-model="user.password"/>
+                <input type="password" name="password" ng-model="user.password" required/>
+                            <span style="color:red" ng-show="myForm.password.$dirty && myForm.password.$invalid">
+                                <span ng-show="myForm.password.$error.required">password is required.</span>
+                            </span>
             </div>
-            <input type="button" value="Save" ng-click="userSave()" class="btn btn-primary"/>
+                            <input type="button" value="Save  " ng-click="userSave()" class="btn btn-primary" ng-disabled="myForm.displayname.$dirty && myForm.displayname.$invalid && myForm.username.$dirty && myForm.username.$invalid && myForm.password.$dirty && myForm.password.$invalid" >  -->
+                            <input type="button" value="Save  " ng-click="userSave()" class="btn btn-primary" ng-disabled="(myForm.displayname.$dirty && myForm.displayname.$invalid) || (myForm.username.$dirty && myForm.username.$invalid)" >
         </form>
         <h3> {{login_message}} </h3>
+    </div>
     </div>
 
 </body>
