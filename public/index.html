@@ -40,16 +40,24 @@
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
 <body>
 <div ng-app="scotchTodo" ng-controller="mainController as ctrl">
-<div class="text-center">
-<a href="/#/event_list" ng-show="isUserLoggedIn" > list </a>
-<a href="/#/user" ng-show="isUserLoggedIn" > user </a>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Envite</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/#/event_list" ng-show="isUserLoggedIn" > Event List </a></li>
+      <li><a href="/#/user" ng-show="isUserLoggedIn" > User Account </a></li>
+      <li><a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > Logout </a></li>
+    </ul>
+  </div>
+</nav>
 <!--
 <a href="#/register" ng-hide="isUserLoggedIn" > register </a>
 <a href="#/login" ng-hide="isUserLoggedIn"> login </a>
 <a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > logout </a>
 -->
 
-</div>
         <ng-view></ng-view>
 </div>
 

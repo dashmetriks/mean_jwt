@@ -1,18 +1,21 @@
 <body ng-controller="mainController">
     <div class="container" ng-init="checkLogin()">
-       <div class="col-xs-3">
+       <div class="col-xs-4">
        <h3> User Account </h3>
         <form class="well" name="myForm">
             <div  class="form-group" >
-                <label>Username</label>
-                <input type="text" name="username" ng-model="user_data.username" required/>
-<span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
-                                <span ng-show="myForm.username.$error.required">Username is required.</span>
-                            </span>
+                <label>Email</label>
+                <input type="email" name="username" ng-model="username" required/>
+        <div role="alert">
+      <span class="error" ng-show="myForm.username.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.username.$error.email">
+        Not valid email!</span>
+    </div>
             </div>
             <div  class="form-group" >
                 <label>Displayname</label>
-                <input type="text" name="displayname" ng-model="user_data.displayname" required/>
+                <input type="text" name="displayname" ng-model="displayname" required/>
                             <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
                                 <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
                             </span>

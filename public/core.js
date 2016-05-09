@@ -450,7 +450,11 @@ var that = this;
             console.log(data);
             if (data['user'][0]['username']) { 
               console.log("kkmkmkoooo");
-              $scope.user_data = data['user'][0]
+              $scope.username = data['user'][0].username
+              if (data['user'][0].displayname){
+                 $scope.displayname = data['user'][0].displayname;
+              }else{
+                 $scope.displayname =  data['user'][0].username.split('@')[0];             } 
               $scope.showLoginToInvite = false;
             } else {
 $scope.showLoginToInvite = true;
@@ -466,7 +470,7 @@ $scope.showLoginToInvite = true;
         $http({
                 method: 'POST',
                 url: express_endpoint + '/api/usersave/', 
-                data: 'username=' + $scope.user_data.username + '&displayname=' + $scope.user_data.displayname, 
+                data: 'username=' + $scope.username + '&displayname=' + $scope.displayname, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'x-access-token': $window.sessionStorage.getItem('token')
