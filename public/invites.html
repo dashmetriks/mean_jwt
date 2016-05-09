@@ -3,14 +3,14 @@
         <!-- HEADER AND TODO COUNT -->
         <div id="todo-list" class="row" ng-controller="mainController" >
             <div class="col-xs-5">
-                <div class="jumbotron text-left" ng-if="eventEdit != 'YES'">
-                    <h3>{{ event_title}}</h3>
-                    <h3>Date: {{event_date}} </h3>
-                    <h3>Location: {{event_location}} </h3>
-                    <h3>Host: {{event_creator_displayname}} </h3>
+                <div class="well text-left" ng-if="eventEdit != 'YES'">
+                    <h4>{{ event_title}}</h4>
+                    <h4>Date: {{event_date}} </h4>
+                    <h4>Location: {{event_location}} </h4>
+                    <h4>Host: {{event_creator_displayname}} </h4>
                     <input type="button" value="Edit Event" ng-click="editEvent()" class="btn btn-primary"  >
                 </div>
-                <div class="jumbotron text-left" ng-if="eventEdit == 'YES'">
+                <div class="well text-left" ng-if="eventEdit == 'YES'">
                     <form class="form-inline">
                         <div class="form-group">
                             <label>Title   </label>
@@ -57,7 +57,7 @@
                     <form class="well" name="myForm">
                         <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.comments">
                         <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
-                        <input  class="btn btn-primary btn-lg" type="button" value="Change Reply" ng-click="invite_change()">
+                        <input  class="btn btn-primary btn-sm" type="button" value="Change Reply" ng-click="invite_change()">
                     </form>
                 </div>
                 <div ng-if="newInvite" class="button-bar" >
@@ -100,18 +100,20 @@
             </div>
             <div class="col-xs-5">
                 <label>RSVPs </label>
-                <div ng-repeat="user in yeses">
+                <div class="well well-sm" >
+                <div  ng-repeat="user in yeses">
                     {{user.in_or_out}} - {{user.displayname}} 
                     <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
                     <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
                 </div>
-                <div ng-repeat="user in nos">
+                <div  ng-repeat="user in nos">
                     {{user.in_or_out}} - {{user.displayname}} 
                     <b>  <span ng-if="invite_code == user.invite_code"> -- You </span> </b>
                     <i> <span ng-if="event_creator_id == user.user_id"> Host </span> </i>
+                </div>
                 </div>
                 <h3>Comments </h3>
-                <div ng-repeat="comment in comments">
+                <div class="well well-sm" ng-repeat="comment in comments">
                     "{{comment.text}}" by <b>  {{comment.displayname}} </b>
                 </div>
             </div>
