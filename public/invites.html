@@ -8,7 +8,14 @@
                     <h4>Date: {{event_date}} </h4>
                     <h4>Location: {{event_location}} </h4>
                     <h4>Host: {{event_creator_displayname}} </h4>
-                    <input type="button" value="Edit Event" ng-click="editEvent()" class="btn btn-primary"  >
+                <label>
+                    <div ng-repeat="user in players_list">
+                        <span ng-if="invite_code == user.invite_code && event_creator_id == user.user_id">
+                    <input type="button" value="Edit Event" ng-click="editEvent()" class="btn btn-primary btn-sm"  >
+                            <a href="/invited_list/{{ event_id}}" > Invites </a> 
+                        </span>
+                    </div>
+                </label>
                 </div>
                 <div class="well text-left" ng-if="eventEdit == 'YES'">
                     <form class="form-inline">
@@ -38,34 +45,42 @@
                         </div>
                     </form>
 
-                    <input type="button" value="Save Event" ng-click="editEventSave()" class="btn btn-primary"  >
-                    <input type="button" value="Cancel" ng-click="cancelEditEvent()" class="btn btn-primary"  >
+                    <input type="button" value="Save Event" ng-click="editEventSave()" class="btn btn-primary btn-sm"  >
+                    <input type="button" value="Cancel" ng-click="cancelEditEvent()" class="btn btn-primary btn-sm"  >
+
+
+
                 </div>
-
-
-
-                <label>
-                    <div ng-repeat="user in players_list">
-                        <span ng-if="invite_code == user.invite_code && event_creator_id == user.user_id">
-                            <h3><a href="/invited_list/{{ event_id}}" > Invites </a> </h3>
-                        </span>
-                    </div>
-                </label>
                 <!-- TODO LIST -->
+
+
+
                 <div ng-if="isMember">
                     <label> you replied {{invited_reply}}  </label>                               
-                    <form class="well" name="myForm">
-                        <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.comments">
-                        <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
-                        <input  class="btn btn-primary btn-sm" type="button" value="Change Reply" ng-click="invite_change()">
-                    </form>
+                <div class="button-bar" >
+                    <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
+                    <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="addEvent(event_id, 'Yes')">
+                    <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="addEvent(event_id, 'No')">
+                    <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="addEvent(event_id, 'Maybe')">
                 </div>
+                    <form class="well" name="myForm">
+                        <input type="text" class="form-control input-md text-center" placeholder="Add comment here" ng-model="formData.comments">
+                        <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary btn-sm" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
+                        <input  class="btn btn-primary btn-sm" type="button" value="Change Settings" ng-click="invite_change()">
+                    </form>
+                </div> <!-- ng-if="isMember" -->
+
+
+
                 <div ng-if="newInvite" class="button-bar" >
                     <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
                     <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="invite_open('Yes')">
                     <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="invite_open('No')">
                     <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="invite_open('Maybe')">
-                </div>
+                </div> <!-- ng-if="newInvite" -->
+
+
+
                 <div ng-if="showAcceptInvite">
                     <form class="well" name="myForm">
                         <div  class="form-group" >
@@ -75,7 +90,6 @@
                             <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
                                 <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
                             </span>
-
                             <br/>
                             <label>Receive rsvp updates:
                                 <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="'YES'" ng-false-value="'NO'">
@@ -96,7 +110,27 @@
                             <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.displayname.$dirty && myForm.displayname.$invalid && myForm.username.$dirty && myForm.username.$invalid" >
                         </div>
                     </form>
-                </div>
+                </div> <!-- ng-if="showAcceptInvite" -->
+
+
+
+
+                <div ng-if="changeSettings">
+                    <form class="well" name="myForm">
+                        <div  class="form-group" >
+                            <label>Receive rsvp updates:
+                                <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="'YES'" ng-false-value="'NO'">
+                            </label><br/>
+                            <label>Receive comments from guest :
+                                <input type="checkbox" ng-model="checkboxModel.comment_alert" ng-true-value="'YES'" ng-false-value="'NO'">
+                            </label><br/>
+                            <input type="button" value="Save your Event Settings" ng-click="addEvent(event_id, ustatus)" class="btn btn-primary btn-sm" >
+                        </div>
+                    </form>
+                </div> <!-- ng-if="changeSettings" -->
+
+
+
             </div>
             <div class="col-xs-5">
                 <label>RSVPs </label>

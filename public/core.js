@@ -317,8 +317,15 @@ var that = this;
       $scope.eventEdit = 'NO';
     }
     $scope.invite_change = function () {
-      $scope.showAcceptInvite = true;
-      $scope.newInvite = true;
+      $scope.newInvite = false;
+      if ($rootScope.isUserLoggedIn == true){
+        $scope.changeSettings = true;
+        $scope.showAcceptInvite = false;
+      }else{
+        console.log("nooooo")
+        $scope.changeSettings = false;
+        $scope.showAcceptInvite = true;
+      } 
     //  $scope.ustatus = ustatus
       //$scope.event_id = id
     }
