@@ -18,20 +18,27 @@
                 </label>
                 </div>
                 <div class="well text-left" ng-if="eventEdit == 'YES'">
-                    <form class="form-inline">
+                    <form class="form-inline" name="myForm">
                         <div class="form-group">
                             <label>Title   </label>
-                            <input type="text" class="form-control input-md text-left" value="event_data.event_title" ng-model="event_data.event_title">
+                            <input type="text" name="event_title" class="form-control input-md text-left" value="event_data.event_title" ng-model="event_data.event_title" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.event_title.$error.required">
+        Required</span>
+    </div>
                         </div>
                         <div class="form-group">
                             <label>Location</label>
-                            <input type="text" class="form-control input-md text-left" value="event_data.event_location" ng-model="event_data.event_location">
+                            <input type="text" name="event_location" class="form-control input-md text-left" value="event_data.event_location" ng-model="event_data.event_location" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.event_location.$error.required">
+        Required</span>
+    </div>
                         </div>
                         <div class="form-group">
                             <p class="form-control-static">{{ event_data.event_date}}</p>
                         </div>
-                    </form>
-                    <h3>Pick a date and time</h3>
+                    <h4>Pick a date and time</h4>
                     <form class="form-horizontal">
                         <div class="form-group">
                             <div class="col-sm-10">
@@ -45,27 +52,27 @@
                         </div>
                     </form>
 
-                    <input type="button" value="Save Event" ng-click="editEventSave()" class="btn btn-primary btn-sm"  >
+                    <input type="button" value="Save Event" ng-disabled="(myForm.event_title.$dirty && myForm.event_title.$invalid) || (myForm.event_location.$dirty && myForm.event_location.$invalid)" ng-click="editEventSave()" class="btn btn-primary btn-sm"  >
                     <input type="button" value="Cancel" ng-click="cancelEditEvent()" class="btn btn-primary btn-sm"  >
+                    </form>
 
 
 
                 </div>
-                <!-- TODO LIST -->
 
 
 
                 <div ng-if="isMember">
-                    <label> you replied {{invited_reply}}  </label>                               
+                    <label> You Replied {{invited_reply}}  </label>                               
                 <div class="button-bar" >
                     <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
-                    <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="addEvent(event_id, 'Yes')">
-                    <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="addEvent(event_id, 'No')">
-                    <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="addEvent(event_id, 'Maybe')">
+                    <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]"   type="button" value="Yes" ng-click="addEvent(event_id, 'Yes', 'nocomment')">
+                    <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]"   type="button" value="No" ng-click="addEvent(event_id, 'No', 'nocomment')">
+                    <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]"   type="button" value="Maybe" ng-click="addEvent(event_id, 'Maybe', 'nocomment')">
                 </div>
-                    <form class="well" name="myForm">
-                        <input type="text" class="form-control input-md text-center" placeholder="Add comment here" ng-model="formData.comments">
-                        <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary btn-sm" ng-disabled="myForm.username.$dirty && myForm.username.$invalid" >
+                    <form class="well" name="form.myForm2">
+                        <input type="text" class="form-control input-md text-center" name="addComments" placeholder="Add comment here" ng-model="formData.comments" required>
+                        <input type="button" value="Add Comment" ng-click="addEvent(event_id, 'none')" class="btn btn-primary btn-sm" ng-disabled="form.myForm2.addComments.$pristine && form.myForm2.addComments.$invalid" >
                         <input  class="btn btn-primary btn-sm" type="button" value="Change Settings" ng-click="invite_change()">
                     </form>
                 </div> <!-- ng-if="isMember" -->
@@ -81,11 +88,10 @@
 
 
 
-                <div ng-if="showAcceptInvite">
+                <div ng-if="changeSettingsAnon">
                     <form class="well" name="myForm">
                         <div  class="form-group" >
                             <label>Display Name</label>
-                            <label>{{event_id}}</label>
                             <input type="text" name="displayname" value="invited.displayname" ng-model="invited.displayname" required/> 
                             <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
                                 <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
@@ -97,17 +103,45 @@
                             <label>Receive comments from guest :
                                 <input type="checkbox" ng-model="checkboxModel.comment_alert" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
-                            <label> Create Account
-                                <input type="checkbox" ng-model="checkboxModel.create_account" ng-true-value="'YES'" ng-false-value="'NO'">
+                            <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">Email:
+                                <input type="email" name="username" value="invited.username" ng-model="invited.username" required/> 
+        <div role="alert">
+      <span class="error" ng-show="myForm.username.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.username.$error.email">
+        Not valid email!</span>
+    </div>
+                            </label></br>
+                            <input type="button" value="Save your Event Settings" ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="(myForm.displayname.$pristine && myForm.displayname.$invalid) || (myForm.username.$pristine && myForm.username.$invalid)" >
+                        </div>
+                    </form>
+                </div> <!-- ng-if="showAcceptInvite" -->
+                <div ng-if="showAcceptInvite">
+                    <form class="well" name="myForm">
+                        <div  class="form-group" >
+                            <label>Display Name</label>
+                            <input type="text" name="displayname" value="invited.displayname" ng-model="invited.displayname" required/> 
+                            <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
+                                <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
+                            </span>
+                            <br/>
+                            <label>Receive rsvp updates:
+                                <input type="checkbox" ng-model="checkboxModel.rsvp" ng-true-value="'YES'" ng-false-value="'NO'">
                             </label><br/>
-                            <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">username:
-                                <input type="text" name="username" value="invited.username" ng-model="invited.username" required/> 
-                                <span style="color:red" ng-show="myForm.username.$dirty && myForm.username.$invalid">
-                                    <span ng-show="myForm.username.$error.required">username is required.</span>
-                                </span>
+                            <label>Receive comments from guest :
+                                <input type="checkbox" ng-model="checkboxModel.comment_alert" ng-true-value="'YES'" ng-false-value="'NO'">
+                            </label><br/>
+                            <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">Email:
+                                <input type="email" name="username" value="invited.username" ng-model="invited.username" required/> 
+        <div role="alert">
+      <span class="error" ng-show="myForm.username.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.username.$error.email">
+        Not valid email!</span>
+    </div>
                             </label>
                             <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
-                            <input type="button" value="Accept Invite  " ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="myForm.displayname.$dirty && myForm.displayname.$invalid && myForm.username.$dirty && myForm.username.$invalid" >
+                            <input type="button" value="Accept Invite" ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="(myForm.displayname.$pristine && myForm.displayname.$invalid) || (myForm.username.$pristine && myForm.username.$invalid)" >
                         </div>
                     </form>
                 </div> <!-- ng-if="showAcceptInvite" -->

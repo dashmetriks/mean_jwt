@@ -72,14 +72,27 @@
             <div id="todo-list" class="row"  >
                 <h3><a href="/invite/{{ invite_code}}"> Event Page </a> </h3>
                 <div id="todo-form" class="row">
-                    <div class="col-sm-8 col-sm-offset-2 text-center">
-                        <form>
-                            <div class="form-group">
+                    <div >
+                        <form class="form-inline well" name="myForm">
+                        <div class="form-group">
                                 <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
                         <label>Display Name</label>
-                                <input type="text" class="form-control input-lg text-center" placeholder="name" ng-model="formData.text">
+                                <input type="text"  name="displayname" class="form-control input-lg text-center" placeholder="name" ng-model="formData.text" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.displayname.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.displayname.$error.email">
+        Not valid email!</span>
+    </div>
+                            <br/>
                         <label>Email/Username</label>
-                                <input type="text" class="form-control input-lg text-center" placeholder="slatterytom@gmail.com" ng-model="formData.email">
+                                <input type="email" name="username" class="form-control input-lg text-center" placeholder="slatterytom@gmail.com" ng-model="formData.email" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.username.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.username.$error.email">
+        Not valid email!</span>
+    </div>
                             </div>
                             <!-- createToDo() WILL CREATE NEW TODOS -->
                             <button type="submit" class="btn btn-primary btn-lg" ng-click="addInvite()">Invite</button>

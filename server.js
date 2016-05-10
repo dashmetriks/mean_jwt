@@ -322,37 +322,12 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     res.send(err)
 
                 update_invite_status_displayname(invites["_id"], req.params.ustatus, req.body.displayname,req.body.username);
-                //  if (req.body.create_account == 'YES') {
-                User.findOne({
-                    username: req.body.username
-                }, function (err, user) {
-                    if (err)
-                        throw err;
-                    if (!user) {
-                        User.create({
-                            username: req.body.username,
-                            displayname: req.body.displayname,
-                            password: '77jump'
-                        },
-                        function (err, usernew) {
-                            if (err)
-                                throw err;
-                            new_user_id = usernew._id
-
-                            transporter.sendMail({
-                                from: 'slatterytom@gmail.com',
-                                to: 'slatterytom@gmail.com',
-                                subject: req.body.username + '- click here to complete reg',
-                                html: 'Login here  <a href="' + config.endpoint + '/login/"> login </a> ' + req.body.username,
-                            });
-                            transporter.close();
-
 
                             Player.create({
                                 event_id: req.params.event_id,
                                 invite_code: req.params.invite_code,
                                 notice_rsvp: req.body.rsvp,
-                                user_id: usernew._id,
+                       //         user_id: usernew._id,
                                 notice_comments: req.body.comment_alert,
                                 username: req.body.username,
                                 displayname: req.body.displayname,
@@ -362,25 +337,6 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                                 if (err)
                                     throw err;
                             });
-                        });
-                    } else { // !user
-                        Player.create({
-                            event_id: req.params.event_id,
-                            invite_code: req.params.invite_code,
-                            notice_rsvp: req.body.rsvp,
-                            user_id: user._id,
-                            notice_comments: req.body.comment_alert,
-                            username: req.body.username,
-                            displayname: req.body.displayname,
-                            in_or_out: req.params.ustatus
-                        },
-                        function (err, result) {
-                            if (err)
-                                throw err;
-                        });
-                    }
-                });
-
                 if (req.body.comment != "undefined") {
                     Comments.create({
                         event_id: req.params.event_id,

@@ -166,6 +166,7 @@ scotchTodo.config(['$locationProvider', '$routeProvider',
 scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$location', '$routeParams', '$rootScope',
   function ($scope, $http, $window, $location , $routeParams, $rootScope) {
 
+     $scope.form = {};
 var that = this;
 
     var in10Days = new Date();
@@ -318,11 +319,17 @@ var that = this;
     }
     $scope.invite_change = function () {
       $scope.newInvite = false;
+      
+        console.log($rootScope.isUserLoggedIn)
       if ($rootScope.isUserLoggedIn == true){
         $scope.changeSettings = true;
         $scope.showAcceptInvite = false;
-      }else{
+      }else if ($rootScope.isMember == true ){
         console.log("nooooo")
+        $scope.changeSettingsAnon = true;
+        $scope.changeSettings = false;
+        $scope.showAcceptInvite = false;
+      }else{
         $scope.changeSettings = false;
         $scope.showAcceptInvite = true;
       } 
@@ -736,13 +743,12 @@ $scope.showLoginToInvite = true;
             });
     };
 
-    $scope.addEvent = function(id,ustatus) {
+    $scope.addEvent = function(id,ustatus,commentsForm) {
        if (ustatus == 'none'){
           Comments = $scope.formData.comments
        }else{
           Comments = $scope.formData.text
       }
-          
        
         $http({
                 method: 'POST',
@@ -767,7 +773,14 @@ $scope.showLoginToInvite = true;
             //   console.log(data['players_yes'])
              //   $scope.$apply();
            //    $scope.invite_check();
+               if (Comments){
+                 $scope.form.myForm2.$setPristine();
+                 delete  $scope.formData.comments 
+                 delete  $scope.formData.text 
+               }
                $scope.showAcceptInvite = false;
+               $scope.changeSettingsAnon = false;
+               $scope.changeSettings = false;
                $scope.newInvite = false;
                $scope.getEventInvite();
             })
@@ -777,7 +790,7 @@ $scope.showLoginToInvite = true;
     };
 
 
-    $scope.createTodo = function() {
+    $scope.createEvent = function() {
       console.log($scope.ctrl.dates.date3)
         $http({
                 method: 'POST',
@@ -791,6 +804,8 @@ $scope.showLoginToInvite = true;
               //  $scope.events = data;
                $scope.getEventList();
 
+                delete  $scope.formData.text 
+                delete  $scope.formData.event_location 
                 console.log("add commment");
                 console.log (data);
             })

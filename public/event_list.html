@@ -1,11 +1,19 @@
 <body >
     <div class="container" ng-controller="mainController" ng-init="getEventList()">
-        <div class="col-xs-4"> 
-            <form>
-                <div class="jumbotron text-left" class="form-group">
-                    <input type="text" class="form-control input-lg text-center" placeholder="Event Title" ng-model="formData.text">
-                    <input type="text" class="form-control input-lg text-center" placeholder="Event Location" ng-model="formData.event_location">
-                    <h3>Pick a date and time</h3>
+        <div class="col-xs-4 well" > 
+            <form  name="myForm">
+                <div  class="form-group" >
+                    <input type="text" name="event_title" class="form-control input-md text-center" placeholder="Event Title" ng-model="formData.text" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.event_title.$error.required">
+        Required</span>
+    </div>
+                    <input type="text" name="event_location" class="form-control input-md text-center" placeholder="Event Location" ng-model="formData.event_location" required>
+        <div role="alert">
+      <span class="error" ng-show="myForm.event_location.$error.required">
+        Required</span>
+    </div>
+                    <h4>Pick a date and time</h4>
                     <form class="form-horizontal">
                         <div class="form-group">
                             <div class="col-sm-10">
@@ -17,15 +25,10 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <p class="form-control-static">{{ ctrl.dates.date3}}</p>
-                            </div>
-                        </div>
                     </form>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Create New Event</button>
+                <button type="submit" ng-disabled="(myForm.event_title.$pristine && myForm.event_title.$invalid) || (myForm.event_location.$pristine && myForm.event_location.$invalid)"  class="btn btn-primary btn-lg" ng-click="createEvent()">Create New Event</button>
             </form>
         </div>
         <div class="col-xs-4"> 
