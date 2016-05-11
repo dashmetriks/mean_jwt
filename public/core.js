@@ -322,11 +322,11 @@ var that = this;
       
         console.log($rootScope.isUserLoggedIn)
       if ($rootScope.isUserLoggedIn == true){
-        $scope.changeSettings = true;
+        $scope.changeSettings = $scope.changeSettings === true ? false: true;
         $scope.showAcceptInvite = false;
       }else if ($rootScope.isMember == true ){
         console.log("nooooo")
-        $scope.changeSettingsAnon = true;
+        $scope.changeSettingsAnon = $scope.changeSettingsAnon === true ? false: true;
         $scope.changeSettings = false;
         $scope.showAcceptInvite = false;
       }else{
@@ -867,6 +867,8 @@ $scope.showLoginToInvite = true;
                 }
             }).success(function(data) {
                 console.log("add invite");
+                delete  $scope.formData.text 
+                delete  $scope.formData.email 
               //  $scope.todos = data;
                 //$scope.comments = data;
                 $scope.getInvites();
