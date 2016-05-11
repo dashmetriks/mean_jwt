@@ -117,12 +117,12 @@
                     </form>
                 </div> <!-- ng-if="showAcceptInvite" -->
                 <div ng-if="showAcceptInvite">
-                    <form class="well" name="myForm">
+                    <form class="well" name="form.myForm2">
                         <div  class="form-group" >
                             <label>Display Name</label>
                             <input type="text" name="displayname" value="invited.displayname" ng-model="invited.displayname" required/> 
-                            <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
-                                <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
+                            <span style="color:red" ng-show="form.myForm2.displayname.$dirty && form.myForm2.displayname.$invalid">
+                                <span ng-show="form.myForm2.displayname.$error.required">displayname is required.</span>
                             </span>
                             <br/>
                             <label>Receive rsvp updates:
@@ -134,14 +134,14 @@
                             <label ng-if="checkboxModel.rsvp == 'YES' || checkboxModel.comment_alert == 'YES'">Email:
                                 <input type="email" name="username" value="invited.username" ng-model="invited.username" required/> 
         <div role="alert">
-      <span class="error" ng-show="myForm.username.$error.required">
+      <span class="error" ng-show="form.myForm2.username.$error.required">
         Required!</span>
-      <span class="error" ng-show="myForm.username.$error.email">
+      <span class="error" ng-show="form.myForm2.username.$error.email">
         Not valid email!</span>
     </div>
                             </label>
                             <input type="text" class="form-control input-lg text-center" placeholder="Add comment here" ng-model="formData.text">
-                            <input type="button" value="Accept Invite" ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="(myForm.displayname.$pristine && myForm.displayname.$invalid) || (myForm.username.$pristine && myForm.username.$invalid)" >
+                            <input type="button" value="Accept Invite" ng-click="addEvent(event_id, ustatus)" class="btn btn-primary" ng-disabled="(form.myForm2.displayname.$pristine && form.myForm2.displayname.$invalid) || (form.myForm2.username.$pristine && form.myForm2.username.$invalid)" >
                         </div>
                     </form>
                 </div> <!-- ng-if="showAcceptInvite" -->
