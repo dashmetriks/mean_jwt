@@ -61,7 +61,7 @@
                         <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
                         <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]" type="button" value="Yes" ng-click="addEvent(event_id, 'Yes', 'nocomment')">
                         <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]" type="button" value="No" ng-click="addEvent(event_id, 'No', 'nocomment')">
-                        <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]" type="button" value="Maybe" ng-click="addEvent(event_id, 'Maybe', 'nocomment')">
+                      <!--  <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]" type="button" value="Maybe" ng-click="addEvent(event_id, 'Maybe', 'nocomment')"> -->
                     </div>
                     <form class="well" name="form.myForm2">
                         <input type="text" class="form-control input-md text-center" name="addComments" placeholder="Add comment here" ng-model="formData.comments" required>
