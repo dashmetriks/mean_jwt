@@ -74,7 +74,7 @@
                     <!--  <input  class="btn btn-primary btn-lg {{(ustatus == 'Yes')}}" type="button" value="Yes" ng-click="invite_open( 'Yes')"> -->
                     <input ng-class="{'Yes':'btn-success', 1:'two',2:'three'}[ustatus]" type="button" value="Yes" ng-click="invite_open('Yes')">
                     <input ng-class="{'No':'btn-danger', 1:'two',2:'three'}[ustatus]" type="button" value="No" ng-click="invite_open('No')">
-                    <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]" type="button" value="Maybe" ng-click="invite_open('Maybe')">
+                  <!--  <input ng-class="{'Maybe':'btn-warning', 1:'two',2:'three'}[ustatus]" type="button" value="Maybe" ng-click="invite_open('Maybe')"> -->
                 </div>
                 <!-- ng-if="newInvite" -->
                 <div ng-if="changeSettingsAnon">
