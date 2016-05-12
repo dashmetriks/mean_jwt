@@ -244,7 +244,7 @@ var that = this;
     $scope.formData1 = {};
 
     $scope.logOut = function () {
-       $window.sessionStorage['token'] = null;
+       $window.localStorage['token'] = null;
        $rootScope.isUserLoggedIn = false;
           //  $window.sessionStorage.setItem('token', data.token);
        $location.url('/login');
@@ -268,7 +268,7 @@ var that = this;
                 url: express_endpoint + '/api/change_invite_status/' + $routeParams.invite_code ,
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
            //     $scope.events = data;
@@ -414,7 +414,7 @@ var that = this;
          //   data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
             }
         }).success(function(data) {
            console.log("blah blah") 
@@ -458,7 +458,7 @@ var that = this;
             url: express_endpoint + '/api/userget/',
              headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
         }).success(function(data) {
             console.log(data);
@@ -487,7 +487,7 @@ $scope.showLoginToInvite = true;
                 data: 'username=' + $scope.username + '&displayname=' + $scope.displayname, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
              // $scope.checkLogin()
@@ -516,7 +516,7 @@ $scope.showLoginToInvite = true;
         }).success(function(data) {
             console.log(data);
             if (data.success == true) {
-              $window.sessionStorage.setItem('token', data.token);
+              $window.localStorage.setItem('token', data.token);
          
             if (data.user_displayname){
               $location.url('/event_list');
@@ -539,7 +539,7 @@ $scope.showLoginToInvite = true;
                 url: express_endpoint + '/api/my_event_list2/',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                 $scope.events = data['my_events'];
@@ -560,7 +560,7 @@ $scope.showLoginToInvite = true;
                 url: express_endpoint + '/api/invited/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                 
@@ -588,41 +588,33 @@ $scope.showLoginToInvite = true;
     };
 
     $scope.getEventInvite = function(id) {
+      console.log($window.localStorage.getItem('token').length < 10)
+      if ($window.localStorage.getItem('token').length < 10 ){
+                console.log("get Event 9999 scope");
+         var endpoint = express_endpoint + '/geteventinviteanon/' + $routeParams.invite_code 
+         var head =  { 'Content-Type': 'application/json' }
+      } else {
+         var endpoint = express_endpoint + '/api/geteventinvite/' + $routeParams.invite_code 
+         var head =  { 'Content-Type': 'application/json', 'x-access-token': $window.localStorage.getItem('token') }
+                $rootScope.isUserLoggedIn = true;
+      } 
         $http({
                 method: 'GET',
-                url: express_endpoint + '/geteventinvite/' + $routeParams.invite_code,
-              //  url: 'http://dashmetriks.com:3000/api/events/' + $routeParams.event_id,
-                headers: {
-                    'Content-Type': 'application/json',
-                //    'x-access-token': $window.sessionStorage.getItem('token')
-                }
+                url: endpoint,
+                headers: head
             }).success(function(data) {
-  
-                console.log ("dedededededeedededededededede")
                 $scope.invite_code =  $routeParams.invite_code
-                $scope.wtf = "lets do this" 
-              //  $scope.widget = {title: 'abc444'};
-        
-      //  $scope.set = function(new_title) {
-       //     this.widget.title = new_title;
-      //  }
-                console.log (data)
-             //   $scope.event_id = $routeParams.event_id;
                 $scope.event_title = data['event'][0].event_title; 
                 $scope.event_date = data['event'][0].event_start; 
                 $scope.event_creator_displayname = data['event'][0].event_creator_displayname; 
                 $scope.event_creator_id = data['event'][0].event_creator;
                 $scope.event_location = data['event'][0].event_location;
-                console.log (data['is_member']);
-                console.log (data['event'][0].event_creator);
                 $scope.event_id = data['event'][0]._id;
                 $scope.yeses = data['players_yes'];
                 $scope.nos = data['players_no'];
                 $scope.players_list = data['players_list'];
                 $scope.comments = data['comments'];
                 $scope.loggedInUsername = data['logged_in_username']; 
-              //  $rootScope.isUserLoggedIn = true;
-                //if (data['is_member'] == null) {
                 if(data['is_member'].length > 0){  
                   $scope.invited = {username: data['is_member'][0].username, displayname: data['is_member'][0].displayname };
                   $scope.set = function(invited_username) {
@@ -646,8 +638,9 @@ $scope.showLoginToInvite = true;
                   $rootScope.isMember = false;
                   $rootScope.newInvite = true;
                 }  
+                console.log ( data['event'][0].event_creator) 
+                console.log (  data['logged_in_userid'])
                 if ( data['event'][0].event_creator == data['logged_in_userid']){
-                  console.log(" is a dkdkkasdkfsdakfasdkfkaskdfaksfkasdk");
                 $rootScope.isEventCreator = true;
                 $rootScope.isMember = true;
                 } 
@@ -656,6 +649,8 @@ $scope.showLoginToInvite = true;
                 console.log('Error: ' + data);
             });
     };
+
+
     $scope.getEvent = function(id) {
        console.log($scope)
         $http({
@@ -664,7 +659,7 @@ $scope.showLoginToInvite = true;
               //  url: 'http://dashmetriks.com:3000/api/events/' + $routeParams.event_id,
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                 console.log (data['event'][0].event_creator_displayname);
@@ -798,7 +793,7 @@ $scope.showLoginToInvite = true;
                 data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3 + '&event_location=' + $scope.formData.event_location, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
               //  $scope.events = data;
@@ -822,7 +817,7 @@ $scope.showLoginToInvite = true;
                 data: 'event_title=' + $scope.event_data.event_title + '&event_start=' + $scope.event_data.event_date + '&event_location=' + $scope.event_data.event_location, 
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                $scope.eventEdit = 'NO';
@@ -840,7 +835,7 @@ $scope.showLoginToInvite = true;
                 data: 'text=' + $scope.formData.text,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                $scope.getEvent();
@@ -863,7 +858,7 @@ $scope.showLoginToInvite = true;
                 data: 'text=' + $scope.formData.text + '&email=' + $scope.formData.email,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'x-access-token': $window.sessionStorage.getItem('token')
+                    'x-access-token': $window.localStorage.getItem('token')
                 }
             }).success(function(data) {
                 console.log("add invite");
