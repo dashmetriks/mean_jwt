@@ -649,6 +649,7 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                         };
 
                         $scope.invited_reply = data['is_member'][0].in_or_out;
+                        $scope.invite_code = data['is_member'][0].invite_code;
                         $scope.ustatus = data['is_member'][0].in_or_out;
                         $rootScope.isMember = true;
                         $rootScope.newInvite = false;
@@ -695,7 +696,6 @@ scotchTodo.controller('mainController', ['$scope', '$http', '$window', '$locatio
                     $scope.comments = data['comments'];
                     $scope.loggedInUsername = data['logged_in_username'];
                     //  $rootScope.isUserLoggedIn = true;
-                    //if (data['is_member'] == null) {
                     if (data['is_member'].length > 0) {
                         $scope.invited = {
                             username: data['is_member'][0].username,
