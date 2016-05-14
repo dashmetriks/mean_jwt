@@ -3,6 +3,7 @@
 // set up ========================
 var express = require('express');
 var app = express(); // create our app w/ express
+var cors = require('cors')
 var mongoose = require('mongoose'); // mongoose for mongodb
 var autoIncrement = require('mongoose-auto-increment');
 var async = require("async");
@@ -48,7 +49,7 @@ app.use(bodyParser.json({
     type: 'application/vnd.api+json'
 })); // parse application/vnd.api+json as json
 app.use(methodOverride());
-
+app.use(cors())
 var Schema = mongoose.Schema,
         ObjectId = Schema.ObjectID;
 
