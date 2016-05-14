@@ -11,7 +11,7 @@ var interceptor = function($q, $location) {
         responseError: function(rejection) {
             console.log('Failed with', rejection.status, 'status');
             if (rejection.status == 403) {
-                //    $location.url('/login');
+                    $location.url('/login');
             }
 
             return $q.reject(rejection);
@@ -21,7 +21,7 @@ var interceptor = function($q, $location) {
 
 
 //var express_endpoint = "http://dashmetriks.com:3000"
-var express_endpoint = "http://localhost:8080"
+var express_endpoint = "http://localhost:8070"
 
 var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 
