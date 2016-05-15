@@ -109,9 +109,21 @@ envite.directive("ngFileSelect", function() {
         }
 
     }
-
-
 });
+
+envite.directive('match', function($parse) {
+  return {
+    require: 'ngModel',
+    link: function(scope, elem, attrs, ctrl) {
+      scope.$watch(function() {        
+        return $parse(attrs.match)(scope) === ctrl.$modelValue;
+      }, function(currentValue) {
+        ctrl.$setValidity('mismatch', currentValue);
+      });
+    }
+  };
+});
+
 
 
 envite.config(function($httpProvider) {
@@ -235,6 +247,14 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
 
         $scope.formData = {};
         $scope.formData1 = {};
+        $scope.fields = {
+          password: '',
+          passwordConfirm: ''
+        };
+  
+  $scope.submit = function() {
+    alert("Submit!");
+  };
 
         $scope.logOut = function() {
             $window.localStorage['token'] = null;
@@ -377,7 +397,7 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
             $http({
                 method: 'POST',
                 url: express_endpoint + '/register',
-                data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
+                data: 'name=' + $scope.user.username + '&password=' + $scope.fields.password,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -386,9 +406,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                     $scope.reg_message = "User already exists."
                 }
                 if (data.success == true) {
-                    $scope.showRegToInvite = false;
-                    $scope.showLoginToInvite = true;
-                    $location.url('/login');
+                  $scope.login();
+                //    $scope.showRegToInvite = false;
+               //     $scope.showLoginToInvite = true;
+                //    $location.url('/login');
                 }
             });
         }
@@ -438,10 +459,12 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         };
 
         $scope.login = function() {
+                    console.log('asdfdasfdsa')
             $http({
                 method: 'POST',
                 url: express_endpoint + '/authenticate',
-                data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
+                //data: 'name=' + $scope.user.username + '&password=' + $scope.user.password,
+                data: 'name=' + $scope.user.username + '&password=' + $scope.fields.password,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
