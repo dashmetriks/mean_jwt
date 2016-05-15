@@ -32,16 +32,18 @@
             </form>
         </div>
         <div class="col-xs-4"> 
-            <div id="todo-list" class="row"  >
-                <div class="checkbox" ng-repeat="event in events | orderBy:'-_id'"> 
+            <div  >
+                <div class="well well-sm" ng-repeat="event in events | orderBy:'-_id'"> 
                     <label>
                         <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"]}}'> {{ event.event_title}} </a>  </h3>
                         Host: {{ event.event_creator_displayname}} </br>
-                        date: {{ event.event_start}} </br>
-                        location: {{ event.event_location}} </br>
+                        Date: {{ event.event_start}} </br>
+                        Location: {{ event.event_location}} </br>
+            
+                    </label>
+             
             <button type="submit" class="btn btn-primary btn-xs" ng-click="deleteEventConfirm(event._id)">Delete Event</button>
             <button type="submit" class="btn btn-primary btn-xs" ng-show="showDeleteEvent && showDeleteEventid == event._id" ng-click="deleteEvent(event._id)">Confirm Delete</button>
-                    </label>
                 </div>
 
             </div>
