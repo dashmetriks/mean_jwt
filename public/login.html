@@ -1,7 +1,7 @@
-<body ng-controller="mainController">
-    <div class="container">
+<body ng-controller="mainController" >
+    <div class="container" ng-init="loginForm()" >
        <div class="col-xs-4">
-       <h3> Login </h3> 
+       <h3> Login {{ loginForm }} </h3> 
         <form name="userForm" class="well">
 
 <!-- EMAIL -->

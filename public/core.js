@@ -20,7 +20,7 @@ var interceptor = function($q, $location) {
 };
 
 
-//var express_endpoint = "http://envite.club/:3000"
+//var express_endpoint = "http://envite.club:3000"
 var express_endpoint = "http://localhost:8070"
 
 var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
@@ -327,6 +327,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         $scope.cancelEditEvent = function() {
             $scope.eventEdit = 'NO';
         }
+        $scope.loginForm = function() {
+                $rootScope.showLoginlink = false;
+        }
+
         $scope.invite_change = function() {
             $scope.newInvite = false;
 
@@ -562,11 +566,13 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
 
         $scope.getEventInvite = function(id) {
             if ($window.localStorage.getItem('token') == null) {
+                $rootScope.showLoginlink = true;
                 var endpoint = express_endpoint + '/geteventinviteanon/' + $routeParams.invite_code
                 var head = {
                     'Content-Type': 'application/json'
                 }
             } else if ($window.localStorage.getItem('token').length < 10) {
+                $rootScope.showLoginlink = true;
                 var endpoint = express_endpoint + '/geteventinviteanon/' + $routeParams.invite_code
                 var head = {
                     'Content-Type': 'application/json'
