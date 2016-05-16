@@ -2,10 +2,12 @@
     <div class="container" ng-init="checkLogin()">
        <div class="col-xs-4">
        <h3> User Account </h3>
-        <form class="well" name="myForm">
+    <h4> {{reg_message_success}} </h4>
+        <form  name="myForm" class="well">
+
             <div  class="form-group" >
                 <label>Email</label>
-                <input type="email" name="username" ng-model="username" required/>
+                <input type="email" class="form-control" name="username" ng-model="username" required/>
         <div role="alert">
       <span class="error" ng-show="myForm.username.$error.required">
         Required!</span>
@@ -15,7 +17,7 @@
             </div>
             <div  class="form-group" >
                 <label>Displayname</label>
-                <input type="text" name="displayname" ng-model="displayname" required/>
+                <input type="text" name="displayname" class="form-control" ng-model="displayname" required/>
                             <span style="color:red" ng-show="myForm.displayname.$dirty && myForm.displayname.$invalid">
                                 <span ng-show="myForm.displayname.$error.required">displayname is required.</span>
                             </span>

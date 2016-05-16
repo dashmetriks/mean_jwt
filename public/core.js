@@ -20,7 +20,7 @@ var interceptor = function($q, $location) {
 };
 
 
-//var express_endpoint = "http://dashmetriks.com:3000"
+//var express_endpoint = "http://envite.club/:3000"
 var express_endpoint = "http://localhost:8070"
 
 var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
@@ -115,7 +115,9 @@ envite.directive('match', function($parse) {
   return {
     require: 'ngModel',
     link: function(scope, elem, attrs, ctrl) {
+      console.log(attrs)
       scope.$watch(function() {        
+      console.log(ctrl)
         return $parse(attrs.match)(scope) === ctrl.$modelValue;
       }, function(currentValue) {
         ctrl.$setValidity('mismatch', currentValue);
@@ -159,6 +161,10 @@ envite.config(['$locationProvider', '$routeProvider',
             })
             .when('/register', {
                 templateUrl: 'register.html',
+                controller: 'mainController'
+            })
+            .when('/register2', {
+                templateUrl: 'register2.html',
                 controller: 'mainController'
             })
             .otherwise({
@@ -251,6 +257,17 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
           password: '',
           passwordConfirm: ''
         };
+
+        $scope.submitForm = function(isValid) {
+          $scope.submitted = true;
+
+    // check to make sure the form is completely valid
+    if (isValid) {
+      alert('our form is amazing');
+    }
+
+  };
+
   
   $scope.submit = function() {
     alert("Submit!");
@@ -394,6 +411,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         };
 
         $scope.register = function() {
+          $scope.submitted = true;
+          if ($scope.fields.password.length < 1){
+             $scope.noPassword = true;
+          } else {
             $http({
                 method: 'POST',
                 url: express_endpoint + '/register',
@@ -406,12 +427,14 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                     $scope.reg_message = "User already exists."
                 }
                 if (data.success == true) {
+                  $rootScope.reg_message_success = "Thanks for registering. Please confirm your Display Name"
                   $scope.login();
                 //    $scope.showRegToInvite = false;
                //     $scope.showLoginToInvite = true;
                 //    $location.url('/login');
                 }
             });
+        }
         }
 
         $scope.checkLogin = function() {
@@ -451,6 +474,9 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                         'x-access-token': $window.localStorage.getItem('token')
                     }
                 }).success(function(data) {
+                    if ($rootScope.reg_message_success){
+                       $rootScope.reg_message_success = null;
+                    }
                     $location.url('/event_list');
                 })
                 .error(function(data) {
@@ -459,7 +485,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         };
 
         $scope.login = function() {
-                    console.log('asdfdasfdsa')
+          $scope.submitted = true;
+          if ($scope.fields.password.length < 1){
+             $scope.noPassword = true;
+          } else {
             $http({
                 method: 'POST',
                 url: express_endpoint + '/authenticate',
@@ -471,6 +500,8 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
             }).success(function(data) {
                 if (data.success == true) {
                     $window.localStorage.setItem('token', data.token);
+  
+                    $rootScope.isUserLoggedIn = true;
 
                     if (data.user_displayname) {
                         $location.url('/event_list');
@@ -482,6 +513,7 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                 }
 
             });
+        }
         }
 
 
@@ -689,6 +721,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
 
 
         $scope.createEvent = function() {
+          $scope.submitted = true;
+          if ($scope.formData.text.length < 1){
+             $scope.noEventTitle = true;
+          } else {
             $http({
                     method: 'POST',
                     url: express_endpoint + '/api/new_event',
@@ -700,12 +736,14 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                 }).success(function(data) {
                     $scope.getEventList();
 
+          $scope.submitted = false;
                     delete $scope.formData.text
                     delete $scope.formData.event_location
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);
                 });
+        }
         };
 
         $scope.editEventSave = function() {
