@@ -1,7 +1,7 @@
-<body>
+<body ng-controller="mainController" >
     <div class="container" ng-init="getEventInvite()">
         <!-- HEADER AND TODO COUNT -->
-        <div id="todo-list" class="row" ng-controller="mainController">
+        <div class="row" >
             <div class="col-sm-5">
                 <div class="well text-left" ng-if="eventEdit != 'YES'">
                     <h4>{{ event_title}}</h4>
