@@ -331,6 +331,10 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                 $rootScope.showLoginlink = false;
         }
 
+        $scope.password_change = function() {
+                $scope.changePassword = $scope.changePassword === true ? false : true;
+        }
+
         $scope.invite_change = function() {
             $scope.newInvite = false;
 
@@ -414,6 +418,29 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                 });
         };
 
+        $scope.save_password = function() {
+          $scope.submitted = true;
+          if ($scope.fields.password.length < 1){
+             $scope.noPassword = true;
+          } else {
+            $http({
+                method: 'POST',
+                url: express_endpoint + '/api/passwordsave',
+                data: '&password=' + $scope.fields.password,
+                headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'x-access-token': $window.localStorage.getItem('token')
+                }
+            }).success(function(data) {
+                $scope.changePassword = $scope.changePassword === true ? false : true;
+                $rootScope.reg_message_success = "Password has been changed."
+                if (data.success == true) {
+                //  $rootScope.reg_message_success = "Thanks for registering. Please confirm your Display Name"
+               //   $scope.login();
+                }
+            });
+        }
+        }
         $scope.register = function() {
           $scope.submitted = true;
           if ($scope.fields.password.length < 1){
@@ -433,9 +460,6 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                 if (data.success == true) {
                   $rootScope.reg_message_success = "Thanks for registering. Please confirm your Display Name"
                   $scope.login();
-                //    $scope.showRegToInvite = false;
-               //     $scope.showLoginToInvite = true;
-                //    $location.url('/login');
                 }
             });
         }

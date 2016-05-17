@@ -1004,6 +1004,25 @@ console.log(req.decoded._doc._id)
         });
     });
 });
+
+apiRoutes.post('/passwordsave', function (req, res) {
+    User.update({
+        _id: req.decoded._doc._id
+    }, {
+        $set: {
+            password: req.body.password
+        }
+    },
+    function (err, users) {
+        if (err)
+            throw err;
+        //res.json(result);
+        res.json({
+            'user': users,
+        });
+    });
+});
+
 apiRoutes.post('/usersave', function (req, res) {
     User.update({
         _id: req.decoded._doc._id
@@ -1022,6 +1041,7 @@ apiRoutes.post('/usersave', function (req, res) {
         });
     });
 });
+
 apiRoutes.get('/my_event_list2', function (req, res) {
     var player_data = []
     var player_data2 = []
