@@ -20,8 +20,7 @@ var interceptor = function($q, $location) {
 };
 
 
-//var express_endpoint = "http://envite.club:3000"
-var express_endpoint = "http://localhost:8070"
+var express_endpoint = "http://envite.club:3000"
 
 var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 
@@ -143,6 +142,10 @@ envite.config(['$locationProvider', '$routeProvider',
                 templateUrl: 'invited_list.html',
                 controller: 'mainController'
             })
+            .when('/invited_list2/:event_id', {
+                templateUrl: 'invited_list2.html',
+                controller: 'mainController'
+            })
             .when('/events/:event_id', {
                 templateUrl: 'events.html',
                 controller: 'mainController'
@@ -161,6 +164,10 @@ envite.config(['$locationProvider', '$routeProvider',
             })
             .when('/register', {
                 templateUrl: 'register.html',
+                controller: 'mainController'
+            })
+            .when('/smsdata', {
+                templateUrl: 'smsdata.html',
                 controller: 'mainController'
             })
             .when('/register2', {
@@ -272,6 +279,7 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
   $scope.submit = function() {
     alert("Submit!");
   };
+
 
         $scope.logOut = function() {
             $window.localStorage['token'] = null;
@@ -812,6 +820,24 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         };
 
 
+        $scope.sendSMS = function() {
+            $http({
+                    method: 'POST',
+                    url: express_endpoint + '/api/sendsms/' + $routeParams.event_id,
+                    data: 'text=' + $scope.formData.text + '&phone=' + $scope.formData.email,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'x-access-token': $window.localStorage.getItem('token')
+                    }
+                }).success(function(data) {
+                    delete $scope.formData.text
+                    delete $scope.formData.email
+                    $scope.getInvites();
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
         $scope.addInvite = function() {
             $http({
                     method: 'POST',
@@ -832,5 +858,20 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
         };
 
 
+ $scope.getSMS = function() {
+            $http({
+                    method: 'GET',
+                    url: express_endpoint + '/smsdata?ToCountry', 
+                  //  data: 'text=' + $scope.formData.text + '&email=' + $scope.formData.email,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).success(function(data) {
+                   console.log("wowowowowo")
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
     }
 ]);
