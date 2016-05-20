@@ -42,6 +42,16 @@ var apiRoutes = express.Router();
 // configuration =================
 app.set('superSecret', config.secret);
 
+io.on('connection', function(client) {
+    console.log('Client connected...');
+
+    client.on('join', function(data) {
+        console.log(data);
+        client.emit('messages', 'Hello from server');
+    });
+
+});
+
 
 mongoose.connect('mongodb://localhost:27017/test'); // connect to mongoDB database on modulus.io
 
@@ -406,6 +416,8 @@ app.post('/adduserevent2/:event_id/:ustatus/:invite_code', function (req, res) {
                     res.json(data);
                 })
             }
+io.sockets.emit("foo", req.params.invite_code);
+console.log("fdasdasfadsfasfa")
         } // else   players = null
     });
 });

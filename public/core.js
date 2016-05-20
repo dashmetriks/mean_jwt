@@ -288,10 +288,16 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
                //$scope.logOut();
     });
         socket.on('messages', function(data) {
-               $scope.logOut();
-                //alert(data);
             
+     //          $scope.logOut();
+                //alert(data);
         });
+socket.on("foo", function(message) { 
+
+console.log("foo: ", message)
+               $scope.getEventInvite(message);
+
+ });
         $scope.logOut = function() {
             $window.localStorage['token'] = null;
             $rootScope.isUserLoggedIn = false;
