@@ -20,7 +20,8 @@ var interceptor = function($q, $location) {
 };
 
 
-var express_endpoint = "http://envite.club:3000"
+//var express_endpoint = "http://envite.club:3000"
+var express_endpoint = "http://localhost:8070"
 
 var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 
@@ -175,7 +176,7 @@ envite.config(['$locationProvider', '$routeProvider',
                 controller: 'mainController'
             })
             .otherwise({
-                redirectTo: '/event_list'
+                redirectTo: '/login'
             });
         $locationProvider.html5Mode(true);
     }
@@ -281,6 +282,16 @@ envite.controller('mainController', ['$scope', '$http', '$window', '$location', 
   };
 
 
+    var socket = io.connect('http://localhost:8070');
+    socket.on('connect', function(data) {
+        socket.emit('join', 'Hello World from client');
+               //$scope.logOut();
+    });
+        socket.on('messages', function(data) {
+               $scope.logOut();
+                //alert(data);
+            
+        });
         $scope.logOut = function() {
             $window.localStorage['token'] = null;
             $rootScope.isUserLoggedIn = false;

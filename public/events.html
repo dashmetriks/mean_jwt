@@ -7,6 +7,7 @@
             <h3>{{ event_title}}</h3>
             <h3>Date: {{event_date}} </h3>
             <h3>Host: {{event_creator_username}} </h3>
+           <input type="button" value="Edit Event" ng-click="editEvent(event_id)" class="btn btn-primary"  >
         </div>
         <!-- TODO LIST -->
                 <div ng-if="isMember">
