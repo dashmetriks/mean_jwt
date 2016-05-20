@@ -3,6 +3,9 @@
 // set up ========================
 var express = require('express');
 var app = express(); // create our app w/ express
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
 var cors = require('cors')
 var mongoose = require('mongoose'); // mongoose for mongodb
 var autoIncrement = require('mongoose-auto-increment');
@@ -38,6 +41,7 @@ var apiRoutes = express.Router();
 
 // configuration =================
 app.set('superSecret', config.secret);
+
 
 mongoose.connect('mongodb://localhost:27017/test'); // connect to mongoDB database on modulus.io
 
@@ -1067,6 +1071,14 @@ app.get('/smsdata', function (req, res) {
    //     if (err) res.send(err);
    // });
    } 
+io.on('connection', function(client) { 
+    console.log('Client connected...');
+    client.on('join', function(data) {
+        console.log(data);
+        client.emit('messages', 'Hello from server 8888');
+    });
+
+});
    
 });
 apiRoutes.get('/event_list', function (req, res) {
@@ -1314,5 +1326,6 @@ app.use(function (req, res) {
     res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
 });
 // listen (start app with node server.js) ======================================
-app.listen(config.port_endpoint);
+//app.listen(config.port_endpoint);
+server.listen(config.port_endpoint);
 console.log("App listening on port " +  config.port_endpoint);
