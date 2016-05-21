@@ -18,7 +18,7 @@ var jwt = require('jsonwebtoken');
 var config = require('./config');
 var User = require('./app/models/user');
 var crypto = require('crypto');
-var client = require('twilio')('ACdca8cb5499c7e7db7fe124192674c4f5', '9a1ef4bbc5d9ca9672a484011fef5ff6');
+var client = require('twilio')(config.twilio_sid, config.twilio_token);
 
 
 var nodemailer = require('nodemailer');
@@ -1063,36 +1063,20 @@ apiRoutes.get('/change_invite_status/:invite_code', function (req, res) {
         });
     });
 });
+
 app.get('/smsdata', function (req, res) {
-  console.log(req.query.From)
-  console.log(req.query.From.replace(/\+1/g, ""))
-   if (req.query.Body == "leave"){
-    console.log("99999999")
-    Invite.update({
-        invited_phone: req.query.From.replace(/\+1/g, "") , invite_status: 'Sent'
-    }, {
-        $set: {
-            invite_status: 'stop'
-        }
-    },
+        Invite.create({
+            event_id: '573df302ff23ec9151000002',
+            invited_email: req.query.From,
+            invite_status: req.query.MediaUrl0
+          },
     function (err, result) {
         if (err)
             throw err;
     });
-  //  Invite.remove({ invited_phone: req.query.From }, function (err, events) {
-   //     if (err) res.send(err);
-   // });
-   } 
-io.on('connection', function(client) { 
-    console.log('Client connected...');
-    client.on('join', function(data) {
-        console.log(data);
-        client.emit('messages', 'Hello from server 8888');
-    });
+    io.sockets.emit("mms", '573df302ff23ec9151000002');
+});
 
-});
-   
-});
 apiRoutes.get('/event_list', function (req, res) {
     Event.find(function (err, events) {
         if (err)
