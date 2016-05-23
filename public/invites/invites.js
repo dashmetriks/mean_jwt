@@ -1,30 +1,27 @@
-//angular.module('envite.invites', [
-//  'ngRoute',
-//  'ui.bootstrap', 
- // 'ui.bootstrap.datetimepicker', 
-//])
-angular.module('envite.invites', [ 'ngRoute' ])
+angular.module('envite.invite', [
+    'ngRoute',
+    'ui.bootstrap',
+    'ui.bootstrap.datetimepicker',
+])
 
 .config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-            .when('/invite/:invite_code', {
-                templateUrl: 'invites/invites.html',
-                controller: 'invitesController'
-            })
-            .when('/invited_list/:event_id', {
-                templateUrl: 'invites/invited_list.html',
-                controller: 'invitesController'
-            })
-            .when('/event_list', {
-                templateUrl: 'invites/event_list.html',
-                controller: 'invitesController'
-            })
+    $routeProvider
+        .when('/invite/:invite_code', {
+            templateUrl: 'invites/invites.html',
+            controller: 'invitesController'
+        })
+        .when('/invited_list/:event_id', {
+            templateUrl: 'invites/invited_list.html',
+            controller: 'invitesController'
+        })
+        .when('/event_list', {
+            templateUrl: 'invites/event_list.html',
+            controller: 'invitesController'
+        })
 }])
-
 
 .controller('invitesController', ['$scope', '$http', '$window', '$location', '$routeParams', '$rootScope',
     function($scope, $http, $window, $location, $routeParams, $rootScope) {
-
         $scope.form = {};
         var that = this;
 
@@ -102,42 +99,41 @@ angular.module('envite.invites', [ 'ngRoute' ])
         $scope.formData = {};
         $scope.formData1 = {};
         $scope.fields = {
-          password: '',
-          passwordConfirm: ''
+            password: '',
+            passwordConfirm: ''
         };
 
         $scope.submitForm = function(isValid) {
-          $scope.submitted = true;
+            $scope.submitted = true;
 
-    // check to make sure the form is completely valid
-    if (isValid) {
-      alert('our form is amazing');
-    }
+            // check to make sure the form is completely valid
+            if (isValid) {
+                alert('our form is amazing');
+            }
 
-  };
-
-  
+        };
 
 
-    var socket = io.connect('http://localhost:8070');
-    socket.on('connect', function(data) {
-        socket.emit('join', 'Hello World from client');
-               //$scope.logOut();
-    });
+
+        var socket = io.connect(express_endpoint);
+        socket.on('connect', function(data) {
+            socket.emit('join', 'Hello World from client');
+            //$scope.logOut();
+        });
         socket.on('messages', function(data) {
-            
-     //          $scope.logOut();
-                //alert(data);
+
+            //          $scope.logOut();
+            //alert(data);
         });
 
-socket.on("foo", function(message) { 
-               $scope.getEventInvite(message);
- });
+        socket.on("foo", function(message) {
+            $scope.getEventInvite(message);
+        });
 
-socket.on("mms", function(message) {
-      console.log("mms: ", message)
-      $scope.getInvites(message);
- });
+        socket.on("mms", function(message) {
+            console.log("mms: ", message)
+            $scope.getInvites(message);
+        });
 
         $scope.logOut = function() {
             $window.localStorage['token'] = null;
@@ -194,11 +190,11 @@ socket.on("mms", function(message) {
             $scope.eventEdit = 'NO';
         }
         $scope.loginForm = function() {
-                $rootScope.showLoginlink = false;
+            $rootScope.showLoginlink = false;
         }
 
         $scope.password_change = function() {
-                $scope.changePassword = $scope.changePassword === true ? false : true;
+            $scope.changePassword = $scope.changePassword === true ? false : true;
         }
 
         $scope.invite_change = function() {
@@ -521,29 +517,29 @@ socket.on("mms", function(message) {
 
 
         $scope.createEvent = function() {
-          $scope.submitted = true;
-          if ($scope.formData.text.length < 1){
-             $scope.noEventTitle = true;
-          } else {
-            $http({
-                    method: 'POST',
-                    url: express_endpoint + '/api/new_event',
-                    data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3 + '&event_location=' + $scope.formData.event_location,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'x-access-token': $window.localStorage.getItem('token')
-                    }
-                }).success(function(data) {
-                    $scope.getEventList();
+            $scope.submitted = true;
+            if ($scope.formData.text.length < 1) {
+                $scope.noEventTitle = true;
+            } else {
+                $http({
+                        method: 'POST',
+                        url: express_endpoint + '/api/new_event',
+                        data: 'text=' + $scope.formData.text + '&event_start=' + $scope.ctrl.dates.date3 + '&event_location=' + $scope.formData.event_location,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'x-access-token': $window.localStorage.getItem('token')
+                        }
+                    }).success(function(data) {
+                        $scope.getEventList();
 
-          $scope.submitted = false;
-                    delete $scope.formData.text
-                    delete $scope.formData.event_location
-                })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                });
-        }
+                        $scope.submitted = false;
+                        delete $scope.formData.text
+                        delete $scope.formData.event_location
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+            }
         };
 
         $scope.editEventSave = function() {
@@ -620,16 +616,16 @@ socket.on("mms", function(message) {
         };
 
 
- $scope.getSMS = function() {
+        $scope.getSMS = function() {
             $http({
                     method: 'GET',
-                    url: express_endpoint + '/smsdata?ToCountry', 
-                  //  data: 'text=' + $scope.formData.text + '&email=' + $scope.formData.email,
+                    url: express_endpoint + '/smsdata?ToCountry',
+                    //  data: 'text=' + $scope.formData.text + '&email=' + $scope.formData.email,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }).success(function(data) {
-                   console.log("wowowowowo")
+                    console.log("wowowowowo")
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);
