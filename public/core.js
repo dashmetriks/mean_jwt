@@ -11,7 +11,7 @@ var interceptor = function($q, $location) {
         responseError: function(rejection) {
             console.log('Failed with', rejection.status, 'status');
             if (rejection.status == 403) {
-                    $location.url('/login');
+                $location.url('/login');
             }
 
             return $q.reject(rejection);
@@ -19,41 +19,43 @@ var interceptor = function($q, $location) {
     }
 };
 
-
-//var express_endpoint = "http://envite.club:3000"
-var express_endpoint = "http://localhost:8070"
-
-//var envite = angular.module('envite', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ngRoute']);
 angular.module('envite', [
-  'ngRoute',
-  'envite.user',
-  'envite.view1',
-  'envite.invites'
-]).
-config(['$locationProvider', '$routeProvider',
+    'ngRoute',
+    'config',
+    'envite.user',
+    'envite.invite'
+])
+
+.config(['$locationProvider', '$routeProvider',
     function($locationProvider, $routeProvider) {
         $routeProvider
-       //     .when('/smsdata', {
-      //          templateUrl: 'smsdata.html',
-       //         controller: 'mainController'
-       //     })
-      //      .otherwise({
-       //         redirectTo: '/event_list'
-        //    });
         $locationProvider.html5Mode(true);
     }
 ])
+
 .directive('match', function($parse) {
-  return {
-    require: 'ngModel',
-    link: function(scope, elem, attrs, ctrl) {
-      console.log(attrs)
-      scope.$watch(function() {        
-      console.log(ctrl)
-        return $parse(attrs.match)(scope) === ctrl.$modelValue;
-      }, function(currentValue) {
-        ctrl.$setValidity('mismatch', currentValue);
-      });
+    return {
+        require: 'ngModel',
+        link: function(scope, elem, attrs, ctrl) {
+            console.log(attrs)
+            scope.$watch(function() {
+                console.log(ctrl)
+                return $parse(attrs.match)(scope) === ctrl.$modelValue;
+            }, function(currentValue) {
+                ctrl.$setValidity('mismatch', currentValue);
+            });
+        }
+    };
+})
+
+.factory('urls', function(config) {
+    return {
+        express_endpoint: config.express_endpoint
     }
-  };
-});
+})
+
+.controller('mainController', ['urls',
+    function(urls) {
+        express_endpoint = urls.express_endpoint
+    }
+]);

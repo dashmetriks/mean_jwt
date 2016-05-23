@@ -1,86 +1,91 @@
 <!-- index.html -->
 <!doctype html>
-
 <!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="envite">
+<html ng-app="envite" ng-controller="mainController">
+
 <head>
     <!-- META -->
     <meta charset="utf-8">
     <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Optimize mobile viewport -->
     <title>Envite</title>
-
     <!-- SCROLLS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <!-- load bootstrap -->
     <style>
-        html                    { overflow-y:scroll; }
-        body                    { padding-top:50px; }
-        #todo-list              { margin-bottom:30px; }
+    html {
+        overflow-y: scroll;
+    }
+    
+    body {
+        padding-top: 50px;
+    }
+    
+    #todo-list {
+        margin-bottom: 30px;
+    }
     </style>
-
     <link rel="stylesheet" href="style.css" />
     <!-- SPELLS -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
-      <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <!-- load jquery -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-   <!-- 
+    <!-- 
     <script src="https://code.angularjs.org/1.2.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
    -->
-     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.js"></script>
-
     <script src="core.js"></script>
+    <script src="config.js"></script>
     <script src="user/user.js"></script>
     <script src="invites/invites.js"></script>
-    <script src="app1.js"></script>
     <script src="datetime-picker.js"></script>
-    <script src="/socket.io/socket.io.js"></script>            
+    <script src="/socket.io/socket.io.js"></script>
     </body>
-
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
+
 <body>
-<div  ng-controller="mainController as ctrl" class="container">
-<div >
-<nav class="navbar navbar-default" id="site_header8">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">envites - simple invites</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-      <li ng-show="isUserLoggedIn"><a href="/#/event_list" >Event List </a></li>
-      <li ng-show="isUserLoggedIn"><a href="/#/user" > User Account </a></li>
-      <li ng-show="isUserLoggedIn"><a href="" ng-click="logOut()" > Logout </a></li>
-      <li ng-hide="isUserLoggedIn"><a href="/#/login" > Login </a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
-<!--
+    <div ng-controller="invitesController as ctrl" class="container">
+        <div>
+            <nav class="navbar navbar-default" id="site_header8">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">envites - simple invites</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li ng-show="isUserLoggedIn"><a href="/#/event_list">Event List </a></li>
+                        <li ng-show="isUserLoggedIn"><a href="/#/user"> User Account </a></li>
+                        <li ng-show="isUserLoggedIn"><a href="" ng-click="logOut()"> Logout </a></li>
+                        <li ng-hide="isUserLoggedIn"><a href="/#/login"> Login </a></li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+        </nav>
+        <!--
 <a href="#/register" ng-hide="isUserLoggedIn" > register </a>
 <a href="#/login" ng-hide="isUserLoggedIn"> login </a>
 <a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > logout </a>
 -->
-
         <ng-view></ng-view>
-</div>
-
-        <!-- FORM TO CREATE TODOS -->
-
+    </div>
+    <!-- FORM TO CREATE TODOS -->
 </body>
 <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
 </html>
