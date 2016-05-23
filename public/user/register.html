@@ -1,0 +1,34 @@
+<body ng-controller="mainController">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                <h3> Register </h3>
+                <form name="userForm" class="well">
+                    <!-- EMAIL -->
+                    <div class="form-group" ng-class="{ 'has-error' : userForm.username.$invalid &&  submitted }">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="username" ng-model="user.username" required/>
+                        <p ng-show="userForm.username.$invalid && submitted" class="help-block">Provide Valid Email.</p>
+                    </div>
+                    <!-- password1 -->
+                    <div class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid &&  submitted }">
+                        <label>Password</label>
+                        <input id="password" name="password" ng-model="fields.password" class="form-control" required type="password" />
+                        <p ng-show="(userForm.password.$invalid && submitted) || noPassword" class="help-block">Password is required.</p>
+                    </div>
+                    <!-- password2 -->
+                    <div class="form-group" ng-class="{ 'has-error' : userForm.passwordConfirm.$invalid &&  submitted }">
+                        <label>Confirm Password</label>
+                        <input name="passwordConfirm" ng-model="fields.passwordConfirm" class="form-control" required type="password" match="fields.password" />
+                        <div ng-show="userForm.passwordConfirm.$error.mismatch">
+                            <span class="msg-error">Passwords must match.</span>
+                        </div>
+                    </div>
+                    <input type="button" ng-disabled="(userForm.$invalid && submitted) || userForm.passwordConfirm.$error.mismatch" value="Register" ng-click="register()" class="btn btn-primary" />
+                </form>
+                <h3> {{reg_message}} </h3>
+                <h4> or <a href="/login">Login</a>
+            </div>
+        </div>
+    </div>
+</body>

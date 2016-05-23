@@ -12,6 +12,7 @@
     <title>Envite</title>
 
     <!-- SCROLLS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
     <style>
         html                    { overflow-y:scroll; }
         body                    { padding-top:50px; }
@@ -22,7 +23,7 @@
     <!-- SPELLS -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
       <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="//getbootstrap.com/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
    <!-- 
     <script src="https://code.angularjs.org/1.2.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
@@ -33,16 +34,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.js"></script>
 
     <script src="core.js"></script>
+    <script src="user/user.js"></script>
+    <script src="invites/invites.js"></script>
+    <script src="app1.js"></script>
     <script src="datetime-picker.js"></script>
-           <script src="/socket.io/socket.io.js"></script>            
-        <script>  
-</script>
+    <script src="/socket.io/socket.io.js"></script>            
+    </body>
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
 <body>
 <div  ng-controller="mainController as ctrl" class="container">
-<nav class="navbar navbar-default">
+<div >
+<nav class="navbar navbar-default" id="site_header8">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -60,25 +64,13 @@
       <li ng-show="isUserLoggedIn"><a href="/#/event_list" >Event List </a></li>
       <li ng-show="isUserLoggedIn"><a href="/#/user" > User Account </a></li>
       <li ng-show="isUserLoggedIn"><a href="" ng-click="logOut()" > Logout </a></li>
-      <li ng-show="showLoginlink"><a href="/#/login" > Login </a></li>
+      <li ng-hide="isUserLoggedIn"><a href="/#/login" > Login </a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+
 <!--
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Envite - invites made simple</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li><a href="/#/event_list" ng-show="isUserLoggedIn" > Event List </a></li>
-      <li><a href="/#/user" ng-show="isUserLoggedIn" > User Account </a></li>
-      <li><a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > Logout </a></li>
-      <li><a href="/#/login" ng-show="showLoginlink"> Login </a></li>
-    </ul>
-  </div>
-</nav>
 <a href="#/register" ng-hide="isUserLoggedIn" > register </a>
 <a href="#/login" ng-hide="isUserLoggedIn"> login </a>
 <a href="" ng-show="isUserLoggedIn" ng-click="logOut()" > logout </a>
@@ -90,10 +82,5 @@
         <!-- FORM TO CREATE TODOS -->
 
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-  </body>
+<script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
 </html>

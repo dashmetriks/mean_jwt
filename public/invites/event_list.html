@@ -1,0 +1,54 @@
+<body >
+    <div class="container" ng-controller="mainController" ng-init="getEventList()">
+        <div class="col-md-4 well" > 
+            <form  name="eventForm">
+
+<div class="form-group" ng-class="{ 'has-error' : eventForm.event_title.$invalid &&  submitted }">
+    <label>Event Title</label>
+                    <input type="text" name="event_title" class="form-control input-md text-center" placeholder="Event Title" ng-model="formData.text" required>
+    <p ng-show="(eventForm.event_title.$invalid && submitted) || noEventTitle" class="help-block">Provide Event Title.</p>
+    </div>
+
+
+<div class="form-group" ng-class="{ 'has-error' : eventForm.event_location.$invalid &&  submitted }">
+    <label>Event Location</label>
+                    <input type="text" name="event_location" class="form-control input-md text-center" placeholder="Event Location" ng-model="formData.event_location" required>
+    <p ng-show="eventForm.event_location.$invalid && submitted" class="help-block">Provide Event Title.</p>
+    </div>
+
+                    <h4>Pick a date and time</h4>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="ctrl.dates.date3" is-open="ctrl.open.date3" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'date3')"><i class="fa fa-calendar"></i></button>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+
+                <button type="submit"  ng-disabled="eventForm.$invalid && submitted" class="btn btn-primary btn-lg" ng-click="createEvent()">Create New Event</button>
+            </form>
+        </div>
+        <div class="col-md-4"> 
+            <div  >
+                <div class="well well-sm" ng-repeat="event in events | orderBy:'-_id'"> 
+                    <label>
+                        <h3><a href='/invite/{{ events_invite[event._id][0]["invite_code"]}}'> {{ event.event_title}} </a>  </h3>
+                        Host: {{ event.event_creator_displayname}} </br>
+                        Date: {{ event.event_start}} </br>
+                        Location: {{ event.event_location}} </br>
+            
+                    </label>
+             
+            <button type="submit" class="btn btn-primary btn-xs" ng-click="deleteEventConfirm(event._id)">Delete Event</button>
+            <button type="submit" class="btn btn-primary btn-xs" ng-show="showDeleteEvent && showDeleteEventid == event._id" ng-click="deleteEvent(event._id)">Confirm Delete</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
