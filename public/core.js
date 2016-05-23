@@ -13,7 +13,9 @@ var interceptor = function($q, $location) {
             if (rejection.status == 403) {
                 $location.url('/login');
             }
-
+            if (rejection.status == 404) {
+                $location.url('/event_list');
+            }
             return $q.reject(rejection);
         }
     }
@@ -26,9 +28,13 @@ angular.module('envite', [
     'envite.invite'
 ])
 
+.config(function($httpProvider) {
+    $httpProvider.interceptors.push(interceptor);
+})
+
 .config(['$locationProvider', '$routeProvider',
     function($locationProvider, $routeProvider) {
-        $routeProvider
+        $routeProvider.otherwise({redirectTo: '/login'});
         $locationProvider.html5Mode(true);
     }
 ])

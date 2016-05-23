@@ -815,12 +815,19 @@ app.get('/geteventinviteanon/:invite_code', function (req, res) {
     function (err, invites) {
         if (err)
             res.send(err)
+        if (invites){
         if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened");
         }
         get_event_data(invites.event_id, req.params.invite_code, function (data) {
             res.json(data);
         })
+        } else{
+        return res.status(403).send({
+            success: false,
+            message: 'No Invite for that code.'
+        });
+        }
     });
 });
 apiRoutes.get('/geteventinvite/:invite_code', function (req, res) {
@@ -830,12 +837,19 @@ apiRoutes.get('/geteventinvite/:invite_code', function (req, res) {
     function (err, invites) {
         if (err)
             res.send(err)
-        if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
-            update_invite_status(invites["_id"], "Opened");
+        if (invites){
+           if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
+               update_invite_status(invites["_id"], "Opened");
+           }
+           get_event_data(invites.event_id, req.params.invite_code, function (data) {
+               res.json(data);
+           })
+        } else{
+        return res.status(404).send({
+            success: false,
+            message: 'No Invite for that code.'
+        });
         }
-        get_event_data(invites.event_id, req.params.invite_code, function (data) {
-            res.json(data);
-        })
     });
 });
 
@@ -921,10 +935,17 @@ app.get('/invites/:invite_code', function (req, res) {
     function (err, invites) {
         if (err)
             res.send(err)
+        if (invites){
         if (invites["invite_status"] == "Opened" || invites["invite_status"] == "Sent") {
             update_invite_status(invites["_id"], "Opened");
         }
         res.json(invites);
+        } else{
+        return res.status(403).send({
+            success: false,
+            message: 'No Invite for that code.'
+        });
+        }
     });
 });
 
