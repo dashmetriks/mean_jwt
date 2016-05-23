@@ -1,4 +1,4 @@
-<body ng-controller="mainController">
+<body ng-controller="userController">
     <div class="container" ng-init="checkLogin()">
         <div class="col-md-4">
             <h4> User Account </h4>
@@ -22,13 +22,13 @@
                     </span>
                 </div>
                 <input type="button" value="Save  " ng-click="userSave()" class="btn btn-primary" ng-disabled="(myForm.displayname.$dirty && myForm.displayname.$invalid) || (myForm.username.$dirty && myForm.username.$invalid)">
-                        <input class="btn btn-primary btn-sm" type="button" value="Change Password" ng-click="password_change()">
+                <input class="btn btn-primary btn-sm" type="button" value="Change Password" ng-click="password_change()">
             </form>
             <h3> {{login_message}} </h3>
-                </div>
+        </div>
         <div class="col-md-4">
-                <div ng-if="changePassword">
-            <h4> Change Password </h4>
+            <div ng-if="changePassword">
+                <h4> Change Password </h4>
                 <form name="userForm" class="well">
                     <!-- password1 -->
                     <div class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid &&  submitted }">
@@ -45,9 +45,9 @@
                         </div>
                     </div>
                     <input type="button" ng-disabled="(userForm.$invalid && submitted) || userForm.passwordConfirm.$error.mismatch" value="Save Password" ng-click="save_password()" class="btn btn-primary" />
-                    <input type="button"  value="Cancel" ng-click="password_change()" class="btn btn-primary btn-sm" />
+                    <input type="button" value="Cancel" ng-click="password_change()" class="btn btn-primary btn-sm" />
                 </form>
-                </div>
+            </div>
         </div>
     </div>
 </body>
